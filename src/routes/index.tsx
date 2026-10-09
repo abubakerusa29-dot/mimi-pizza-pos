@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bike, Search, RotateCcw, ShoppingBag, SearchX } from "lucide-react";
-import logo from "@/assets/mimis-logo.png.asset.json";
+import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupSoda, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
 import { addLine, cartTotals, changeQty, formatRs, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
 import { OptionModal } from "@/components/pos/OptionModal";
-import { CartPanel, type OrderType } from "@/components/pos/CartPanel";
+import { CartPanel } from "@/components/pos/CartPanel";
+import { useOrder } from "@/components/pos/OrderContext";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
 
 export const Route = createFileRoute("/")({
@@ -28,10 +28,7 @@ export const Route = createFileRoute("/")({
 function POS() {
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [query, setQuery] = useState("");
-  const [lines, setLines] = useState<CartLine[]>([]);
-  const [orderNo, setOrderNo] = useState(1001);
-  const [orderType, setOrderType] = useState<OrderType>("Dine-in");
-  const [table, setTable] = useState("");
+  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable } = useOrder();
   const [modal, setModal] = useState<Product | null>(null);
   const [receiptAt, setReceiptAt] = useState<Date | null>(null);
   const [mobileCart, setMobileCart] = useState(false);
@@ -74,71 +71,61 @@ function POS() {
   };
 
   return (
-    <div className="pos-app flex h-dvh flex-col bg-background">
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <img src={logo.url} alt="Mimi’s Pizza logo" width={56} height={56} className="h-14 w-14 shrink-0 object-contain" />
-          <div className="min-w-0">
-            <h1 className="truncate font-display text-lg font-bold">Mimi’s Pizza</h1>
-            <p className="flex items-center gap-1 text-xs font-medium text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Delivery available</p>
-          </div>
-          <span className="hidden shrink-0 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-accent-foreground sm:inline">POS DEMO</span>
-        </div>
-        <Button onClick={newOrder} className="flex shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-sm font-semibold text-background hover:bg-foreground/90">
-          <RotateCcw className="h-4 w-4" /> <span className="hidden sm:inline">New Order</span>
-        </Button>
-      </header>
-
+    <div className="pos-app flex min-h-0 flex-1 flex-col bg-background">
       <div className="flex min-h-0 flex-1">
         <main className="flex min-w-0 flex-1 flex-col">
-          <div className="space-y-3 px-4 pt-3">
+          <div className="space-y-4 px-4 pt-5 lg:px-6">
+            <div className="flex items-center justify-between gap-3"><div><h2 className="font-display text-xl font-semibold">Point of Sale</h2><p className="mt-0.5 text-xs text-muted-foreground">Mimi’s menu <span className="mx-1">·</span> {products.length} items</p></div><Button variant="outline" onClick={newOrder} className="h-9 text-xs"><RotateCcw /> New Order</Button></div>
             <label className="relative block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search products..."
+                aria-label="Search products"
                 className="w-full rounded-lg border border-input bg-card py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary"
               />
             </label>
             <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
-              {categories.map((c) => (
-                <button
+              {categories.map((c, index) => {
+                const Icon = [LayoutGrid, Package, Pizza, Sandwich, CupSoda][index] ?? LayoutGrid;
+                return <Button
+                  variant="ghost"
                   key={c.id}
                   onClick={() => setCategory(c.id)}
-                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${category === c.id ? "bg-primary text-primary-foreground shadow" : "border border-border bg-card text-foreground hover:border-primary/50"}`}
+                  className={`h-10 shrink-0 rounded-lg px-3 text-sm font-semibold transition ${category === c.id ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground" : "border border-border bg-card text-muted-foreground hover:border-primary/50"}`}
                 >
-                  {c.label}
-                </button>
-              ))}
+                  <Icon /> {c.label}
+                </Button>;
+              })}
             </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-28 md:pb-4">
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-28 md:pb-4 lg:px-6">
             {visible.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-16 text-center text-muted-foreground">
                 <SearchX className="h-10 w-10" />
                 <p className="text-sm">No products match “{query}”.</p>
-                <button onClick={() => { setQuery(""); setCategory("all"); }} className="text-sm font-semibold text-primary">Clear search</button>
+                <Button variant="link" onClick={() => { setQuery(""); setCategory("all"); }}>Clear search</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-4">
                 {visible.map((p) => <ProductCard key={p.id} product={p} onSelect={select} />)}
               </div>
             )}
           </div>
         </main>
 
-        <aside className="hidden w-[34%] min-w-[300px] max-w-[420px] border-l border-border md:block">
+        <aside className="hidden w-[33%] min-w-[300px] max-w-[390px] border-l border-border md:block">
           <CartPanel {...cartProps} />
         </aside>
       </div>
 
       {/* Mobile order bar */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
-        <button onClick={() => setMobileCart(true)} className="flex w-full items-center justify-between rounded-xl bg-primary px-4 py-3 text-primary-foreground">
+        <Button onClick={() => setMobileCart(true)} className="flex h-12 w-full items-center justify-between rounded-lg bg-primary px-4 text-primary-foreground">
           <span className="flex items-center gap-2 text-sm font-semibold"><ShoppingBag className="h-5 w-5" /> {items} items · {formatRs(total)}</span>
           <span className="text-sm font-bold">View Order</span>
-        </button>
+        </Button>
       </div>
       {mobileCart && (
         <div className="fixed inset-0 z-40 md:hidden">
