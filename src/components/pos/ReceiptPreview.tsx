@@ -1,7 +1,6 @@
 import { Printer, ArrowLeft } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/mimis-logo.png.asset.json";
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
@@ -19,6 +18,8 @@ interface Props {
 
 export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack }: Props) {
   const barcode = useRef<SVGSVGElement>(null);
+  const [printNotice, setPrintNotice] = useState(false);
+  useEffect(() => { setPrintNotice(false); }, [open]);
   useEffect(() => {
     if (!open || !barcode.current) return;
     JsBarcode(barcode.current, `MIMI-${orderNo}`, { format: "CODE128", width: 1.4, height: 38, displayValue: false, margin: 0 });
@@ -42,10 +43,11 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         <Button autoFocus variant="outline" onClick={onBack} className="h-10 flex-1 text-xs">
           <ArrowLeft className="h-4 w-4" /> Back to Order
         </Button>
-        <Button onClick={() => toast.info("Printer connection will be added later. This is your receipt preview.")} className="h-10 flex-1 text-xs font-bold">
+        <Button onClick={() => setPrintNotice(true)} className="h-10 flex-1 text-xs font-bold">
           <Printer className="h-4 w-4" /> Print Receipt
         </Button>
         </div>
+        {printNotice && <p role="status" className="mt-3 text-xs leading-relaxed text-muted-foreground">Printer connection will be added later.</p>}
       </div>
       <div id="receipt" className="thermal-receipt">
         <div className="text-center">
