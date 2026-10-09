@@ -1,7 +1,9 @@
-import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { OrderType } from "./OrderContext";
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 
-export type OrderType = "Dine-in" | "Takeaway";
+export type { OrderType } from "./OrderContext";
 
 interface Props {
   lines: CartLine[];
@@ -28,21 +30,24 @@ export function CartPanel(p: Props) {
             <h2 className="text-lg font-bold">#{p.orderNo}</h2>
           </div>
           {p.onCloseMobile && (
-            <button onClick={p.onCloseMobile} aria-label="Close order" className="grid h-10 w-10 place-items-center rounded-full bg-muted">
+            <Button variant="ghost" size="icon" onClick={p.onCloseMobile} aria-label="Close order" className="h-10 w-10 bg-muted">
               <X className="h-5 w-5" />
-            </button>
+            </Button>
           )}
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
-          {(["Dine-in", "Takeaway"] as OrderType[]).map((t) => (
-            <button
+        <div className="mt-3 grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+          {(["Dine-in", "Takeaway", "Delivery"] as OrderType[]).map((t) => {
+            const Icon = t === "Dine-in" ? UtensilsCrossed : t === "Delivery" ? Bike : Package;
+            return <Button
+              variant="ghost"
               key={t}
+              aria-pressed={p.orderType === t}
               onClick={() => p.setOrderType(t)}
-              className={`rounded-md py-2 text-sm font-semibold transition ${p.orderType === t ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground"}`}
+              className={`h-14 flex-col gap-1 rounded-md px-1 text-xs font-semibold transition ${p.orderType === t ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground" : "text-muted-foreground"}`}
             >
-              {t}
-            </button>
-          ))}
+              <Icon />{t}
+            </Button>;
+          })}
         </div>
         {p.orderType === "Dine-in" && (
           <input
@@ -66,7 +71,7 @@ export function CartPanel(p: Props) {
         ) : (
           <ul className="space-y-2">
             {p.lines.map((l) => (
-              <li key={l.key} className="rounded-lg border border-border bg-background p-3">
+              <li key={l.key} className="border-b border-border px-1 py-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold leading-tight">{l.name}</p>
@@ -74,15 +79,15 @@ export function CartPanel(p: Props) {
                     {l.description && <p className="line-clamp-2 text-[11px] text-muted-foreground">{l.description}</p>}
                     <p className="text-xs text-muted-foreground">{formatRs(l.unitPrice)} each</p>
                   </div>
-                  <button onClick={() => p.onQty(l.key, -l.qty)} aria-label={`Remove ${l.name}`} className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                  <Button variant="ghost" size="icon" onClick={() => p.onQty(l.key, -l.qty)} aria-label={`Remove ${l.name}`} className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                     <Trash2 className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center gap-1">
-                    <button onClick={() => p.onQty(l.key, -1)} aria-label="Decrease" className="grid h-8 w-8 place-items-center rounded-md border border-border hover:bg-muted"><Minus className="h-4 w-4" /></button>
+                    <Button variant="outline" size="icon" onClick={() => p.onQty(l.key, -1)} aria-label="Decrease" className="h-8 w-8"><Minus /></Button>
                     <span className="w-8 text-center text-sm font-bold">{l.qty}</span>
-                    <button onClick={() => p.onQty(l.key, 1)} aria-label="Increase" className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground"><Plus className="h-4 w-4" /></button>
+                    <Button size="icon" onClick={() => p.onQty(l.key, 1)} aria-label="Increase" className="h-8 w-8"><Plus /></Button>
                   </div>
                   <span className="text-sm font-bold">{formatRs(lineTotal(l))}</span>
                 </div>
@@ -96,16 +101,16 @@ export function CartPanel(p: Props) {
         <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal ({items} items)</span><span>{formatRs(subtotal)}</span></div>
         <div className="mt-1 flex justify-between text-lg font-bold"><span>Total</span><span className="text-primary">{formatRs(total)}</span></div>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <button onClick={p.onClear} disabled={!p.lines.length} className="flex items-center justify-center gap-1.5 rounded-lg border border-border py-2.5 text-sm font-semibold hover:bg-muted disabled:opacity-40">
+          <Button variant="outline" onClick={p.onClear} disabled={!p.lines.length} className="h-10 gap-1.5 text-xs font-semibold">
             <Trash2 className="h-4 w-4" /> Clear Cart
-          </button>
-          <button onClick={p.onNewOrder} className="flex items-center justify-center gap-1.5 rounded-lg border border-border py-2.5 text-sm font-semibold hover:bg-muted">
+          </Button>
+          <Button variant="outline" onClick={p.onNewOrder} className="h-10 gap-1.5 text-xs font-semibold">
             <RotateCcw className="h-4 w-4" /> New Order
-          </button>
+          </Button>
         </div>
-        <button onClick={p.onPrint} disabled={!p.lines.length} className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-md hover:bg-primary/90 disabled:opacity-40">
+        <Button onClick={p.onPrint} disabled={!p.lines.length} className="mt-2 h-12 w-full gap-2 text-base font-bold">
           <Printer className="h-5 w-5" /> Print Bill
-        </button>
+        </Button>
       </div>
     </div>
   );

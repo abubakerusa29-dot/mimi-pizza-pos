@@ -1,23 +1,25 @@
-import { Plus } from "lucide-react";
+import { Plus, ImageOff } from "lucide-react";
+import { useState } from "react";
 import type { Product } from "@/data/menuData";
 import { productImages } from "@/data/productImages";
 import { Button } from "@/components/ui/button";
 import { formatRs, startingPrice } from "@/lib/cart";
 
 export function ProductCard({ product, onSelect }: { product: Product; onSelect: (p: Product) => void }) {
+  const [failed, setFailed] = useState(false);
   return (
     <Button variant="ghost"
       onClick={() => onSelect(product)}
-      className="group h-auto items-stretch justify-start gap-0 whitespace-normal p-0 flex flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:bg-card hover:border-primary/60 hover:shadow-md active:scale-[0.97]"
+      className="product-card group flex h-auto flex-col items-stretch justify-start gap-0 overflow-hidden whitespace-normal rounded-lg border border-border bg-card p-0 text-left transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card active:scale-[0.98]"
     >
-      <div className="aspect-[4/3] w-full overflow-hidden bg-card">
-        <img src={productImages[product.id]} alt={product.description ?? `${product.name} ${product.tag ?? ""}`} width={480} height={480} loading="lazy" className="h-full w-full object-contain transition-transform group-hover:scale-105" />
+      <div className="menu-photo relative aspect-square w-full overflow-hidden border-b border-border">
+        {failed || !productImages[product.id] ? <div className="grid h-full place-items-center text-muted-foreground"><ImageOff /></div> : <img src={productImages[product.id]} onError={() => setFailed(true)} alt={product.name} width={480} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />}
       </div>
-      <div className="flex flex-1 flex-col gap-1 p-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="min-w-0 text-sm font-semibold leading-tight text-foreground">{product.name}</h3>
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
+        <div className={`flex flex-col items-start gap-1 ${product.category === "deals" ? "min-h-6" : "min-h-11"}`}>
+          <h3 className="min-w-0 text-sm font-semibold leading-snug text-foreground">{product.name}</h3>
           {product.tag && (
-            <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{product.tag}</span>
+            <span className="text-[10px] font-medium uppercase text-muted-foreground">{product.tag}</span>
           )}
         </div>
         {product.description && <p className="line-clamp-2 text-xs text-muted-foreground">{product.description}</p>}
@@ -26,7 +28,7 @@ export function ProductCard({ product, onSelect }: { product: Product; onSelect:
           <span className="text-sm font-bold text-primary">
             {product.sizes ? `From ${formatRs(startingPrice(product))}` : formatRs(product.price ?? 0)}
           </span>
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
             <Plus className="h-4 w-4" />
           </span>
         </div>
