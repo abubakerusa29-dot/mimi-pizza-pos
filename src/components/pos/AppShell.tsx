@@ -2,13 +2,14 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { futureFeatures } from "@/data/futureFeatures";
 import logo from "@/assets/mimis-logo.png.asset.json";
 
 const navigation = [
   { to: "/", label: "Point of Sale", icon: UtensilsCrossed },
   { to: "/invoices", label: "Previous Invoices", icon: History },
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },
-  { to: "/menu-growth", label: "Menu Growth", icon: BookOpen },
+  { to: "/menu-growth", label: "Menu Management", icon: BookOpen },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -28,7 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="relative flex min-h-0 flex-1">
         {expanded && <div className="absolute inset-0 z-30 bg-foreground/30 md:hidden" onClick={() => setExpanded(false)} />}
         <aside className={`absolute inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] md:relative ${expanded ? "w-56" : "hidden w-[72px] md:flex"}`}>
-          <nav aria-label="Main navigation" className="space-y-2 px-3 py-5">
+          <nav aria-label="Main navigation" className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
             {navigation.map(({ to, label, icon: Icon }, index) => (
               <Button key={to} asChild variant="ghost" className={`h-12 w-full rounded-lg ${expanded ? "justify-start px-3" : "px-0"}`}>
                 <Link to={to} activeOptions={{ exact: true }} activeProps={{ className: "bg-sidebar-accent text-primary hover:bg-sidebar-accent" }} inactiveProps={{ className: "text-muted-foreground" }} onClick={() => { if (window.innerWidth < 768) setExpanded(false); }} title={label} aria-label={label}>
@@ -36,8 +37,16 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               </Button>
             ))}
+            <p className={`px-3 pb-1 pt-4 text-[10px] font-semibold uppercase text-muted-foreground ${expanded ? "" : "sr-only"}`}>Coming soon</p>
+            {futureFeatures.map(({ slug, label, icon: Icon }) => (
+              <Button key={slug} asChild variant="ghost" className={`h-10 w-full rounded-lg ${expanded ? "justify-start px-3" : "px-0"}`}>
+                <Link to="/features/$slug" params={{ slug }} activeProps={{ className: "bg-sidebar-accent text-primary hover:bg-sidebar-accent" }} inactiveProps={{ className: "text-muted-foreground" }} onClick={() => { if (window.innerWidth < 768) setExpanded(false); }} title={label} aria-label={label}>
+                  <Icon className="!h-[18px] !w-[18px]" />{expanded && <span className="text-[13px]">{label}</span>}
+                </Link>
+              </Button>
+            ))}
           </nav>
-          {expanded && <div className="mt-auto border-t border-border p-5"><p className="text-xs font-semibold">Mimi’s Pizza</p><p className="mt-1 text-xs text-muted-foreground">Counter workspace</p></div>}
+          {expanded && <div className="shrink-0 border-t border-border p-5"><p className="text-xs font-semibold">Mimi’s Pizza</p><p className="mt-1 text-xs text-muted-foreground">Counter workspace</p></div>}
         </aside>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
       </div>
