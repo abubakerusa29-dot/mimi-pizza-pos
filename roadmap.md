@@ -7,3 +7,4 @@
 - [x] Improve product image fit and polish the POS layout.
 - [x] Add collapsible left navigation and future-feature demo pages.
 - [x] Add Delivery order type and verify cart, receipt, and navigation.
+- [ ] Optimize tablet for a compact 3-by-3 product grid and icon-opened navigation; verify tablet and mobile ordering.
