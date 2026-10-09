@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Pizza, Search, RotateCcw, ShoppingBag, SearchX } from "lucide-react";
+import { Bike, Search, RotateCcw, ShoppingBag, SearchX } from "lucide-react";
+import logo from "@/assets/mimis-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
 import { addLine, cartTotals, changeQty, formatRs, type CartLine } from "@/lib/cart";
@@ -16,6 +18,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Point of sale demo for Mimi’s Pizza: take orders, calculate bills and print receipts." },
       { property: "og:title", content: "Mimi’s Pizza POS — Counter Billing" },
       { property: "og:description", content: "Take orders, calculate bills and print receipts at Mimi’s Pizza." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: POS,
@@ -73,13 +77,16 @@ function POS() {
     <div className="pos-app flex h-dvh flex-col bg-background">
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground"><Pizza className="h-5 w-5" /></span>
-          <h1 className="truncate font-display text-lg font-bold">Mimi’s Pizza</h1>
-          <span className="shrink-0 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-accent-foreground">POS DEMO</span>
+          <img src={logo.url} alt="Mimi’s Pizza logo" width={56} height={56} className="h-14 w-14 shrink-0 object-contain" />
+          <div className="min-w-0">
+            <h1 className="truncate font-display text-lg font-bold">Mimi’s Pizza</h1>
+            <p className="flex items-center gap-1 text-xs font-medium text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Delivery available</p>
+          </div>
+          <span className="hidden shrink-0 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-accent-foreground sm:inline">POS DEMO</span>
         </div>
-        <button onClick={newOrder} className="flex shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-sm font-semibold text-background hover:opacity-90">
+        <Button onClick={newOrder} className="flex shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-sm font-semibold text-background hover:bg-foreground/90">
           <RotateCcw className="h-4 w-4" /> <span className="hidden sm:inline">New Order</span>
-        </button>
+        </Button>
       </header>
 
       <div className="flex min-h-0 flex-1">
