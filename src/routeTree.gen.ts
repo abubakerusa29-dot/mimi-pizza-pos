@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
 import { Route as SalesRouteImport } from './routes/sales'
+import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const SalesRoute = SalesRouteImport.update({
   path: '/sales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
+  id: '/features/$slug',
+  path: '/features/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/sales': typeof SalesRoute
+  '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/sales': typeof SalesRoute
+  '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,20 @@ export interface FileRoutesById {
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/sales': typeof SalesRoute
+  '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/invoices' | '/menu-growth' | '/sales'
+  fullPaths: '/' | '/invoices' | '/menu-growth' | '/sales' | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/invoices' | '/menu-growth' | '/sales'
-  id: '__root__' | '/' | '/invoices' | '/menu-growth' | '/sales'
+  to: '/' | '/invoices' | '/menu-growth' | '/sales' | '/features/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/invoices'
+    | '/menu-growth'
+    | '/sales'
+    | '/features/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +82,7 @@ export interface RootRouteChildren {
   InvoicesRoute: typeof InvoicesRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
   SalesRoute: typeof SalesRoute
+  FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/features/$slug': {
+      id: '/features/$slug'
+      path: '/features/$slug'
+      fullPath: '/features/$slug'
+      preLoaderRoute: typeof FeaturesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvoicesRoute: InvoicesRoute,
   MenuGrowthRoute: MenuGrowthRoute,
   SalesRoute: SalesRoute,
+  FeaturesSlugRoute: FeaturesSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
