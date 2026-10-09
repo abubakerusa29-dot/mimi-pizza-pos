@@ -10,7 +10,7 @@ describe("Delivery orders", () => {
   it("can select Delivery alongside Dine-in and Takeaway", () => {
     const setOrderType = vi.fn();
     render(<CartPanel lines={[]} orderNo={1001} orderType="Dine-in" table="" setOrderType={setOrderType} setTable={vi.fn()} onQty={vi.fn()} onClear={vi.fn()} onNewOrder={vi.fn()} onPrint={vi.fn()} />);
-    fireEvent.click(screen.getByRole("button", { name: "Delivery", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Delivery" }));
     expect(setOrderType).toHaveBeenCalledWith("Delivery");
   });
 
