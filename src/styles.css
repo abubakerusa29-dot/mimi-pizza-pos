@@ -169,6 +169,19 @@
 }
 .product-card { box-shadow: var(--card-shadow); }
 .menu-photo { background: var(--photo-background); }
+@media (min-width: 768px) and (max-width: 1279px) {
+  .product-card { height: 156px; }
+  .product-card .menu-photo { height: 56px; aspect-ratio: auto; flex-shrink: 0; }
+  .product-card .menu-photo img { object-fit: contain; }
+  .product-card > div:last-child { min-height: 0; padding: 8px; gap: 2px; }
+  .product-card > div:last-child > div:first-child { min-height: 28px; gap: 0; }
+  .product-card h3 { font-size: 12px; line-height: 14px; }
+  .product-card > div:last-child > div:first-child > span { display: none; }
+  .product-card p { font-size: 11px; line-height: 14px; -webkit-line-clamp: 1; }
+  .product-card > div:last-child > div:last-child { padding-top: 0; }
+  .product-card > div:last-child > div:last-child > span:first-child { font-size: 12px; }
+  .product-card > div:last-child > div:last-child > span:last-child { width: 24px; height: 24px; }
+}
 .thermal-receipt::before, .thermal-receipt::after {
   content: "";
   position: absolute;
