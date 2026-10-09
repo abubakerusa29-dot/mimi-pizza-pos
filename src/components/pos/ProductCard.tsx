@@ -1,19 +1,17 @@
-import { Pizza, Sandwich, CupSoda, Tag, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { Product } from "@/data/menuData";
+import { productImages } from "@/data/productImages";
+import { Button } from "@/components/ui/button";
 import { formatRs, startingPrice } from "@/lib/cart";
 
-const icons = { deals: Tag, pizza: Pizza, burgers: Sandwich, drinks: CupSoda };
-
 export function ProductCard({ product, onSelect }: { product: Product; onSelect: (p: Product) => void }) {
-  const Icon = icons[product.category];
-  const isDeal = product.category === "deals";
   return (
-    <button
+    <Button variant="ghost"
       onClick={() => onSelect(product)}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md active:scale-[0.97]"
+      className="group h-auto items-stretch justify-start gap-0 whitespace-normal p-0 flex flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:bg-card hover:border-primary/60 hover:shadow-md active:scale-[0.97]"
     >
-      <div className={`flex h-20 items-center justify-center sm:h-24 ${isDeal ? "bg-accent" : "bg-secondary"}`}>
-        <Icon className={`h-9 w-9 ${isDeal ? "text-accent-foreground" : "text-primary"}`} strokeWidth={1.6} />
+      <div className="aspect-[4/3] w-full overflow-hidden bg-card">
+        <img src={productImages[product.id]} alt={product.description ?? `${product.name} ${product.tag ?? ""}`} width={480} height={480} loading="lazy" className="h-full w-full object-contain transition-transform group-hover:scale-105" />
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <div className="flex items-start justify-between gap-2">
@@ -33,6 +31,6 @@ export function ProductCard({ product, onSelect }: { product: Product; onSelect:
           </span>
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
