@@ -3,8 +3,8 @@ import type { Product } from "@/data/menuData";
 export interface CartLine {
   key: string; // product id + variant, so identical items merge
   name: string;
-  variant?: string; // size or flavour
-  description?: string;
+  variant?: string | undefined; // size or flavour
+  description?: string | undefined;
   unitPrice: number;
   qty: number;
 }

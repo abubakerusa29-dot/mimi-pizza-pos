@@ -40,7 +40,7 @@ export function OptionModal({
         <div className="mt-2 flex gap-2">
           <button onClick={onClose} className="flex-1 rounded-lg border border-border py-3 text-sm font-semibold hover:bg-muted">Cancel</button>
           <button
-            onClick={() => product && onAdd(product, options[sel].label, options[sel].price)}
+            onClick={() => { const o = options[sel]; if (product && o) onAdd(product, o.label, o.price); }}
             className="flex-[2] rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
           >
             Add to Order · {formatRs(options[sel]?.price ?? 0)}
