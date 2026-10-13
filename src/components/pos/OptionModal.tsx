@@ -5,7 +5,7 @@ import {
 } from "@/data/menuData";
 import { formatRs } from "@/lib/cart";
 
-export interface OptionResult { variant?: string; extras: Extra[]; unitPrice: number }
+export interface OptionResult { variant?: string | undefined; extras: Extra[]; unitPrice: number }
 
 const needsDialog = (p: Product) => !!(p.sizes || p.flavourChoice || p.extras);
 export { needsDialog };
