@@ -15,7 +15,7 @@ function useOrderState() {
 
 type OrderValue = ReturnType<typeof useOrderState>;
 // Keep one context object across hot reloads so the provider and the pages always match.
-const store = globalThis as typeof globalThis & { __mimiOrderContext?: React.Context<OrderValue | null> };
+const store = globalThis as typeof globalThis & { __mimiOrderContext?: Context<OrderValue | null> };
 const OrderContext = (store.__mimiOrderContext ??= createContext<OrderValue | null>(null));
 export function OrderProvider({ children }: { children: ReactNode }) {
   const order = useOrderState();
