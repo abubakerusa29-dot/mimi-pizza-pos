@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode, type Context } from "react";
 import type { CartLine } from "@/lib/cart";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
@@ -13,7 +13,10 @@ function useOrderState() {
   return { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress };
 }
 
-const OrderContext = createContext<ReturnType<typeof useOrderState> | null>(null);
+type OrderValue = ReturnType<typeof useOrderState>;
+// Keep one context object across hot reloads so the provider and the pages always match.
+const store = globalThis as typeof globalThis & { __mimiOrderContext?: Context<OrderValue | null> };
+const OrderContext = (store.__mimiOrderContext ??= createContext<OrderValue | null>(null));
 export function OrderProvider({ children }: { children: ReactNode }) {
   const order = useOrderState();
   return <OrderContext.Provider value={order}>{children}</OrderContext.Provider>;
