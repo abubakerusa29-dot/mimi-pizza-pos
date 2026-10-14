@@ -1,20 +1,19 @@
 import { Plus, ImageOff } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@/data/menuData";
-import { imageFor } from "@/data/productImages";
+import { productImages } from "@/data/productImages";
 import { Button } from "@/components/ui/button";
 import { formatRs, startingPrice } from "@/lib/cart";
 
 export function ProductCard({ product, onSelect }: { product: Product; onSelect: (p: Product) => void }) {
   const [failed, setFailed] = useState(false);
-  const img = imageFor(product.id, product.category);
   return (
     <Button variant="ghost"
       onClick={() => onSelect(product)}
       className="product-card group flex h-auto flex-col items-stretch justify-start gap-0 overflow-hidden whitespace-normal rounded-lg border border-border bg-card p-0 text-left transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card active:scale-[0.98]"
     >
       <div className="menu-photo relative aspect-square w-full overflow-hidden border-b border-border">
-        {failed || !img ? <div className="grid h-full place-items-center text-muted-foreground"><ImageOff /></div> : <img src={img} onError={() => setFailed(true)} alt={product.name} width={480} height={480} loading="lazy" className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105" />}
+        {failed || !productImages[product.id] ? <div className="grid h-full place-items-center text-muted-foreground"><ImageOff /></div> : <img src={productImages[product.id]} onError={() => setFailed(true)} alt={product.name} width={480} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />}
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3">
         <div className={`flex flex-col items-start gap-1 ${product.category === "deals" ? "min-h-6" : "min-h-11"}`}>

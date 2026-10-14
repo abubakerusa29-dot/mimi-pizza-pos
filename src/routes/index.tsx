@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupSoda, LayoutGrid, Drumstick, Flame, Soup, ScrollText, UtensilsCrossed, Droplet } from "lucide-react";
+import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupSoda, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
 import { addLine, cartTotals, changeQty, formatRs, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
-import { OptionModal, needsDialog } from "@/components/pos/OptionModal";
+import { OptionModal } from "@/components/pos/OptionModal";
 import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
@@ -46,7 +46,7 @@ function POS() {
   };
 
   const select = (p: Product) => {
-    if (needsDialog(p)) return setModal(p);
+    if (p.sizes || p.flavourChoice) return setModal(p);
     add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0 });
   };
 
@@ -88,7 +88,7 @@ function POS() {
             </label>
             <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
               {categories.map((c, index) => {
-                const Icon = [LayoutGrid, Package, Pizza, Sandwich, Drumstick, Flame, Soup, ScrollText, UtensilsCrossed, CupSoda, Droplet][index] ?? LayoutGrid;
+                const Icon = [LayoutGrid, Package, Pizza, Sandwich, CupSoda][index] ?? LayoutGrid;
                 return <Button
                   variant="ghost"
                   key={c.id}
@@ -136,11 +136,8 @@ function POS() {
       <OptionModal
         product={modal}
         onClose={() => setModal(null)}
-        onAdd={(p, r) => {
-          const extrasText = r.extras.length ? `+ ${r.extras.map((e) => e.label).join(", ")}` : "";
-          const variant = [r.variant, extrasText].filter(Boolean).join(" ") || undefined;
-          const name = p.tag && !p.sizes && p.category === "drinks" ? `${p.name} ${p.tag}` : p.name;
-          add({ key: `${p.id}|${r.variant ?? ""}|${r.extras.map((e) => e.id).join(",")}`, name, variant, description: p.description, unitPrice: r.unitPrice });
+        onAdd={(p, option, price) => {
+          add({ key: `${p.id}|${option}`, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
           setModal(null);
         }}
       />

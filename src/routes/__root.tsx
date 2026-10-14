@@ -42,16 +42,6 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    const message = error instanceof Error ? error.message : String(error);
-    if (/dynamically imported module|Importing a module script failed|Loading chunk/i.test(message)) {
-      const key = "chunk-reload-at";
-      const last = Number(sessionStorage.getItem(key) ?? 0);
-      if (Date.now() - last > 10_000) {
-        sessionStorage.setItem(key, String(Date.now()));
-        window.location.reload();
-        return;
-      }
-    }
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -129,22 +119,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
-  // After a new publish, old page chunks no longer exist; reload once to fetch the latest version.
-  useEffect(() => {
-    const onPreloadError = (event: Event) => {
-      event.preventDefault();
-      const key = "chunk-reload-at";
-      const last = Number(sessionStorage.getItem(key) ?? 0);
-      if (Date.now() - last > 10_000) {
-        sessionStorage.setItem(key, String(Date.now()));
-        window.location.reload();
-      }
-    };
-    window.addEventListener("vite:preloadError", onPreloadError);
-    return () => window.removeEventListener("vite:preloadError", onPreloadError);
-  }, []);
-
 
   return (
     <QueryClientProvider client={queryClient}>
