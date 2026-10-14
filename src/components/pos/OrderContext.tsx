@@ -23,7 +23,7 @@ function useOrderState() {
   return { rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
-export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string; area?: string; status?: DeliveryStatus }
+export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }
 
 type OrderValue = ReturnType<typeof useOrderState>;
 // Keep one context object across hot reloads so the provider and the pages always match.
