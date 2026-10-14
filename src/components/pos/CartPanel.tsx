@@ -36,8 +36,7 @@ export function CartPanel(p: Props) {
       <div className="border-b border-border p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground">Current Order</p>
-            <h2 className="text-lg font-bold">#{p.orderNo}</h2>
+            <h2 className="text-sm font-bold"><span className="font-medium text-muted-foreground">Current Order </span>#{p.orderNo}</h2>
           </div>
           {p.onCloseMobile && (
             <Button variant="ghost" size="icon" onClick={p.onCloseMobile} aria-label="Close order" className="h-10 w-10 bg-muted">
