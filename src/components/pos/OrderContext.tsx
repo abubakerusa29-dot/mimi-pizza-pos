@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode, type Context } from "react";
 import type { CartLine } from "@/lib/cart";
+import type { DeliveryStatus } from "@/lib/riders";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -10,13 +11,16 @@ function useOrderState() {
   const [table, setTable] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [rider, setRider] = useState("");
+  const [area, setArea] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   /** Records (or updates) an invoice in this session's history, keyed by order number. */
   const saveInvoice = (inv: Invoice) => setInvoices((list) => [inv, ...list.filter((i) => i.orderNo !== inv.orderNo)]);
-  return { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
+  return { rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
-export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string }
+export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string; area?: string; status?: DeliveryStatus }
 
 type OrderValue = ReturnType<typeof useOrderState>;
 // Keep one context object across hot reloads so the provider and the pages always match.
