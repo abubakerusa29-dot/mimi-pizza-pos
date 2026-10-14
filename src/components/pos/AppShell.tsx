@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
-import logo from "@/assets/mimis-logo.png.asset.json";
+import badge from "@/assets/mimis-badge.png.asset.json";
+import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 
 const navigation = [
   { to: "/", label: "Point of Sale", icon: UtensilsCrossed },
@@ -21,10 +22,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Button variant="ghost" size="icon" onClick={() => setExpanded(!expanded)} aria-label={expanded ? "Collapse navigation" : "Expand navigation"} title={expanded ? "Collapse navigation" : "Expand navigation"}>
             {expanded ? <PanelLeftClose /> : <PanelLeftOpen />}
           </Button>
-          <img src={logo.url} alt="Mimi’s Pizza logo" className="h-12 w-12 shrink-0 object-contain" />
-           <div className="min-w-0"><h1 className="truncate font-display text-lg font-semibold sm:text-xl">Mimi’s Pizza</h1><p className="flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Delivery available</p></div>
+          <img src={badge.url} alt="" className="h-14 w-14 shrink-0 object-contain" />
+           <div className="min-w-0"><h1><img src={wordmark.url} alt="Mimi’s Pizza" className="h-6 w-auto max-w-[150px] object-contain sm:h-7 sm:max-w-none" /></h1><p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Take away & free home delivery</p></div>
         </div>
-        <span className="rounded-md border border-primary/20 bg-secondary px-2 py-1 text-[10px] font-bold text-primary sm:text-xs">POS DEMO</span>
+        <span className="hidden text-xs font-medium text-muted-foreground sm:block">0312-4607733</span>
       </header>
       <div className="relative flex min-h-0 flex-1">
         {expanded && <div className="absolute inset-0 z-30 bg-foreground/30 xl:hidden" onClick={() => setExpanded(false)} />}

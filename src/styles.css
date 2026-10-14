@@ -170,8 +170,8 @@
 .product-card { box-shadow: var(--card-shadow); }
 .menu-photo { background: var(--photo-background); }
 @media (min-width: 768px) and (max-width: 1279px) {
-  .product-card { height: 156px; }
-  .product-card .menu-photo { height: 56px; aspect-ratio: auto; flex-shrink: 0; }
+  .product-card { height: 214px; }
+  .product-card .menu-photo { height: 118px; aspect-ratio: auto; flex-shrink: 0; }
   .product-card .menu-photo img { object-fit: contain; }
   .product-card > div:last-child { min-height: 0; padding: 8px; gap: 2px; }
   .product-card > div:last-child > div:first-child { min-height: 28px; gap: 0; }

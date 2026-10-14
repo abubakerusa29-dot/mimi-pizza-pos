@@ -2,7 +2,10 @@ import { Printer, ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/mimis-logo.png.asset.json";
+import badge from "@/assets/mimis-badge.png.asset.json";
+import wordmark from "@/assets/mimis-wordmark.png.asset.json";
+import { restaurantInfo } from "@/data/menuData";
+import { softwareCredit } from "@/data/softwareCredit";
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 import type { OrderType } from "./CartPanel";
 
@@ -51,9 +54,9 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
       </div>
       <div id="receipt" className="thermal-receipt">
         <div className="text-center">
-          <img src={logo.url} alt="Mimi’s Pizza" width={72} height={72} className="thermal-logo mx-auto mb-2 h-[72px] w-[72px] object-contain" />
-          <p className="text-lg font-bold uppercase">Mimi’s Pizza</p>
-          <p className="text-[10px]">DELICIOUSNESS DELIVERED</p>
+          <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
+          <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
+          <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
           <p className="mt-3 font-bold">CUSTOMER RECEIPT</p>
         </div>
         <div className="receipt-divider" />
@@ -86,6 +89,11 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
           <svg ref={barcode} role="img" aria-label={`Barcode for order ${orderNo}`} className="receipt-barcode mx-auto mt-5" />
           <p className="mt-2 text-[10px]">MIMI-{orderNo}</p>
           <p className="mt-4 text-[9px]">*** CUSTOMER COPY ***</p>
+          <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />
+          <div className="mt-3 border-t border-dashed border-current pt-2 text-[9px] leading-tight">
+            <p>Software by {softwareCredit.name}</p>
+            <p>{softwareCredit.website}{softwareCredit.phone && ` · ${softwareCredit.phone}`}</p>
+          </div>
         </div>
       </div>
     </div>
