@@ -235,7 +235,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         ))}
       </div>
       {printing && createPortal(
-        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex]} {...slipProps} /></div></div>,
+        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
         document.body,
       )}
     </div>
