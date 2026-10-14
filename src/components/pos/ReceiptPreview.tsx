@@ -134,8 +134,8 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
         <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
         <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
         <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
-        <p className="mt-3 font-bold">CUSTOMER RECEIPT</p>
-      </div>
+        </div>
+      <SlipBanner title="CUSTOMER RECEIPT" orderType={orderType} table={table} />
       <div className="receipt-divider" />
       {meta}
       {customerInfo}
@@ -174,6 +174,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const available = slipsFor(orderType);
   const [view, setView] = useState<SlipKind | "all">("all");
   const [printing, setPrinting] = useState<SlipKind[] | null>(null);
+  const [jobIndex, setJobIndex] = useState(0);
   useEffect(() => { if (open) setView("all"); }, [open]);
   useEffect(() => {
     if (!open) return;
@@ -181,17 +182,26 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
     document.addEventListener("keydown", dismiss);
     return () => document.removeEventListener("keydown", dismiss);
   }, [open, onBack]);
+  // Each slip is sent as its own print job, one after another, so the printer
+  // receives a separate signal (and cut) per slip.
   useEffect(() => {
     if (!printing) return;
-    const done = () => setPrinting(null);
-    window.addEventListener("afterprint", done);
+    let cancelled = false;
     const root = document.getElementById("print-root");
     const imgs = Array.from(root?.querySelectorAll("img") ?? []);
     Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; })))).then(() => {
-      requestAnimationFrame(() => window.print());
+      requestAnimationFrame(() => {
+        if (cancelled) return;
+        window.print(); // blocks until this job is sent or cancelled
+        setTimeout(() => {
+          if (cancelled) return;
+          if (jobIndex + 1 < printing.length) setJobIndex(jobIndex + 1);
+          else { setPrinting(null); setJobIndex(0); }
+        }, 400);
+      });
     });
-    return () => window.removeEventListener("afterprint", done);
-  }, [printing]);
+    return () => { cancelled = true; };
+  }, [printing, jobIndex]);
   if (!open) return null;
   const shown = view === "all" ? available : available.filter((k) => k === view);
   const slipProps = { lines, orderNo, orderType, table, date, phone, address };
@@ -200,7 +210,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
-          <span className="font-mono text-xs text-muted-foreground">80mm · #{orderNo}</span>
+          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `80mm · #${orderNo}`}</span>
         </div>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
           {(["all", ...available] as const).map((k) => (
@@ -211,16 +221,21 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => setPrinting(shown)} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => { setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-8">
-        {shown.map((k) => <Slip key={k} kind={k} {...slipProps} />)}
+      <div className="flex flex-wrap items-start justify-center gap-10">
+        {shown.map((k, i) => (
+          <div key={k} className="flex flex-col items-center gap-2">
+            <span className="no-print rounded-full bg-card px-3 py-1 text-[11px] font-semibold text-foreground shadow">Slip {i + 1} of {shown.length} · {slipLabels[k]}</span>
+            <Slip kind={k} {...slipProps} />
+          </div>
+        ))}
       </div>
       {printing && createPortal(
-        <div id="print-root">{printing.map((k) => <div key={k} className="print-page"><Slip kind={k} {...slipProps} /></div>)}</div>,
+        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex]} {...slipProps} /></div></div>,
         document.body,
       )}
     </div>
