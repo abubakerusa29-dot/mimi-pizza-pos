@@ -1,6 +1,6 @@
-/** Printed at the bottom of every invoice. */
+/** Printed at the bottom of every customer and rider slip, and in the app footer. */
 export const softwareCredit = {
   name: "Ecom Builder Pakistan",
-  website: "ebpk.site",
-  phone: "", // add the Ecom Builder phone number here
+  website: "https://ecombuilder.site/",
+  phone: "03426313348",
 };

@@ -1,6 +1,7 @@
 import { useOrder } from "./OrderContext";
 import { Printer, ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import JsBarcode from "jsbarcode";
 import { Button } from "@/components/ui/button";
 import badge from "@/assets/mimis-badge.png.asset.json";
@@ -9,6 +10,14 @@ import { restaurantInfo } from "@/data/menuData";
 import { softwareCredit } from "@/data/softwareCredit";
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 import type { OrderType } from "./CartPanel";
+
+export type SlipKind = "customer" | "kitchen" | "rider";
+const slipLabels: Record<SlipKind, string> = { customer: "Customer", kitchen: "Kitchen", rider: "Delivery Rider" };
+
+/** Dine-in & Takeaway get kitchen + customer slips; Delivery also gets a rider slip. */
+export function slipsFor(orderType: OrderType): SlipKind[] {
+  return orderType === "Delivery" ? ["kitchen", "customer", "rider"] : ["kitchen", "customer"];
+}
 
 interface Props {
   open: boolean;
@@ -20,86 +29,181 @@ interface Props {
   onBack: () => void;
 }
 
+interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string }
+
+function Credit() {
+  return (
+    <div className="mt-3 border-t border-dashed border-current pt-2 text-center text-[9px] leading-tight">
+      <p>Software by {softwareCredit.name}</p>
+      <p>{softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "")} · {softwareCredit.phone}</p>
+    </div>
+  );
+}
+
+function Barcode({ orderNo }: { orderNo: number }) {
+  const ref = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    if (ref.current) JsBarcode(ref.current, `MIMI-${orderNo}`, { format: "CODE128", width: 1.4, height: 38, displayValue: false, margin: 0 });
+  }, [orderNo]);
+  return <svg ref={ref} role="img" aria-label={`Barcode for order ${orderNo}`} className="receipt-barcode mx-auto mt-4" />;
+}
+
+function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: SlipProps) {
+  const { subtotal, total, items } = cartTotals(lines);
+  const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const meta = (
+    <>
+      <div className="flex justify-between"><span>Order #</span><span className="font-bold">{orderNo}</span></div>
+      <div className="flex justify-between"><span>Date</span><span>{date.toLocaleDateString("en-GB")} {time}</span></div>
+      <div className="flex justify-between"><span>Type</span><span className="font-bold">{orderType}</span></div>
+      {orderType === "Dine-in" && table && <div className="flex justify-between"><span>Table</span><span className="font-bold">{table}</span></div>}
+    </>
+  );
+  const customerInfo = orderType === "Delivery" && (
+    <>
+      {phone && <div className="flex justify-between gap-2"><span>Phone</span><span className="font-bold">{phone}</span></div>}
+      {address && <div className="mt-1"><span>Address:</span><span className="block break-words font-bold">{address}</span></div>}
+    </>
+  );
+
+  if (kind === "kitchen") {
+    return (
+      <div className="thermal-receipt slip-compact">
+        <p className="text-center text-base font-bold">KITCHEN ORDER</p>
+        <div className="receipt-divider" />
+        {meta}
+        <div className="receipt-divider" />
+        {lines.map((l) => (
+          <div key={l.key} className="mt-1.5">
+            <p className="font-bold">{l.qty} x {l.name}</p>
+            {l.variant && <p className="pl-4 text-[11px]">{l.variant}</p>}
+            {l.addons?.length ? <p className="pl-4 text-[11px]">+ {l.addons.join(", ")}</p> : null}
+          </div>
+        ))}
+        <div className="receipt-divider" />
+        <p className="text-center">Items: {items}</p>
+        <p className="mt-2 text-center text-[8px] leading-tight">Software by {softwareCredit.name}</p>
+      </div>
+    );
+  }
+
+  if (kind === "rider") {
+    return (
+      <div className="thermal-receipt slip-compact">
+        <p className="text-center text-sm font-bold">Mimi’s Pizza</p>
+        <p className="text-center text-base font-bold">DELIVERY SLIP</p>
+        <div className="receipt-divider" />
+        {meta}
+        {customerInfo}
+        <div className="receipt-divider" />
+        {lines.map((l) => (
+          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span>{lineTotal(l).toLocaleString("en-US")}</span></div>
+        ))}
+        <div className="receipt-divider" />
+        <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
+        <div className="receipt-divider" />
+        <p className="mt-3">Rider: ____________________</p>
+        <p className="mt-3">Received by: ______________</p>
+        <Credit />
+      </div>
+    );
+  }
+
+  return (
+    <div className="thermal-receipt">
+      <div className="text-center">
+        <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
+        <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
+        <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
+        <p className="mt-3 font-bold">CUSTOMER RECEIPT</p>
+      </div>
+      <div className="receipt-divider" />
+      {meta}
+      {customerInfo}
+      <div className="receipt-divider" />
+      <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2 font-bold"><span>ITEM</span><span className="text-right">QTY</span><span className="text-right">PKR</span></div>
+      {lines.map((l) => (
+        <div key={l.key} className="mt-3">
+          <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2">
+            <span className="min-w-0 break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</span>
+            <span className="text-right">{l.qty}</span>
+            <span className="text-right">{lineTotal(l).toLocaleString("en-US")}</span>
+          </div>
+          <div className="text-[10px] opacity-70">@ {formatRs(l.unitPrice)}</div>
+        </div>
+      ))}
+      <div className="receipt-divider" />
+      <div className="mb-1 flex justify-between"><span>Items</span><span>{items}</span></div>
+      <div className="flex justify-between"><span>Subtotal</span><span>{formatRs(subtotal)}</span></div>
+      <div className="receipt-divider" />
+      <div className="flex justify-between text-base font-bold"><span>TOTAL</span><span>{formatRs(total)}</span></div>
+      <div className="receipt-divider" />
+      <div className="pt-3 text-center">
+        <p>Thank you for your order!</p>
+        <p className="mt-1 text-[10px]">Please visit again</p>
+        <Barcode orderNo={orderNo} />
+        <p className="mt-2 text-[10px]">MIMI-{orderNo}</p>
+        <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />
+      </div>
+      <Credit />
+    </div>
+  );
+}
+
 export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack }: Props) {
   const { phone, address } = useOrder();
-  const barcode = useRef<SVGSVGElement>(null);
-  const [printNotice, setPrintNotice] = useState(false);
-  useEffect(() => { setPrintNotice(false); }, [open]);
-  useEffect(() => {
-    if (!open || !barcode.current) return;
-    JsBarcode(barcode.current, `MIMI-${orderNo}`, { format: "CODE128", width: 1.4, height: 38, displayValue: false, margin: 0 });
-  }, [open, orderNo]);
+  const available = slipsFor(orderType);
+  const [view, setView] = useState<SlipKind | "all">("all");
+  const [printing, setPrinting] = useState<SlipKind[] | null>(null);
+  useEffect(() => { if (open) setView("all"); }, [open]);
   useEffect(() => {
     if (!open) return;
     const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onBack(); };
     document.addEventListener("keydown", dismiss);
     return () => document.removeEventListener("keydown", dismiss);
   }, [open, onBack]);
+  useEffect(() => {
+    if (!printing) return;
+    const done = () => setPrinting(null);
+    window.addEventListener("afterprint", done);
+    const root = document.getElementById("print-root");
+    const imgs = Array.from(root?.querySelectorAll("img") ?? []);
+    Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; })))).then(() => {
+      requestAnimationFrame(() => window.print());
+    });
+    return () => window.removeEventListener("afterprint", done);
+  }, [printing]);
   if (!open) return null;
-  const { subtotal, total, items } = cartTotals(lines);
+  const shown = view === "all" ? available : available.filter((k) => k === view);
+  const slipProps = { lines, orderNo, orderType, table, date, phone, address };
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
-      <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[360px] rounded-lg border border-border bg-card p-3 shadow-lg">
+      <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 id="invoice-title" className="text-sm font-semibold">Invoice Preview</h2>
+          <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
           <span className="font-mono text-xs text-muted-foreground">80mm · #{orderNo}</span>
         </div>
+        <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
+          {(["all", ...available] as const).map((k) => (
+            <button key={k} role="tab" aria-selected={view === k} onClick={() => setView(k)} className={`h-8 rounded px-1 text-[11px] font-semibold ${view === k ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+              {k === "all" ? `All (${available.length})` : slipLabels[k]}
+            </button>
+          ))}
+        </div>
         <div className="flex gap-2">
-        <Button autoFocus variant="outline" onClick={onBack} className="h-10 flex-1 text-xs">
-          <ArrowLeft className="h-4 w-4" /> Back to Order
-        </Button>
-        <Button onClick={() => setPrintNotice(true)} className="h-10 flex-1 text-xs font-bold">
-          <Printer className="h-4 w-4" /> Print Receipt
-        </Button>
-        </div>
-        {printNotice && <p role="status" className="mt-3 text-xs leading-relaxed text-muted-foreground">Printer connection will be added later.</p>}
-      </div>
-      <div id="receipt" className="thermal-receipt">
-        <div className="text-center">
-          <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
-          <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
-          <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
-          <p className="mt-3 font-bold">CUSTOMER RECEIPT</p>
-        </div>
-        <div className="receipt-divider" />
-        <div className="flex justify-between"><span>Order #</span><span>{orderNo}</span></div>
-        <div className="flex justify-between"><span>Date</span><span>{date.toLocaleDateString("en-GB")}</span></div>
-        <div className="flex justify-between"><span>Time</span><span>{date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</span></div>
-        <div className="flex justify-between"><span>Type</span><span>{orderType}</span></div>
-        {orderType === "Dine-in" && table && <div className="flex justify-between"><span>Table</span><span>{table}</span></div>}
-        {orderType === "Delivery" && phone && <div className="flex justify-between gap-2"><span>Phone</span><span>{phone}</span></div>}
-        {orderType === "Delivery" && address && <div className="mt-1"><span>Address:</span><span className="block break-words">{address}</span></div>}
-        <div className="receipt-divider" />
-        <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2 font-bold"><span>ITEM</span><span className="text-right">QTY</span><span className="text-right">PKR</span></div>
-        {lines.map((l) => (
-          <div key={l.key} className="mt-3">
-            <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2">
-              <span className="min-w-0 break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</span>
-              <span className="text-right">{l.qty}</span>
-              <span className="text-right">{lineTotal(l).toLocaleString("en-US")}</span>
-            </div>
-            <div className="text-[10px] opacity-70">@ {formatRs(l.unitPrice)}</div>
-          </div>
-        ))}
-        <div className="receipt-divider" />
-        <div className="mb-1 flex justify-between"><span>Items</span><span>{items}</span></div>
-        <div className="flex justify-between"><span>Subtotal</span><span>{formatRs(subtotal)}</span></div>
-        <div className="receipt-divider" />
-        <div className="flex justify-between text-base font-bold"><span>TOTAL</span><span>{formatRs(total)}</span></div>
-        <div className="receipt-divider" />
-        <div className="mt-auto pt-5 text-center">
-          <p>Thank you for your order!</p>
-          <p className="mt-1 text-[10px]">Please visit again</p>
-          <svg ref={barcode} role="img" aria-label={`Barcode for order ${orderNo}`} className="receipt-barcode mx-auto mt-5" />
-          <p className="mt-2 text-[10px]">MIMI-{orderNo}</p>
-          <p className="mt-4 text-[9px]">*** CUSTOMER COPY ***</p>
-          <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />
-          <div className="mt-3 border-t border-dashed border-current pt-2 text-[9px] leading-tight">
-            <p>Software by {softwareCredit.name}</p>
-            <p>{softwareCredit.website}{softwareCredit.phone && ` · ${softwareCredit.phone}`}</p>
-          </div>
+          <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
+          <Button autoFocus onClick={() => setPrinting(shown)} className="h-10 flex-[2] text-xs font-bold">
+            <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
+          </Button>
         </div>
       </div>
+      <div className="flex flex-col items-center gap-8">
+        {shown.map((k) => <Slip key={k} kind={k} {...slipProps} />)}
+      </div>
+      {printing && createPortal(
+        <div id="print-root">{printing.map((k) => <div key={k} className="print-page"><Slip kind={k} {...slipProps} /></div>)}</div>,
+        document.body,
+      )}
     </div>
   );
 }

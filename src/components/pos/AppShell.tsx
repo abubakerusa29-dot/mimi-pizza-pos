@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
+import { softwareCredit } from "@/data/softwareCredit";
 import badge from "@/assets/mimis-badge.png.asset.json";
 import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 
@@ -51,6 +52,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
       </div>
+      <footer className="hidden shrink-0 border-t border-border bg-card px-4 py-1 text-center text-[11px] text-muted-foreground md:block">
+        This software made by{" "}
+        <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">{softwareCredit.name}</a>
+        {" · "}{softwareCredit.phone}
+      </footer>
     </div>
   );
 }
