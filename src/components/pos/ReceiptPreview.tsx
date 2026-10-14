@@ -27,6 +27,9 @@ interface Props {
   table: string;
   date: Date;
   onBack: () => void;
+  /** Reprints pass stored customer details; live orders read them from the current order. */
+  phone?: string;
+  address?: string;
 }
 
 interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string }
@@ -169,8 +172,10 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
   );
 }
 
-export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack }: Props) {
-  const { phone, address } = useOrder();
+export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, phone: phoneProp, address: addressProp }: Props) {
+  const order = useOrder();
+  const phone = phoneProp ?? order.phone;
+  const address = addressProp ?? order.address;
   const available = slipsFor(orderType);
   const [view, setView] = useState<SlipKind | "all">("all");
   const [printing, setPrinting] = useState<SlipKind[] | null>(null);
@@ -225,19 +230,27 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address }); setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
       </div>
-      <div className="flex flex-wrap items-start justify-center gap-10">
-        {shown.map((k, i) => (
+      {(() => {
+        // Customer receipt is long; stack the short kitchen and rider slips in a column beside it.
+        const card = (k: SlipKind) => (
           <div key={k} className="flex flex-col items-center gap-2">
-            <span className="no-print rounded-full bg-card px-3 py-1 text-[11px] font-semibold text-foreground shadow">Slip {i + 1} of {shown.length} · {slipLabels[k]}</span>
+            <span className="no-print rounded-full bg-card px-3 py-1 text-[11px] font-semibold text-foreground shadow">Slip {shown.indexOf(k) + 1} of {shown.length} · {slipLabels[k]}</span>
             <Slip kind={k} {...slipProps} />
           </div>
-        ))}
-      </div>
+        );
+        const side = shown.filter((k) => k !== "customer");
+        return (
+          <div className="flex flex-wrap items-start justify-center gap-8">
+            {side.length > 0 && <div className="flex flex-col items-center gap-10">{side.map(card)}</div>}
+            {shown.includes("customer") && card("customer")}
+          </div>
+        );
+      })()}
       {printing && createPortal(
         <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
         document.body,
