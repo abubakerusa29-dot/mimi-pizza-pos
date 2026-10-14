@@ -65,7 +65,7 @@
 
 :root {
   --receipt-paper: oklch(0.995 0 0);
-  --receipt-ink: oklch(0.18 0 0);
+  --receipt-ink: oklch(0 0 0);
   --receipt-shadow: 0 12px 32px oklch(0 0 0 / 28%);
   --radius: 0.5rem;
   --photo-background: oklch(1 0 0);
@@ -161,8 +161,9 @@
   padding: 24px 16px 28px;
   background: var(--receipt-paper);
   color: var(--receipt-ink);
-  font-family: "Courier New", Courier, monospace;
-  font-size: 12px;
+  font-family: "Consolas", "Lucida Console", "DejaVu Sans Mono", monospace;
+  font-size: 12.5px;
+  font-weight: 600;
   line-height: 1.45;
   font-variant-numeric: tabular-nums;
   filter: drop-shadow(var(--receipt-shadow));
@@ -200,6 +201,8 @@
   *, *::before, *::after { transition-duration: 0ms !important; }
 }
 .slip-compact { min-height: 0; }
+.slip-banner { border-top: 2px solid var(--receipt-ink); border-bottom: 2px solid var(--receipt-ink); padding: 4px 0; }
+.thermal-receipt .font-bold { font-weight: 800; }
 #print-root { display: none; }
 @media print {
   @page { size: 80mm auto; margin: 0; }

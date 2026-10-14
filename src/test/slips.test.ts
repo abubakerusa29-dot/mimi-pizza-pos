@@ -11,3 +11,11 @@ describe("print slips per order type", () => {
     expect(softwareCredit.phone).toBe("03426313348");
   });
 });
+
+import { dealParts } from "@/components/pos/ReceiptPreview";
+describe("kitchen slip deal breakdown", () => {
+  it("lists every item inside a deal", () =>
+    expect(dealParts({ key: "deal-2|Cheese Lover", description: "Regular Small Pizza, Creamy Pasta (Half), Chicken Paratha Roll, 500 ml Drink" }))
+      .toEqual(["Regular Small Pizza", "Creamy Pasta (Half)", "Chicken Paratha Roll", "500 ml Drink"]));
+  it("non-deal items get no breakdown", () => expect(dealParts({ key: "pz-bbq|Large", description: "Dip sauce, onion" })).toEqual([]));
+});

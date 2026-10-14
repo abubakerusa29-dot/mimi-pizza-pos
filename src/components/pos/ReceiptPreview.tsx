@@ -48,6 +48,22 @@ function Barcode({ orderNo }: { orderNo: number }) {
   return <svg ref={ref} role="img" aria-label={`Barcode for order ${orderNo}`} className="receipt-barcode mx-auto mt-4" />;
 }
 
+/** Deal contents for the kitchen: the deal's included items, one per line. */
+export function dealParts(l: Pick<CartLine, "key" | "description">): string[] {
+  if (!l.key.startsWith("deal-") || !l.description) return [];
+  return l.description.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function SlipBanner({ title, orderType, table }: { title: string; orderType: OrderType; table: string }) {
+  const sub = orderType === "Dine-in" ? `DINE-IN${table ? ` · TABLE ${table}` : ""}` : orderType.toUpperCase();
+  return (
+    <div className="slip-banner my-2 text-center">
+      <p className="text-[15px] font-bold tracking-wide">{title}</p>
+      <p className="text-[12px] font-bold">{sub}</p>
+    </div>
+  );
+}
+
 function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: SlipProps) {
   const { subtotal, total, items } = cartTotals(lines);
   const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
@@ -69,20 +85,23 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
   if (kind === "kitchen") {
     return (
       <div className="thermal-receipt slip-compact">
-        <p className="text-center text-base font-bold">KITCHEN ORDER</p>
-        <div className="receipt-divider" />
+        <SlipBanner title="KITCHEN SLIP" orderType={orderType} table={table} />
         {meta}
         <div className="receipt-divider" />
-        {lines.map((l) => (
-          <div key={l.key} className="mt-1.5">
-            <p className="font-bold">{l.qty} x {l.name}</p>
-            {l.variant && <p className="pl-4 text-[11px]">{l.variant}</p>}
-            {l.addons?.length ? <p className="pl-4 text-[11px]">+ {l.addons.join(", ")}</p> : null}
-          </div>
-        ))}
+        {lines.map((l) => {
+          const parts = dealParts(l);
+          return (
+            <div key={l.key} className="mt-2">
+              <p className="text-[14px] font-bold">{l.qty} x {l.name}</p>
+              {l.variant && <p className="pl-4 font-bold">{parts.length ? "Pizza flavour: " : ""}{l.variant}</p>}
+              {parts.map((p) => <p key={p} className="pl-4">- {p}</p>)}
+              {l.addons?.length ? <p className="pl-4 font-bold">+ ADD: {l.addons.join(", ")}</p> : null}
+            </div>
+          );
+        })}
         <div className="receipt-divider" />
-        <p className="text-center">Items: {items}</p>
-        <p className="mt-2 text-center text-[8px] leading-tight">Software by {softwareCredit.name}</p>
+        <p className="text-center font-bold">Total items: {items}</p>
+        <p className="mt-2 text-center text-[9px] leading-tight">Software by {softwareCredit.name}</p>
       </div>
     );
   }
@@ -91,13 +110,12 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
     return (
       <div className="thermal-receipt slip-compact">
         <p className="text-center text-sm font-bold">Mimi’s Pizza</p>
-        <p className="text-center text-base font-bold">DELIVERY SLIP</p>
-        <div className="receipt-divider" />
+        <SlipBanner title="DELIVERY RIDER SLIP" orderType={orderType} table={table} />
         {meta}
         {customerInfo}
         <div className="receipt-divider" />
         {lines.map((l) => (
-          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span>{lineTotal(l).toLocaleString("en-US")}</span></div>
+          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
         ))}
         <div className="receipt-divider" />
         <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
@@ -109,14 +127,15 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
     );
   }
 
+
   return (
     <div className="thermal-receipt">
       <div className="text-center">
         <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
         <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
         <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
-        <p className="mt-3 font-bold">CUSTOMER RECEIPT</p>
-      </div>
+        </div>
+      <SlipBanner title="CUSTOMER RECEIPT" orderType={orderType} table={table} />
       <div className="receipt-divider" />
       {meta}
       {customerInfo}
@@ -155,24 +174,38 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const available = slipsFor(orderType);
   const [view, setView] = useState<SlipKind | "all">("all");
   const [printing, setPrinting] = useState<SlipKind[] | null>(null);
-  useEffect(() => { if (open) setView("all"); }, [open]);
+  const [jobIndex, setJobIndex] = useState(0);
+  const sentJob = useRef("");
+  const printRun = useRef(0);
+  const openedAt = useRef(0);
+  useEffect(() => { if (open) { setView("all"); openedAt.current = Date.now(); } }, [open]);
   useEffect(() => {
     if (!open) return;
     const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onBack(); };
     document.addEventListener("keydown", dismiss);
     return () => document.removeEventListener("keydown", dismiss);
   }, [open, onBack]);
+  // Each slip is sent as its own print job, one after another, so the printer
+  // receives a separate signal (and cut) per slip.
   useEffect(() => {
     if (!printing) return;
-    const done = () => setPrinting(null);
-    window.addEventListener("afterprint", done);
+    let cancelled = false;
     const root = document.getElementById("print-root");
     const imgs = Array.from(root?.querySelectorAll("img") ?? []);
     Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; })))).then(() => {
-      requestAnimationFrame(() => window.print());
+      requestAnimationFrame(() => {
+        if (cancelled || sentJob.current === `${printRun.current}:${jobIndex}`) return;
+        sentJob.current = `${printRun.current}:${jobIndex}`;
+        window.print(); // blocks until this job is sent or cancelled
+        setTimeout(() => {
+          if (cancelled) return;
+          if (jobIndex + 1 < printing.length) setJobIndex(jobIndex + 1);
+          else { setPrinting(null); setJobIndex(0); }
+        }, 400);
+      });
     });
-    return () => window.removeEventListener("afterprint", done);
-  }, [printing]);
+    return () => { cancelled = true; };
+  }, [printing, jobIndex]);
   if (!open) return null;
   const shown = view === "all" ? available : available.filter((k) => k === view);
   const slipProps = { lines, orderNo, orderType, table, date, phone, address };
@@ -181,7 +214,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
-          <span className="font-mono text-xs text-muted-foreground">80mm · #{orderNo}</span>
+          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `80mm · #${orderNo}`}</span>
         </div>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
           {(["all", ...available] as const).map((k) => (
@@ -192,16 +225,21 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => setPrinting(shown)} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-8">
-        {shown.map((k) => <Slip key={k} kind={k} {...slipProps} />)}
+      <div className="flex flex-wrap items-start justify-center gap-10">
+        {shown.map((k, i) => (
+          <div key={k} className="flex flex-col items-center gap-2">
+            <span className="no-print rounded-full bg-card px-3 py-1 text-[11px] font-semibold text-foreground shadow">Slip {i + 1} of {shown.length} · {slipLabels[k]}</span>
+            <Slip kind={k} {...slipProps} />
+          </div>
+        ))}
       </div>
       {printing && createPortal(
-        <div id="print-root">{printing.map((k) => <div key={k} className="print-page"><Slip kind={k} {...slipProps} /></div>)}</div>,
+        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
         document.body,
       )}
     </div>
