@@ -7,6 +7,8 @@ export interface CartLine {
   description?: string | undefined;
   unitPrice: number;
   qty: number;
+  addons?: string[] | undefined;
+  addonGroup?: "burger" | undefined;
 }
 
 export const formatRs = (n: number) => `Rs. ${n.toLocaleString("en-US")}`;
@@ -32,4 +34,21 @@ export function changeQty(lines: CartLine[], key: string, delta: number): CartLi
   return lines
     .map((l) => (l.key === key ? { ...l, qty: Math.max(0, l.qty + delta) } : l))
     .filter((l) => l.qty > 0);
+}
+
+export interface Addon { id: string; name: string; price: number }
+
+/** Attach an add-on to ONE unit of a cart line (splits it off if qty > 1). */
+export function applyAddon(lines: CartLine[], key: string, addon: Addon): CartLine[] {
+  const src = lines.find((l) => l.key === key);
+  if (!src) return lines;
+  const addons = [...(src.addons ?? []), addon.name];
+  const next: Omit<CartLine, "qty"> = {
+    ...src,
+    key: `${key}+${addon.id}`,
+    addons,
+    unitPrice: src.unitPrice + addon.price,
+  };
+  const rest = changeQty(lines, key, -1);
+  return addLine(rest, next);
 }

@@ -68,7 +68,7 @@
   --receipt-ink: oklch(0.18 0 0);
   --receipt-shadow: 0 12px 32px oklch(0 0 0 / 28%);
   --radius: 0.5rem;
-  --photo-background: oklch(0.977 0 0);
+  --photo-background: oklch(1 0 0);
   --card-shadow: 0 2px 5px oklch(0.255 0 0 / 4%);
   --background: oklch(0.976 0.004 85);
   --foreground: oklch(0.255 0 0);
@@ -170,8 +170,8 @@
 .product-card { box-shadow: var(--card-shadow); }
 .menu-photo { background: var(--photo-background); }
 @media (min-width: 768px) and (max-width: 1279px) {
-  .product-card { height: 214px; }
-  .product-card .menu-photo { height: 118px; aspect-ratio: auto; flex-shrink: 0; }
+  .product-card { height: 224px; }
+  .product-card .menu-photo { height: 128px; aspect-ratio: auto; flex-shrink: 0; }
   .product-card .menu-photo img { object-fit: contain; }
   .product-card > div:last-child { min-height: 0; padding: 8px; gap: 2px; }
   .product-card > div:last-child > div:first-child { min-height: 28px; gap: 0; }

@@ -4,7 +4,7 @@ import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupS
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
-import { addLine, cartTotals, changeQty, formatRs, type CartLine } from "@/lib/cart";
+import { addLine, applyAddon, cartTotals, changeQty, formatRs, type Addon, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
 import { OptionModal } from "@/components/pos/OptionModal";
 import { CartPanel } from "@/components/pos/CartPanel";
@@ -47,7 +47,7 @@ function POS() {
 
   const select = (p: Product) => {
     if (p.sizes || p.flavourChoice) return setModal(p);
-    add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0 });
+    add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
   };
 
   const clear = () => {
@@ -67,6 +67,7 @@ function POS() {
   const cartProps = {
     lines, orderNo, orderType, table, setOrderType, setTable,
     onQty: (k: string, d: number) => setLines((l) => changeQty(l, k, d)),
+    onAddon: (k: string, a: Addon) => { setLines((l) => applyAddon(l, k, a)); toast.success(`${a.name} added`, { duration: 1200 }); },
     onClear: clear, onNewOrder: newOrder, onPrint: () => setReceiptAt(new Date()),
   };
 
@@ -108,7 +109,7 @@ function POS() {
                 <Button variant="link" onClick={() => { setQuery(""); setCategory("all"); }}>Clear search</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                 {visible.map((p) => <ProductCard key={p.id} product={p} onSelect={select} />)}
               </div>
             )}
@@ -137,7 +138,7 @@ function POS() {
         product={modal}
         onClose={() => setModal(null)}
         onAdd={(p, option, price) => {
-          add({ key: `${p.id}|${option}`, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
+          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
           setModal(null);
         }}
       />
