@@ -199,12 +199,15 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0ms !important; }
 }
+.slip-compact { min-height: 0; }
+#print-root { display: none; }
 @media print {
   @page { size: 80mm auto; margin: 0; }
-  body * { visibility: hidden !important; }
-  #receipt, #receipt * { visibility: visible !important; }
-  .receipt-overlay { position: static !important; background: none !important; padding: 0 !important; }
-  #receipt { position: absolute; left: 0; top: 0; width: 80mm !important; max-width: 80mm !important; padding: 3mm !important; box-shadow: none !important; filter: none !important; background: var(--receipt-paper) !important; color: var(--receipt-ink) !important; }
-  #receipt::before, #receipt::after { display: none; }
-  .no-print { display: none !important; }
+  html, body { width: 80mm; height: auto !important; overflow: visible !important; background: var(--receipt-paper) !important; }
+  body > *:not(#print-root) { display: none !important; }
+  #print-root { display: block !important; }
+  .print-page { break-after: page; page-break-after: always; }
+  .print-page:last-child { break-after: auto; page-break-after: auto; }
+  #print-root .thermal-receipt { width: 80mm !important; max-width: 80mm !important; min-height: 0 !important; padding: 3mm 3mm 8mm !important; filter: none !important; background: var(--receipt-paper) !important; color: var(--receipt-ink) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #print-root .thermal-receipt::before, #print-root .thermal-receipt::after { display: none; }
 }
