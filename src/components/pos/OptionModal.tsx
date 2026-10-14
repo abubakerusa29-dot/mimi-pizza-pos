@@ -23,7 +23,7 @@ export function OptionModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{product?.name}</DialogTitle>
-          <DialogDescription>{isPizza ? "Select a size" : `Choose pizza flavour · ${product?.description ?? ""}`}</DialogDescription>
+          <DialogDescription>{isPizza ? (product?.description ?? "Select an option") : `Choose pizza flavour · ${product?.description ?? ""}`}</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           {options.map((o, i) => (

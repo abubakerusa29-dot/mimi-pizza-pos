@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Mimi’s Pizza POS — Counter Billing" },
-      { name: "description", content: "Point of sale demo for Mimi’s Pizza: take orders, calculate bills and print receipts." },
+      { name: "description", content: "Point of sale for Mimi’s Pizza: take orders, calculate bills and print receipts." },
       { property: "og:title", content: "Mimi’s Pizza POS — Counter Billing" },
       { property: "og:description", content: "Take orders, calculate bills and print receipts at Mimi’s Pizza." },
       { property: "og:type", content: "website" },

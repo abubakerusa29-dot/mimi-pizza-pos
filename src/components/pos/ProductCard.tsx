@@ -12,8 +12,8 @@ export function ProductCard({ product, onSelect }: { product: Product; onSelect:
       onClick={() => onSelect(product)}
       className="product-card group flex h-auto flex-col items-stretch justify-start gap-0 overflow-hidden whitespace-normal rounded-lg border border-border bg-card p-0 text-left transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card active:scale-[0.98]"
     >
-      <div className="menu-photo relative aspect-square w-full overflow-hidden border-b border-border">
-        {failed || !productImages[product.id] ? <div className="grid h-full place-items-center text-muted-foreground"><ImageOff /></div> : <img src={productImages[product.id]} onError={() => setFailed(true)} alt={product.name} width={480} height={480} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />}
+      <div className="menu-photo relative aspect-[5/4] w-full overflow-hidden border-b border-border bg-white">
+        {failed || !productImages[product.id] ? <div className="grid h-full place-items-center text-muted-foreground"><ImageOff /></div> : <img src={productImages[product.id]} onError={() => setFailed(true)} alt={product.name} width={480} height={480} loading="lazy" className="h-full w-full object-contain p-1 transition-transform duration-300 group-hover:scale-105" />}
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3">
         <div className={`flex flex-col items-start gap-1 ${product.category === "deals" ? "min-h-6" : "min-h-11"}`}>
@@ -22,8 +22,8 @@ export function ProductCard({ product, onSelect }: { product: Product; onSelect:
             <span className="text-[10px] font-medium uppercase text-muted-foreground">{product.tag}</span>
           )}
         </div>
-        {product.description && <p className="line-clamp-2 text-xs text-muted-foreground">{product.description}</p>}
-        {product.sizes && <p className="text-xs text-muted-foreground">{product.sizes.map((s) => s.size).join(" · ")}</p>}
+        {product.description && product.category === "deals" && <p className="line-clamp-2 text-xs text-muted-foreground">{product.description}</p>}
+        {product.sizes && <p className="line-clamp-1 text-xs text-muted-foreground">{product.sizes.map((s) => s.size).join(" · ")}</p>}
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="text-sm font-bold text-primary">
             {product.sizes ? `From ${formatRs(startingPrice(product))}` : formatRs(product.price ?? 0)}
