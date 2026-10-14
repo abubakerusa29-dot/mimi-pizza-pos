@@ -70,7 +70,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         {lines.map((l) => (
           <div key={l.key} className="mt-3">
             <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2">
-              <span className="min-w-0 break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}</span>
+              <span className="min-w-0 break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</span>
               <span className="text-right">{l.qty}</span>
               <span className="text-right">{lineTotal(l).toLocaleString("en-US")}</span>
             </div>
