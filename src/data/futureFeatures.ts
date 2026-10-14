@@ -9,7 +9,6 @@ export const futureFeatures: FutureFeature[] = [
   { slug: "invoice-templates", label: "Invoice Templates", icon: ReceiptText, summary: "Change the look of the printed bill.", actions: ["Choose template", "Logo & header", "Footer message", "Paper size 58/80mm"] },
   { slug: "kitchen", label: "Kitchen Display", icon: ChefHat, summary: "Send orders straight to the kitchen screen.", actions: ["Live order queue", "Mark as ready", "Kitchen slip print"] },
   { slug: "customers", label: "Customers", icon: Contact, summary: "Save regular customers and their addresses.", actions: ["Add customer", "Order history", "Loyalty points"] },
-  { slug: "delivery", label: "Delivery Riders", icon: Bike, summary: "Assign delivery orders to riders and track them.", actions: ["Assign rider", "Delivery charges", "Rider cash collection"] },
   { slug: "inventory", label: "Inventory", icon: Boxes, summary: "Track cheese, dough, buns and drinks stock.", actions: ["Add stock", "Low stock alerts", "Supplier list"] },
   { slug: "expenses", label: "Expenses", icon: Wallet, summary: "Record daily expenses and see real profit.", actions: ["Add expense", "Expense categories", "Daily cash closing"] },
   { slug: "discounts", label: "Discounts & Promos", icon: BadgePercent, summary: "Run offers, coupons and happy hours.", actions: ["Create discount", "Coupon codes", "Happy hour pricing"] },

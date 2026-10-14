@@ -60,7 +60,7 @@ function Invoices() {
           )}
         </div>
       </div>
-      {reprint && <ReceiptPreview open {...reprint} onBack={() => setReprint(null)} />}
+      {reprint && <ReceiptPreview open {...reprint} rider={reprint.rider ?? ""} area={reprint.area ?? ""} onBack={() => setReprint(null)} />}
     </main>
   );
 }

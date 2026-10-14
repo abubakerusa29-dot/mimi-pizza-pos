@@ -30,9 +30,11 @@ interface Props {
   /** Reprints pass stored customer details; live orders read them from the current order. */
   phone?: string;
   address?: string;
+  rider?: string;
+  area?: string;
 }
 
-interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string }
+interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string; rider?: string; area?: string }
 
 function Credit() {
   return (
@@ -67,7 +69,7 @@ function SlipBanner({ title, orderType, table }: { title: string; orderType: Ord
   );
 }
 
-function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: SlipProps) {
+function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, rider, area }: SlipProps) {
   const { subtotal, total, items } = cartTotals(lines);
   const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const meta = (
@@ -123,7 +125,8 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
         <div className="receipt-divider" />
         <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
         <div className="receipt-divider" />
-        <p className="mt-3">Rider: ____________________</p>
+        {area && <p className="mt-1">Area: <span className="font-bold">{area}</span></p>}
+        <p className="mt-3">Rider: {rider ? <span className="font-bold">{rider}</span> : "____________________"}</p>
         <p className="mt-3">Received by: ______________</p>
         <Credit />
       </div>
@@ -172,7 +175,7 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
   );
 }
 
-export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, phone: phoneProp, address: addressProp }: Props) {
+export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, phone: phoneProp, address: addressProp, rider: riderProp, area: areaProp }: Props) {
   const order = useOrder();
   const phone = phoneProp ?? order.phone;
   const address = addressProp ?? order.address;
@@ -213,7 +216,9 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   }, [printing, jobIndex]);
   if (!open) return null;
   const shown = view === "all" ? available : available.filter((k) => k === view);
-  const slipProps = { lines, orderNo, orderType, table, date, phone, address };
+  const rider = riderProp ?? order.rider;
+  const area = areaProp ?? order.area;
+  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area };
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
@@ -230,7 +235,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address }); setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined }); setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>

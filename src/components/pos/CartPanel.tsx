@@ -1,3 +1,4 @@
+import { riders, deliveryAreas } from "@/data/riders";
 import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
-  const { phone, setPhone, address, setAddress } = useOrder();
+  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea } = useOrder();
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
@@ -71,6 +72,10 @@ export function CartPanel(p: Props) {
           <div className="mt-2 grid gap-2">
             <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address / location" rows={2} aria-label="Delivery address" className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+            <div className="grid grid-cols-2 gap-2">
+              <select value={rider} onChange={(e) => setRider(e.target.value)} aria-label="Assign rider" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Assign rider</option>{riders.map((r) => <option key={r}>{r}</option>)}</select>
+              <select value={area} onChange={(e) => setArea(e.target.value)} aria-label="Delivery area" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Area</option>{deliveryAreas.map((a) => <option key={a}>{a}</option>)}</select>
+            </div>
           </div>
         )}
       </div>

@@ -10,6 +10,7 @@ import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 const navigation = [
   { to: "/", label: "Point of Sale", icon: UtensilsCrossed },
   { to: "/invoices", label: "Previous Invoices", icon: History },
+  { to: "/riders", label: "Riders & Cash", icon: Bike },
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },
   { to: "/menu-growth", label: "Menu Management", icon: BookOpen },
 ] as const;
