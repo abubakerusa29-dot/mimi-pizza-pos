@@ -1,3 +1,4 @@
+import { useOrder } from "./OrderContext";
 import { Printer, ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack }: Props) {
+  const { phone, address } = useOrder();
   const barcode = useRef<SVGSVGElement>(null);
   const [printNotice, setPrintNotice] = useState(false);
   useEffect(() => { setPrintNotice(false); }, [open]);
@@ -65,6 +67,8 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         <div className="flex justify-between"><span>Time</span><span>{date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</span></div>
         <div className="flex justify-between"><span>Type</span><span>{orderType}</span></div>
         {orderType === "Dine-in" && table && <div className="flex justify-between"><span>Table</span><span>{table}</span></div>}
+        {orderType === "Delivery" && phone && <div className="flex justify-between gap-2"><span>Phone</span><span>{phone}</span></div>}
+        {orderType === "Delivery" && address && <div className="mt-1"><span>Address:</span><span className="block break-words">{address}</span></div>}
         <div className="receipt-divider" />
         <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2 font-bold"><span>ITEM</span><span className="text-right">QTY</span><span className="text-right">PKR</span></div>
         {lines.map((l) => (

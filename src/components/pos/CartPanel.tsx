@@ -2,7 +2,7 @@ import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrosse
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/menuData";
-import type { OrderType } from "./OrderContext";
+import { useOrder, type OrderType } from "./OrderContext";
 import { type Addon, type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 
 export type { OrderType } from "./OrderContext";
@@ -29,6 +29,7 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
+  const { phone, setPhone, address, setAddress } = useOrder();
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
@@ -66,6 +67,12 @@ export function CartPanel(p: Props) {
             inputMode="numeric"
             className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
           />
+        )}
+        {p.orderType === "Delivery" && (
+          <div className="mt-2 grid gap-2">
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+            <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address / location" rows={2} aria-label="Delivery address" className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+          </div>
         )}
       </div>
 

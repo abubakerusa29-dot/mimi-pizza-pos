@@ -23,6 +23,7 @@ export function OptionModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{product?.name}</DialogTitle>
+          <p className="rounded-md bg-secondary px-2 py-1 text-[11px] font-semibold text-primary">Double-tap an option to quickly add, or press Add to Order.</p>
           <DialogDescription>{isPizza ? (product?.description ?? "Select an option") : `Choose pizza flavour · ${product?.description ?? ""}`}</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
@@ -30,6 +31,7 @@ export function OptionModal({
             <button
               key={o.label}
               onClick={() => setSel(i)}
+              onDoubleClick={() => product && onAdd(product, o.label, o.price)}
               className={`rounded-xl border-2 p-3 text-left transition ${i === sel ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
             >
               <div className="text-sm font-semibold">{o.label}</div>
