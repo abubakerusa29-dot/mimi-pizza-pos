@@ -48,6 +48,22 @@ function Barcode({ orderNo }: { orderNo: number }) {
   return <svg ref={ref} role="img" aria-label={`Barcode for order ${orderNo}`} className="receipt-barcode mx-auto mt-4" />;
 }
 
+/** Deal contents for the kitchen: the deal's included items, one per line. */
+export function dealParts(l: Pick<CartLine, "key" | "description">): string[] {
+  if (!l.key.startsWith("deal-") || !l.description) return [];
+  return l.description.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function SlipBanner({ title, orderType, table }: { title: string; orderType: OrderType; table: string }) {
+  const sub = orderType === "Dine-in" ? `DINE-IN${table ? ` · TABLE ${table}` : ""}` : orderType.toUpperCase();
+  return (
+    <div className="slip-banner my-2 text-center">
+      <p className="text-[15px] font-bold tracking-wide">{title}</p>
+      <p className="text-[12px] font-bold">{sub}</p>
+    </div>
+  );
+}
+
 function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: SlipProps) {
   const { subtotal, total, items } = cartTotals(lines);
   const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
@@ -69,20 +85,23 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
   if (kind === "kitchen") {
     return (
       <div className="thermal-receipt slip-compact">
-        <p className="text-center text-base font-bold">KITCHEN ORDER</p>
-        <div className="receipt-divider" />
+        <SlipBanner title="KITCHEN SLIP" orderType={orderType} table={table} />
         {meta}
         <div className="receipt-divider" />
-        {lines.map((l) => (
-          <div key={l.key} className="mt-1.5">
-            <p className="font-bold">{l.qty} x {l.name}</p>
-            {l.variant && <p className="pl-4 text-[11px]">{l.variant}</p>}
-            {l.addons?.length ? <p className="pl-4 text-[11px]">+ {l.addons.join(", ")}</p> : null}
-          </div>
-        ))}
+        {lines.map((l) => {
+          const parts = dealParts(l);
+          return (
+            <div key={l.key} className="mt-2">
+              <p className="text-[14px] font-bold">{l.qty} x {l.name}</p>
+              {l.variant && <p className="pl-4 font-bold">{parts.length ? "Pizza flavour: " : ""}{l.variant}</p>}
+              {parts.map((p) => <p key={p} className="pl-4">- {p}</p>)}
+              {l.addons?.length ? <p className="pl-4 font-bold">+ ADD: {l.addons.join(", ")}</p> : null}
+            </div>
+          );
+        })}
         <div className="receipt-divider" />
-        <p className="text-center">Items: {items}</p>
-        <p className="mt-2 text-center text-[8px] leading-tight">Software by {softwareCredit.name}</p>
+        <p className="text-center font-bold">Total items: {items}</p>
+        <p className="mt-2 text-center text-[9px] leading-tight">Software by {softwareCredit.name}</p>
       </div>
     );
   }
@@ -91,13 +110,12 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
     return (
       <div className="thermal-receipt slip-compact">
         <p className="text-center text-sm font-bold">Mimi’s Pizza</p>
-        <p className="text-center text-base font-bold">DELIVERY SLIP</p>
-        <div className="receipt-divider" />
+        <SlipBanner title="DELIVERY RIDER SLIP" orderType={orderType} table={table} />
         {meta}
         {customerInfo}
         <div className="receipt-divider" />
         {lines.map((l) => (
-          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span>{lineTotal(l).toLocaleString("en-US")}</span></div>
+          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
         ))}
         <div className="receipt-divider" />
         <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
@@ -108,6 +126,7 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address }: 
       </div>
     );
   }
+
 
   return (
     <div className="thermal-receipt">
