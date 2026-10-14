@@ -21,3 +21,15 @@ describe("cart billing", () => {
     expect(startingPrice(products.find((p) => p.id === "pz-behari-kabab")!)).toBe(1400);
   });
 });
+
+import { applyAddon } from "@/lib/cart";
+describe("burger add-ons", () => {
+  it("adds cheese slice price to one burger only", () => {
+    let c = addLine([], { key: "bg-zinger", name: "Zinger Burger", unitPrice: 380 });
+    c = addLine(c, { key: "bg-zinger", name: "Zinger Burger", unitPrice: 380 });
+    c = applyAddon(c, "bg-zinger", { id: "ex-cheese-slice", name: "Cheese Slice", price: 100 });
+    expect(c.find((l) => l.key === "bg-zinger")?.qty).toBe(1);
+    expect(c.find((l) => l.key === "bg-zinger+ex-cheese-slice")?.unitPrice).toBe(480);
+    expect(cartTotals(c).total).toBe(860);
+  });
+});

@@ -1,7 +1,9 @@
 import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { products } from "@/data/menuData";
 import type { OrderType } from "./OrderContext";
-import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
+import { type Addon, type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 
 export type { OrderType } from "./OrderContext";
 
@@ -13,14 +15,21 @@ interface Props {
   setOrderType: (t: OrderType) => void;
   setTable: (t: string) => void;
   onQty: (key: string, d: number) => void;
+  onAddon: (key: string, addon: Addon) => void;
   onClear: () => void;
   onNewOrder: () => void;
   onPrint: () => void;
   onCloseMobile?: () => void;
 }
 
+const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
+  const x = products.find((q) => q.id === id);
+  return x ? [{ id, name: x.name, price: x.price ?? 0 }] : [];
+});
+
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
+  const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
       <div className="border-b border-border p-4">
@@ -76,6 +85,7 @@ export function CartPanel(p: Props) {
                   <div className="min-w-0">
                     <p className="text-sm font-semibold leading-tight">{l.name}</p>
                     {l.variant && <p className="text-xs font-medium text-primary">{l.variant}</p>}
+                    {l.addons?.length ? <p className="text-xs font-medium text-primary">+ {l.addons.join(", ")}</p> : null}
                     {l.description && <p className="line-clamp-2 text-[11px] text-muted-foreground">{l.description}</p>}
                     <p className="text-xs text-muted-foreground">{formatRs(l.unitPrice)} each</p>
                   </div>
@@ -91,6 +101,24 @@ export function CartPanel(p: Props) {
                   </div>
                   <span className="text-sm font-bold">{formatRs(lineTotal(l))}</span>
                 </div>
+                {l.addonGroup === "burger" && (
+                  <div className="mt-2">
+                    <Button variant="ghost" size="sm" onClick={() => setOpenAddon(openAddon === l.key ? null : l.key)} className="h-7 px-2 text-xs font-semibold text-primary hover:bg-secondary">
+                      <Plus className="h-3.5 w-3.5" /> Add add-on
+                    </Button>
+                    {openAddon === l.key && (
+                      <div className="mt-1 grid grid-cols-2 gap-1.5">
+                        {burgerAddons.map((a) => (
+                          <Button key={a.id} variant="outline" size="sm" onClick={() => { p.onAddon(l.key, a); setOpenAddon(null); }} className="h-auto flex-col gap-0 py-1.5 text-xs">
+                            <span className="font-semibold">{a.name}</span>
+                            <span className="text-primary">+{formatRs(a.price)}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                    {l.qty > 1 && openAddon === l.key && <p className="mt-1 text-[10px] text-muted-foreground">Applies to 1 of {l.qty} — tap again for more.</p>}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
