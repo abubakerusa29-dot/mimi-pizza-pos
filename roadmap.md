@@ -7,4 +7,11 @@
 - [x] Improve product image fit and polish the POS layout.
 - [x] Add collapsible left navigation and future-feature demo pages.
 - [x] Add Delivery order type and verify cart, receipt, and navigation.
-- [x] Optimize tablet for a compact 3-by-3 product grid and icon-opened navigation; verify tablet and mobile ordering.
+- [x] Optimize tablet for a compact 3-by-3 product grid and icon-opened navigation; verify tablet and mobile ordering.- [x] Phase 1 slips & printing
+- [x] Phase 2 invoice history
+- [x] Phase 3 riders, areas & cash settlement (session only)
+- [ ] Phase 4 Sales analytics
+- [ ] Phase 5 Menu management
+- [ ] Phase 6 Settings
+- [ ] Phase 7 Cloud persistence
+- [ ] Real rider names & areas (waiting on client)

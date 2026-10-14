@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
+import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
@@ -30,6 +31,11 @@ const MenuGrowthRoute = MenuGrowthRouteImport.update({
   path: '/menu-growth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RidersRoute = RidersRouteImport.update({
+  id: '/riders',
+  path: '/riders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SalesRoute = SalesRouteImport.update({
   id: '/sales',
   path: '/sales',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
@@ -60,19 +68,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/invoices' | '/menu-growth' | '/sales' | '/features/$slug'
+  fullPaths:
+    | '/'
+    | '/invoices'
+    | '/menu-growth'
+    | '/riders'
+    | '/sales'
+    | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/invoices' | '/menu-growth' | '/sales' | '/features/$slug'
+  to:
+    | '/'
+    | '/invoices'
+    | '/menu-growth'
+    | '/riders'
+    | '/sales'
+    | '/features/$slug'
   id:
     | '__root__'
     | '/'
     | '/invoices'
     | '/menu-growth'
+    | '/riders'
     | '/sales'
     | '/features/$slug'
   fileRoutesById: FileRoutesById
@@ -81,6 +103,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InvoicesRoute: typeof InvoicesRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
+  RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
@@ -108,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MenuGrowthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/riders': {
+      id: '/riders'
+      path: '/riders'
+      fullPath: '/riders'
+      preLoaderRoute: typeof RidersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sales': {
       id: '/sales'
       path: '/sales'
@@ -129,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InvoicesRoute: InvoicesRoute,
   MenuGrowthRoute: MenuGrowthRoute,
+  RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { riderSummaries } from "@/lib/riders";
-const line = (price: number) => [{ key: "a", id: "a", name: "A", price, qty: 1 }] as never;
+const line = (price: number) => [{ key: "a", id: "a", name: "A", unitPrice: price, qty: 1 }] as never;
 
 describe("rider cash", () => {
   it("keeps cash outstanding until marked returned", () => {
