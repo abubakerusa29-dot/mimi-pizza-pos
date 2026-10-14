@@ -177,7 +177,8 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const [jobIndex, setJobIndex] = useState(0);
   const sentJob = useRef("");
   const printRun = useRef(0);
-  useEffect(() => { if (open) setView("all"); }, [open]);
+  const openedAt = useRef(0);
+  useEffect(() => { if (open) { setView("all"); openedAt.current = Date.now(); } }, [open]);
   useEffect(() => {
     if (!open) return;
     const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onBack(); };
@@ -224,7 +225,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => { printRun.current++; setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
