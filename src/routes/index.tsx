@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
 function POS() {
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [query, setQuery] = useState("");
-  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable } = useOrder();
+  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, setPhone, setAddress } = useOrder();
   const [modal, setModal] = useState<Product | null>(null);
   const [receiptAt, setReceiptAt] = useState<Date | null>(null);
   const [mobileCart, setMobileCart] = useState(false);
@@ -58,6 +58,8 @@ function POS() {
     if (lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
     setLines([]);
     setTable("");
+    setPhone("");
+    setAddress("");
     setOrderType("Dine-in");
     setOrderNo((n) => n + 1);
     setMobileCart(false);

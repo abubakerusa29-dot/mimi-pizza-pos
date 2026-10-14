@@ -9,7 +9,7 @@ afterEach(cleanup);
 describe("Delivery orders", () => {
   it("can select Delivery alongside Dine-in and Takeaway", () => {
     const setOrderType = vi.fn();
-    render(<CartPanel lines={[]} orderNo={1001} orderType="Dine-in" table="" setOrderType={setOrderType} setTable={vi.fn()} onQty={vi.fn()} onAddon={vi.fn()} onClear={vi.fn()} onNewOrder={vi.fn()} onPrint={vi.fn()} />);
+    render(<OrderProvider><CartPanel lines={[]} orderNo={1001} orderType="Dine-in" table="" setOrderType={setOrderType} setTable={vi.fn()} onQty={vi.fn()} onAddon={vi.fn()} onClear={vi.fn()} onNewOrder={vi.fn()} onPrint={vi.fn()} /></OrderProvider>);
     fireEvent.click(screen.getByRole("button", { name: "Delivery" }));
     expect(setOrderType).toHaveBeenCalledWith("Delivery");
   });
@@ -29,5 +29,14 @@ describe("Delivery orders", () => {
     expect(observed?.orderType).toBe("Delivery");
     expect(cartTotals(observed?.lines ?? []).total).toBe(1460);
     expect(observed?.lines).toHaveLength(1);
+  });
+});
+describe("Delivery customer details", () => {
+  it("shows phone and address fields only for Delivery", () => {
+    const { rerender } = render(<OrderProvider><CartPanel lines={[]} orderNo={1001} orderType="Takeaway" table="" setOrderType={vi.fn()} setTable={vi.fn()} onQty={vi.fn()} onAddon={vi.fn()} onClear={vi.fn()} onNewOrder={vi.fn()} onPrint={vi.fn()} /></OrderProvider>);
+    expect(screen.queryByLabelText("Customer phone number")).toBeNull();
+    rerender(<OrderProvider><CartPanel lines={[]} orderNo={1001} orderType="Delivery" table="" setOrderType={vi.fn()} setTable={vi.fn()} onQty={vi.fn()} onAddon={vi.fn()} onClear={vi.fn()} onNewOrder={vi.fn()} onPrint={vi.fn()} /></OrderProvider>);
+    expect(screen.getByLabelText("Customer phone number")).toBeTruthy();
+    expect(screen.getByLabelText("Delivery address")).toBeTruthy();
   });
 });

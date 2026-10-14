@@ -8,7 +8,9 @@ function useOrderState() {
   const [orderNo, setOrderNo] = useState(1001);
   const [orderType, setOrderType] = useState<OrderType>("Dine-in");
   const [table, setTable] = useState("");
-  return { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable };
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  return { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress };
 }
 
 const OrderContext = createContext<ReturnType<typeof useOrderState> | null>(null);
