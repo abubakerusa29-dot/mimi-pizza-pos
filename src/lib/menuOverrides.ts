@@ -9,18 +9,22 @@ export interface MenuOverrides {
   images?: Record<string, string>;
   /** Built-in items the owner permanently deleted. */
   deleted?: string[];
+  /** Renamed items and edited descriptions, by product id. */
+  names?: Record<string, string>;
+  descriptions?: Record<string, string>;
 }
 export const emptyOverrides: MenuOverrides = { prices: {}, hidden: [], custom: [], images: {} };
 
 export const priceKey = (id: string, size?: string) => (size ? `${id}|${size}` : id);
 
 /** Full menu = built-in items + owner-added items. */
-export const fullMenu = (base: Product[], o: MenuOverrides) => [...base, ...(o.custom ?? [])].filter((p) => !(o.deleted ?? []).includes(p.id));
+export const fullMenu = (base: Product[], o: MenuOverrides) => [...base, ...(o.custom ?? [])].filter((p) => !(o.deleted ?? []).includes(p.id)).map((p) => ({ ...p, name: o.names?.[p.id] ?? p.name, ...(o.descriptions?.[p.id] !== undefined ? { description: o.descriptions[p.id] } : {}) }));
 
 /** Returns the menu (including owner-added items) with edited prices applied. */
 export function applyOverrides(list: Product[], o: MenuOverrides): Product[] {
   return fullMenu(list, o).map((p) => {
-    const next: Product = { ...p };
+    const next: Product = { ...p, name: o.names?.[p.id] ?? p.name };
+    if (o.descriptions?.[p.id] !== undefined) next.description = o.descriptions[p.id];
     if (p.price !== undefined) next.price = o.prices[priceKey(p.id)] ?? p.price;
     if (p.sizes) next.sizes = p.sizes.map((s) => ({ ...s, price: o.prices[priceKey(p.id, s.size)] ?? s.price }));
     return next;
