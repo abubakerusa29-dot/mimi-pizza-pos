@@ -34,5 +34,5 @@ export function makeCustomItem(input: { name: string; category: Product["categor
   const sizes = input.sizes.split(",").map((s) => s.split(":").map((x) => x.trim())).filter(([a, b]) => a && Number(b) > 0).map(([size, p]) => ({ size: size!, price: Math.round(Number(p)) }));
   const price = Math.round(Number(input.price));
   if (!sizes.length && !(price > 0)) return null;
-  return { id, name, category: input.category, description: input.description.trim() || undefined, ...(sizes.length ? { sizes } : { price }) };
+  return { id, name, category: input.category, ...(input.description.trim() ? { description: input.description.trim() } : {}), ...(sizes.length ? { sizes } : { price }) };
 }

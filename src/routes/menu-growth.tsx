@@ -59,7 +59,7 @@ function MenuManagement() {
   const save = () => {
     const item = makeCustomItem(form, `custom-${Date.now().toString(36)}`);
     if (!item) { setErr("Naam aur price (ya sizes) zaroori hain."); return; }
-    setMenuOverrides((m) => ({ ...m, custom: [...(m.custom ?? []), item], images: photo ? { ...(m.images ?? {}), [item.id]: photo } : m.images }));
+    setMenuOverrides((m) => ({ ...m, custom: [...(m.custom ?? []), item], images: photo ? { ...(m.images ?? {}), [item.id]: photo } : (m.images ?? {}) }));
     setForm(blank); setPhoto(""); setErr(""); setAdding(false);
   };
   const remove = (id: string) => {
