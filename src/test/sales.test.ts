@@ -11,7 +11,7 @@ describe("sales summary", () => {
   it("totals revenue, orders and average for the chosen day", () => {
     const s = salesSummary(inv, new Date(2026, 9, 15), new Date(2026, 9, 15));
     expect([s.orders, s.revenue, s.average]).toEqual([2, 2700, 1350]);
-    expect(s.byType.Delivery).toEqual({ orders: 1, revenue: 1000 });
+    expect(s.byType["Delivery"]).toEqual({ orders: 1, revenue: 1000 });
   });
   it("ranks best sellers by quantity", () => {
     expect(salesSummary(inv).topItems[0]).toEqual({ name: "Zinger", qty: 3, revenue: 1500 });
