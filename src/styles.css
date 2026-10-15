@@ -221,3 +221,7 @@
 .receipt-invert { background: var(--receipt-ink); color: var(--receipt-paper); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .tpl-compact { min-height: 0; padding-top: 14px; line-height: 1.3; }
 .tpl-minimal { min-height: 0; }
+.receipt-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+.receipt-table th, .receipt-table td { border: 1px solid var(--receipt-ink); padding: 3px 3px; vertical-align: top; }
+.receipt-table th { font-weight: 700; }
+.kitchen-large { font-size: 15px; line-height: 1.4; }
