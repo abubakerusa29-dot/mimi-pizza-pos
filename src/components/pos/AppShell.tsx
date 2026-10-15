@@ -1,5 +1,8 @@
 import { useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
+import { LogOut, ShieldCheck } from "lucide-react";
+import { StaffSessionProvider, useStaff, PinScreen } from "@/components/pos/StaffSession";
+import { canOpen } from "@/lib/staffAccess";
 import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair, Contact, Boxes, Wallet, FileBarChart, Users } from "lucide-react";
 import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
@@ -26,6 +29,13 @@ const navigation = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  return <StaffSessionProvider><Shell>{children}</Shell></StaffSessionProvider>;
+}
+
+function Shell({ children }: { children: ReactNode }) {
+  const { user, locked, signOut, ownerPinSet } = useStaff();
+  const path = useLocation({ select: (l) => l.pathname });
+  const allowed = canOpen(user, path);
   const [expanded, setExpanded] = useState(false);
   const { restaurant } = useOrder();
   return (
@@ -38,13 +48,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <img src={badge.url} alt="" className="h-10 w-10 shrink-0 object-contain" />
            <div className="min-w-0"><h1><img src={wordmark.url} alt="Mimi’s Pizza" className="h-5 w-auto max-w-[130px] object-contain sm:h-6 sm:max-w-none" /></h1><p className="mt-0.5 hidden sm:flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Take away & free home delivery</p></div>
         </div>
-        <span className="hidden text-xs font-medium text-muted-foreground sm:block">{restaurant.phone}</span>
+        <div className="flex items-center gap-2"><span className="hidden text-xs font-medium text-muted-foreground lg:block">{restaurant.phone}</span>{ownerPinSet && user && <><span className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium"><ShieldCheck className="size-3.5 text-primary" />{user.name}</span><Button variant="ghost" size="icon" onClick={signOut} aria-label="Lock and switch user" title="Lock and switch user"><LogOut /></Button></>}</div>
       </header>
       <div className="relative flex min-h-0 flex-1">
         {expanded && <div className="absolute inset-0 z-30 bg-foreground/30 xl:hidden" onClick={() => setExpanded(false)} />}
         <aside className={`absolute inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] xl:relative ${expanded ? "w-56" : "hidden w-[72px] xl:flex"}`}>
           <nav aria-label="Main navigation" className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
-            {navigation.map(({ to, label, icon: Icon }, index) => (
+            {navigation.filter(({ to }) => canOpen(user, to)).map(({ to, label, icon: Icon }, index) => (
               <Button key={to} asChild variant="ghost" className={`h-12 w-full rounded-lg ${expanded ? "justify-start px-3" : "px-0"}`}>
                   <Link to={to} activeOptions={{ exact: true }} activeProps={{ className: "bg-sidebar-accent text-primary hover:bg-sidebar-accent" }} inactiveProps={{ className: "text-muted-foreground" }} onClick={() => { if (window.innerWidth < 1280) setExpanded(false); }} title={label} aria-label={label}>
                   <Icon className="!h-5 !w-5" />{expanded && <span className="text-[13px]">{label}</span>}{expanded && index > 0 && <ArrowUpRight className="ml-auto !h-3 !w-3" />}
@@ -62,7 +72,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           {expanded && <div className="shrink-0 border-t border-border p-5"><p className="text-xs font-semibold">Mimi’s Pizza</p><p className="mt-1 text-xs text-muted-foreground">Counter workspace</p></div>}
         </aside>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">{locked ? <PinScreen /> : allowed ? children : <PinScreen title="Owner access needed" />}</div>
       </div>
       <footer className="hidden shrink-0 border-t border-border bg-card px-4 py-1 text-center text-[11px] text-muted-foreground md:block">
         This software made by{" "}
