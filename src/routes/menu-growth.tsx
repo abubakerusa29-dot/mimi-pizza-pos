@@ -113,7 +113,7 @@ function MenuManagement() {
     <main className="min-h-0 flex-1 overflow-y-auto">
     <div className="mx-auto max-w-5xl space-y-4 p-4 md:p-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div><h2 className="font-display text-xl font-semibold">Menu Management</h2><p className="text-xs text-muted-foreground">Naye items add karein, prices edit karein ya item unavailable karein — POS screen par foran apply hota hai. {changed > 0 && <b className="text-primary">{changed} changes</b>}</p></div>
+        <div><h2 className="font-display text-xl font-semibold">Menu Management</h2><p className="text-xs text-muted-foreground">Add new items, edit prices or mark items unavailable. Changes show on the POS screen right away. {changed > 0 && <b className="text-primary">{changed} changes</b>}</p></div>
         <div className="flex gap-2">
           <Button variant="outline" className="h-9 text-xs" disabled={!changed} onClick={() => setMenuOverrides((m) => ({ ...m, prices: {}, hidden: [] }))}><RotateCcw /> Reset prices</Button>
           <Button className="h-9 text-xs" onClick={() => setAdding(!adding)}>{adding ? <X /> : <Plus />} {adding ? "Close" : "Add new item"}</Button>
@@ -130,7 +130,7 @@ function MenuManagement() {
                 {categories.filter((c) => c.id !== "all").map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
             </label>
-            <label className="grid gap-1 text-xs font-medium text-muted-foreground sm:col-span-2">Short description / included items<textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder={form.category === "deals" ? "Upar se items add karein ya yahan khud likhein" : "e.g. Chicken, cheese, special sauce"} className="rounded-md border bg-background px-3 py-2 text-sm text-foreground" /></label>
+            <label className="grid gap-1 text-xs font-medium text-muted-foreground sm:col-span-2">Short description / included items<textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder={form.category === "deals" ? "Add items above or type them here" : "e.g. Chicken, cheese, special sauce"} className="rounded-md border bg-background px-3 py-2 text-sm text-foreground" /></label>
             {form.category === "pizza" ? (
               <div className="space-y-2 sm:col-span-2">
                 <p className="text-xs font-medium text-muted-foreground">Sizes aur prices — jo size nahi banta usay Off kar dein</p>
@@ -150,7 +150,7 @@ function MenuManagement() {
             )}
             {form.category === "deals" && (
               <div className="space-y-2 rounded-lg border bg-muted/40 p-3 sm:col-span-2">
-                <p className="text-xs font-semibold">Deal mein kya shamil hai — select karke "Add to deal" dabayein (description khud likh jayegi)</p>
+                <p className="text-xs font-semibold">What is included in this deal? Select an item and press "Add to deal". The description fills in by itself.</p>
                 <div className="flex flex-wrap items-end gap-2">
                   <label className="grid gap-1 text-[11px] text-muted-foreground">Item
                     <select value={part.cat} onChange={(e) => setPart({ ...part, cat: e.target.value as CategoryId, pick: "", q: "", mode: "any" })} className="h-9 rounded-md border bg-background px-2 text-sm text-foreground">{DEAL_PARTS.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}</select>
@@ -171,7 +171,7 @@ function MenuManagement() {
                 </div>
                 {part.mode === "specific" && (
                   <div className="space-y-1.5">
-                    <Input value={part.q} onChange={(e) => setPart({ ...part, q: e.target.value })} placeholder="Naam likh kar search karein..." className="h-8 text-sm" />
+                    <Input value={part.q} onChange={(e) => setPart({ ...part, q: e.target.value })} placeholder="Type a name to search..." className="h-8 text-sm" />
                     <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                       {partOptions.map((p) => <button type="button" key={p.id} onClick={() => setPart({ ...part, pick: p.id })} className={`rounded-full border px-2.5 py-1 text-xs ${part.pick === p.id ? "border-primary bg-primary text-primary-foreground" : "bg-background"}`}>{p.name}</button>)}
                       {!partOptions.length && <span className="text-xs text-muted-foreground">Koi item nahi mila.</span>}
@@ -223,7 +223,7 @@ function MenuManagement() {
       <AlertDialog open={!!del} onOpenChange={(v) => !v && setDel(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{del?.step === 2 ? "Are you sure you want to delete this regular item?" : `"${del?.name}" delete karein?`}</AlertDialogTitle>
+            <AlertDialogTitle>{del?.step === 2 ? "Are you sure you want to delete this regular item?" : `Delete "${del?.name}"?`}</AlertDialogTitle>
             <AlertDialogDescription>{del?.step === 2 ? "Yeh item restaurant ke printed menu mein hai. Delete ke baad POS screen se hamesha ke liye hat jayega." : "Yeh item menu se hat jayega. Sirf chhupana ho to Available switch Off kar dein."}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

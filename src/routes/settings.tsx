@@ -53,7 +53,7 @@ function Settings() {
   return (
     <div className="mx-auto min-h-0 w-full max-w-3xl flex-1 space-y-4 overflow-y-auto p-4 md:p-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div><h2 className="font-display text-xl font-semibold">Settings</h2><p className="text-xs text-muted-foreground">Restaurant ki details receipts par print hoti hain. Riders aur areas yahan se manage karein.</p></div>
+        <div><h2 className="font-display text-xl font-semibold">Settings</h2><p className="text-xs text-muted-foreground">Restaurant details print on receipts. Manage riders and delivery areas here.</p></div>
         <Button variant="outline" className="h-9 text-xs" onClick={() => { setRestaurant(restaurantInfo); setRiderList(defaultRiders); setAreaList(defaultAreas); }}><RotateCcw /> Reset all</Button>
       </div>
 

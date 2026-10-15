@@ -12,17 +12,17 @@ export const Route = createFileRoute("/printers")({
 });
 
 const guides = [
-  { icon: Bluetooth, title: "Bluetooth printer", steps: ["Tablet Settings → Bluetooth mein printer pair karein (PIN aam tor par 0000 ya 1234).", "Play Store se “RawBT” app install karein aur usmein printer select karein.", "RawBT settings mein paper width 80mm / 58mm rakhein.", "Print dabane par Chrome mein printer list se “RawBT” chunein."] },
-  { icon: Wifi, title: "Wi-Fi / LAN printer", steps: ["Printer aur tablet ek hi Wi-Fi par hon.", "Settings → Connected devices → Printing mein “Default Print Service” ya printer brand ka plugin on karein.", "Print dialog mein printer khud nazar aa jayega."] },
-  { icon: Usb, title: "USB (OTG cable)", steps: ["USB-C OTG adapter se printer tablet se lagayein.", "RawBT app USB permission maangegi — Allow karein.", "Print dialog mein “RawBT” chunein."] },
+  { icon: Bluetooth, title: "Bluetooth printer", steps: ["Open tablet Settings, then Bluetooth, and pair the printer (PIN is usually 0000 or 1234).", "Install the “RawBT” app from Play Store and select your printer in it.", "In RawBT settings, set paper width to 80mm or 58mm.", "When you press Print, choose “RawBT” from the Chrome printer list."] },
+  { icon: Wifi, title: "Wi-Fi / LAN printer", steps: ["Connect the printer and tablet to the same Wi-Fi.", "In Settings, open Connected devices, then Printing, and turn on “Default Print Service” or your printer brand plugin.", "The printer will then show in the print dialog."] },
+  { icon: Usb, title: "USB (OTG cable)", steps: ["Connect the printer to the tablet with a USB-C OTG adapter.", "RawBT will ask for USB permission. Tap Allow.", "Choose “RawBT” in the print dialog."] },
 ];
 
 const problems = [
-  ["Kagaz par kuch print nahi hota / khali nikalta hai", "Thermal roll ulta laga hai. Naakhun se ragar kar dekhein — jo taraf kaali ho woh bahar ki taraf honi chahiye."],
-  ["Print bohat chhota ya kata hua hai", "Print dialog mein Paper size = 80mm (ya 58mm) aur Margins = None rakhein. Yahan template mein bhi wahi size chunein."],
-  ["Upar URL aur date print ho rahi hai", "Print dialog → More settings → “Headers and footers” band karein."],
-  ["Printer list mein nahi aata", "Bluetooth dobara pair karein, RawBT khol kar “Test” dabayein, tablet restart karein."],
-  ["Har slip alag nahi katti", "Print All har slip alag job bhejta hai; printer ki auto-cut setting on karein."],
+  ["Paper comes out blank", "The thermal roll is upside down. Scratch the paper with a fingernail. The side that turns black must face outward."],
+  ["Print is too small or cut off", "In the print dialog, set Paper size to 80mm (or 58mm) and Margins to None. Pick the same size in Invoice Templates."],
+  ["A web address and date print at the top", "In the print dialog, open More settings and turn off “Headers and footers”."],
+  ["Printer does not show in the list", "Pair Bluetooth again, open RawBT and press “Test”, then restart the tablet."],
+  ["Slips are not cut separately", "Print All sends each slip as its own job. Turn on auto cut in the printer settings."],
 ];
 
 function PrinterSetup() {
@@ -37,11 +37,11 @@ function PrinterSetup() {
   return (
     <div className="min-h-0 w-full flex-1 overflow-y-auto p-4 md:p-6">
       <div className="mx-auto max-w-4xl space-y-4">
-        <div><h2 className="font-display text-xl font-semibold">Printer Setup</h2><p className="text-xs text-muted-foreground">Android tablet ke Chrome browser se thermal printer chalane ka tareeqa aur test print.</p></div>
+        <div><h2 className="font-display text-xl font-semibold">Printer Setup</h2><p className="text-xs text-muted-foreground">How to use a thermal printer from Chrome on an Android tablet, plus a test print.</p></div>
 
         <section className="rounded-xl border bg-card p-4">
           <h3 className="flex items-center gap-2 text-sm font-semibold"><Printer className="size-4 text-primary" /> Test print</h3>
-          <p className="mt-1 text-[11px] text-muted-foreground">Ek namoona customer receipt print hoga. Jo size sahi aaye, wahi <Link to="/invoice-templates" className="font-semibold text-primary underline">Invoice Templates</Link> mein chunein. Abhi chuna hua: {invoiceSettings.paper}mm.</p>
+          <p className="mt-1 text-[11px] text-muted-foreground">A sample customer receipt will print. Whichever size prints correctly, select it in <Link to="/invoice-templates" className="font-semibold text-primary underline">Invoice Templates</Link>. Current size: {invoiceSettings.paper}mm.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button onClick={() => setPaper("80")}><Printer /> Test Print 80mm</Button>
             <Button variant="outline" onClick={() => setPaper("58")}><Printer /> Test Print 58mm</Button>
@@ -49,12 +49,12 @@ function PrinterSetup() {
         </section>
 
         <section className="rounded-xl border bg-card p-4">
-          <h3 className="text-sm font-semibold">Paper size kya hai?</h3>
+          <h3 className="text-sm font-semibold">What is paper size?</h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 text-xs">
-            <div className="rounded-lg bg-muted p-3"><p className="font-semibold">80mm — Standard (recommended)</p><p className="mt-1 text-muted-foreground">Roll ki chaurai ~8cm. Ek line mein ~48 harf. Restaurant counter printers mein yahi hota hai. Logo, items aur total khul kar aate hain.</p></div>
-            <div className="rounded-lg bg-muted p-3"><p className="font-semibold">58mm — Chhota</p><p className="mt-1 text-muted-foreground">Roll ki chaurai ~5.8cm. Ek line mein ~32 harf. Chhote / portable Bluetooth printers mein. Text chhota aata hai.</p></div>
+            <div className="rounded-lg bg-muted p-3"><p className="font-semibold">80mm Standard (recommended)</p><p className="mt-1 text-muted-foreground">Roll width is about 8cm, around 48 letters per line. Used by most restaurant counter printers. Logo, items and total print clearly.</p></div>
+            <div className="rounded-lg bg-muted p-3"><p className="font-semibold">58mm Small</p><p className="mt-1 text-muted-foreground">Roll width is about 5.8cm, around 32 letters per line. Used by small portable Bluetooth printers. Text prints smaller.</p></div>
           </div>
-          <p className="mt-2 text-[11px] text-muted-foreground">Pehchan: roll ko scale se naapein, ya printer ke dabbe/neeche lage sticker par “80mm” ya “58mm” likha hota hai.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">How to check: measure the roll with a ruler, or look for “80mm” or “58mm” on the printer box or bottom sticker.</p>
         </section>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -67,9 +67,9 @@ function PrinterSetup() {
         </div>
 
         <section className="rounded-xl border bg-card p-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold"><AlertTriangle className="size-4 text-primary" /> Masla aaye to</h3>
+          <h3 className="flex items-center gap-2 text-sm font-semibold"><AlertTriangle className="size-4 text-primary" /> Troubleshooting</h3>
           <div className="mt-3 divide-y text-xs">{problems.map(([p, f]) => <div key={p} className="py-2"><p className="font-semibold">{p}</p><p className="text-muted-foreground">{f}</p></div>)}</div>
-          <p className="mt-2 text-[11px] text-muted-foreground">Note: website browser ke print dialog se chhapti hai; printer ka driver/app (jaise RawBT) tablet par hona zaroori hai.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">Note: the app prints through the browser print dialog, so a printer app such as RawBT must be installed on the tablet.</p>
         </section>
       </div>
       {paper && createPortal(
