@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import JsBarcode from "jsbarcode";
 import { Button } from "@/components/ui/button";
-import badge from "@/assets/mimis-badge.png.asset.json";
+import badge from "@/assets/mimis-primary-logo.png.asset.json";
 import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 import { restaurantInfo } from "@/data/menuData";
 import { softwareCredit } from "@/data/softwareCredit";

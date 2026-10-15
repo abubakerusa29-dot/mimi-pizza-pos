@@ -8,8 +8,7 @@ import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
 import { softwareCredit } from "@/data/softwareCredit";
-import badge from "@/assets/mimis-badge.png.asset.json";
-import wordmark from "@/assets/mimis-wordmark.png.asset.json";
+import badge from "@/assets/mimis-primary-logo.png.asset.json";
 
 const navigation = [
   { to: "/", label: "Point of Sale", icon: UtensilsCrossed },
@@ -45,8 +44,8 @@ function Shell({ children }: { children: ReactNode }) {
           <Button variant="ghost" size="icon" onClick={() => setExpanded(!expanded)} aria-label={expanded ? "Collapse navigation" : "Expand navigation"} title={expanded ? "Collapse navigation" : "Expand navigation"}>
             {expanded ? <PanelLeftClose /> : <PanelLeftOpen />}
           </Button>
-          <img src={badge.url} alt="" className="h-10 w-10 shrink-0 object-contain" />
-           <div className="min-w-0"><h1><img src={wordmark.url} alt="Mimi’s Pizza" className="h-5 w-auto max-w-[130px] object-contain sm:h-6 sm:max-w-none" /></h1><p className="mt-0.5 hidden sm:flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Take away & free home delivery</p></div>
+          <img src={badge.url} alt="Mimi’s Pizza logo" className="h-[52px] w-[52px] shrink-0 object-contain" />
+           <div className="min-w-0"><h1 className="truncate text-base font-bold leading-tight sm:text-lg">Mimi’s Pizza</h1><p className="mt-0.5 hidden sm:flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Take away & free home delivery</p></div>
         </div>
         <div className="flex items-center gap-2"><span className="hidden text-xs font-medium text-muted-foreground lg:block">{restaurant.phone}</span>{ownerPinSet && user && <><span className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium"><ShieldCheck className="size-3.5 text-primary" />{user.name}</span><Button variant="ghost" size="icon" onClick={signOut} aria-label="Lock and switch user" title="Lock and switch user"><LogOut /></Button></>}</div>
       </header>
