@@ -40,9 +40,9 @@ export const riderTemplates: { id: RiderTemplateId; name: string; note: string }
 ];
 
 export const defaultInvoiceSettings: InvoiceSettings = {
-  template: "classic",
+  template: "premium",
   kitchenTemplate: "standard",
-  riderTemplate: "standard",
+  riderTemplate: "cash",
   paper: "80",
   logo: "both",
   customLogo: "",
