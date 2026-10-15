@@ -1,5 +1,5 @@
 import { useOrder } from "./OrderContext";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, CheckCircle2, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import JsBarcode from "jsbarcode";
@@ -30,6 +30,8 @@ interface Props {
   table: string;
   date: Date;
   onBack: () => void;
+  /** Called when the cashier confirms all slips printed; starts the next order. */
+  onDone?: () => void;
   /** Reprints pass stored customer details; live orders read them from the current order. */
   phone?: string;
   address?: string;
@@ -268,7 +270,7 @@ export function PaperPrintStyle({ paper }: { paper: "80" | "58" }) {
   return <style>{`@media print { @page { size: ${paper}mm auto; margin: 0; } html, body { width: ${paper}mm !important; } #print-root .thermal-receipt { width: ${paper}mm !important; max-width: ${paper}mm !important; } }`}</style>;
 }
 
-export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, phone: phoneProp, address: addressProp, rider: riderProp, area: areaProp }: Props) {
+export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, onDone, phone: phoneProp, address: addressProp, rider: riderProp, area: areaProp }: Props) {
   const order = useOrder();
   const phone = phoneProp ?? order.phone;
   const address = addressProp ?? order.address;
@@ -279,7 +281,8 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const sentJob = useRef("");
   const printRun = useRef(0);
   const openedAt = useRef(0);
-  useEffect(() => { if (open) { setView("all"); openedAt.current = Date.now(); } }, [open]);
+  const [printed, setPrinted] = useState(false);
+  useEffect(() => { if (open) { setView("all"); setPrinted(false); openedAt.current = Date.now(); } }, [open]);
   useEffect(() => {
     if (!open) return;
     const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onBack(); };
@@ -301,7 +304,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         setTimeout(() => {
           if (cancelled) return;
           if (jobIndex + 1 < printing.length) setJobIndex(jobIndex + 1);
-          else { setPrinting(null); setJobIndex(0); }
+          else { setPrinting(null); setJobIndex(0); setPrinted(true); }
         }, 400);
       });
     });
@@ -313,6 +316,12 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const area = areaProp ?? order.area;
   const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant, invoice: order.invoiceSettings };
   const paper = order.invoiceSettings.paper;
+  const startPrint = (kinds: SlipKind[]) => {
+    if (printing || Date.now() - openedAt.current < 500) return;
+    printRun.current++;
+    order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined });
+    setJobIndex(0); setPrinting(kinds);
+  };
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
@@ -329,10 +338,19 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
-          <Button autoFocus onClick={() => { if (printing || Date.now() - openedAt.current < 500) return; printRun.current++; order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined }); setJobIndex(0); setPrinting(shown); }} className="h-10 flex-[2] text-xs font-bold">
+          <Button autoFocus onClick={() => startPrint(shown)} className="h-10 flex-[2] text-xs font-bold">
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
+        {printed && !printing && (
+          <div className="mt-3 rounded-md border border-primary/40 bg-accent p-3">
+            <p className="text-xs font-semibold">Did every slip print? If one was missed or cancelled, print it again:</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {available.map((k) => <Button key={k} size="sm" variant="outline" className="h-8 text-[11px]" onClick={() => startPrint([k])}><RotateCcw className="h-3.5 w-3.5" /> {slipLabels[k]}</Button>)}
+            </div>
+            {onDone && <Button className="mt-2 h-10 w-full text-xs font-bold" onClick={onDone}><CheckCircle2 className="h-4 w-4" /> All printed. Start next order</Button>}
+          </div>
+        )}
       </div>
       {(() => {
         // Customer receipt is long; stack the short kitchen and rider slips in a column beside it.

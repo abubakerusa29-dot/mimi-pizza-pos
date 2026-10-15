@@ -55,8 +55,8 @@ function POS() {
     if (lines.length && !window.confirm("Clear all items from this order?")) return;
     setLines([]);
   };
-  const newOrder = () => {
-    if (lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
+  const newOrder = (skipConfirm?: unknown) => {
+    if (skipConfirm !== true && lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
     setLines([]);
     setTable("");
     setPhone("");
@@ -147,7 +147,7 @@ function POS() {
           setModal(null);
         }}
       />
-      <ReceiptPreview open={!!receiptAt} date={receiptAt ?? new Date()} lines={lines} orderNo={orderNo} orderType={orderType} table={table} onBack={() => setReceiptAt(null)} />
+      <ReceiptPreview open={!!receiptAt} date={receiptAt ?? new Date()} lines={lines} orderNo={orderNo} orderType={orderType} table={table} onBack={() => setReceiptAt(null)} onDone={() => { setReceiptAt(null); newOrder(true); }} />
     </div>
   );
 }
