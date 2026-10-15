@@ -34,7 +34,8 @@ function Sales() {
             <label className="text-xs font-medium">From<input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 block rounded-md border bg-background px-2 py-1.5 text-sm" /></label>
             <label className="text-xs font-medium">To<input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 block rounded-md border bg-background px-2 py-1.5 text-sm" /></label>
             <Button variant="outline" onClick={() => { setFrom(""); setTo(""); }}>All time</Button>
-            <Button onClick={() => window.print()}>Print report</Button>
+            <Button variant="outline" onClick={() => window.print()}>Save as PDF</Button>
+            <Button onClick={() => saveWord(s, from, to)}>Save as Word</Button>
           </div>
         </div>
 
