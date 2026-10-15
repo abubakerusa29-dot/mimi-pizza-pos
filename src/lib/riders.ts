@@ -18,3 +18,9 @@ export function riderSummaries(records: DeliveryRecord[]): RiderSummary[] {
   }
   return [...map.values()];
 }
+
+/** Delivery invoices still waiting for a rider (no rider chosen yet), filtered by invoice no, phone or address. */
+export function pendingDispatch<T extends { orderNo: number; orderType: string; rider?: string | undefined; phone: string; address: string; area?: string | undefined }>(invoices: T[], query = ""): T[] {
+  const q = query.trim().toLowerCase().replace(/^#/, "");
+  return invoices.filter((i) => i.orderType === "Delivery" && !i.rider && (!q || `${i.orderNo} ${i.phone} ${i.address} ${i.area ?? ""}`.toLowerCase().includes(q)));
+}
