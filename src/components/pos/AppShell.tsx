@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight } from "lucide-react";
+import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings } from "lucide-react";
+import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
 import { softwareCredit } from "@/data/softwareCredit";
@@ -13,10 +14,12 @@ const navigation = [
   { to: "/riders", label: "Riders & Cash", icon: Bike },
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },
   { to: "/menu-growth", label: "Menu Management", icon: BookOpen },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [expanded, setExpanded] = useState(false);
+  const { restaurant } = useOrder();
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <header className="grid h-14 shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card px-3 sm:px-5">
@@ -27,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <img src={badge.url} alt="" className="h-10 w-10 shrink-0 object-contain" />
            <div className="min-w-0"><h1><img src={wordmark.url} alt="Mimi’s Pizza" className="h-5 w-auto max-w-[130px] object-contain sm:h-6 sm:max-w-none" /></h1><p className="mt-0.5 hidden sm:flex items-center gap-1 text-xs text-muted-foreground"><Bike className="h-3.5 w-3.5 shrink-0 text-primary" /> Take away & free home delivery</p></div>
         </div>
-        <span className="hidden text-xs font-medium text-muted-foreground sm:block">0312-4607733</span>
+        <span className="hidden text-xs font-medium text-muted-foreground sm:block">{restaurant.phone}</span>
       </header>
       <div className="relative flex min-h-0 flex-1">
         {expanded && <div className="absolute inset-0 z-30 bg-foreground/30 xl:hidden" onClick={() => setExpanded(false)} />}
