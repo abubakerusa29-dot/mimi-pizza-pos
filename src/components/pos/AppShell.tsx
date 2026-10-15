@@ -8,7 +8,7 @@ import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
 import { softwareCredit } from "@/data/softwareCredit";
-import badge from "@/assets/mimis-badge.png.asset.json";
+import badge from "@/assets/mimis-primary-logo.png.asset.json";
 import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 
 const navigation = [
