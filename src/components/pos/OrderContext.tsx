@@ -6,6 +6,7 @@ import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
 import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
 import { defaultInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
+import { emptyBackOffice, type BackOffice } from "@/lib/backOffice";
 import { defaultTables, type DiningTable } from "@/lib/tables";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
@@ -28,6 +29,7 @@ function useOrderState() {
   const [areaList, setAreaListState] = useState<string[]>(defaultAreas);
   const [invoiceSettings, setInvoiceSettingsState] = useState<InvoiceSettings>(defaultInvoiceSettings);
   const [tableList, setTableListState] = useState<DiningTable[]>(defaultTables);
+  const [backOffice, setBackOfficeState] = useState<BackOffice>(emptyBackOffice);
 
   // Load permanently saved data once on startup.
   useEffect(() => {
@@ -46,13 +48,14 @@ function useOrderState() {
         setMenuOverridesState(saved.menuOverrides);
         setInvoiceSettingsState(saved.invoice);
         setTableListState(saved.tables);
+        setBackOfficeState(saved.backOffice);
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings; tables: DiningTable[] }>) =>
-    void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, tables: tableList, ...patch });
+  const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings; tables: DiningTable[]; backOffice: BackOffice }>) =>
+    void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, tables: tableList, backOffice, ...patch });
 
   /** Records (or updates) an invoice in history, keyed by order number, and saves it permanently. */
   const saveInvoice = (inv: Invoice) => {
@@ -103,7 +106,16 @@ function useOrderState() {
     saveSettings({ tables: v });
   };
 
-  return { tableList, setTableList, invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  /** Customers, packing stock, expenses and team; saved with settings. */
+  const updateBackOffice = (patch: Partial<BackOffice>) => {
+    setBackOfficeState((prev) => {
+      const v = { ...prev, ...patch };
+      saveSettings({ backOffice: v });
+      return v;
+    });
+  };
+
+  return { backOffice, updateBackOffice, tableList, setTableList, invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }

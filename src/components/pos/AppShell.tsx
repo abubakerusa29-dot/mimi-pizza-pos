@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair } from "lucide-react";
+import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair, Contact, Boxes, Wallet, FileBarChart, Users } from "lucide-react";
 import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
@@ -15,6 +15,11 @@ const navigation = [
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },
   { to: "/menu-growth", label: "Menu Management", icon: BookOpen },
   { to: "/tables", label: "Table Management", icon: Armchair },
+  { to: "/customers", label: "Customers", icon: Contact },
+  { to: "/inventory", label: "Inventory", icon: Boxes },
+  { to: "/expenses", label: "Expenses", icon: Wallet },
+  { to: "/reports", label: "Reports", icon: FileBarChart },
+  { to: "/team", label: "Team Members", icon: Users },
   { to: "/invoice-templates", label: "Invoice Templates", icon: ReceiptText },
   { to: "/printers", label: "Printer Setup", icon: Printer },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -46,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               </Button>
             ))}
-            <p className={`px-3 pb-1 pt-4 text-[10px] font-semibold uppercase text-muted-foreground ${expanded ? "" : "sr-only"}`}>Coming soon</p>
+            {futureFeatures.length > 0 && <p className={`px-3 pb-1 pt-4 text-[10px] font-semibold uppercase text-muted-foreground ${expanded ? "" : "sr-only"}`}>Coming soon</p>}
             {futureFeatures.map(({ slug, label, icon: Icon }) => (
               <Button key={slug} asChild variant="ghost" className={`h-10 w-full rounded-lg ${expanded ? "justify-start px-3" : "px-0"}`}>
                 <Link to="/features/$slug" params={{ slug }} activeProps={{ className: "bg-sidebar-accent text-primary hover:bg-sidebar-accent" }} inactiveProps={{ className: "text-muted-foreground" }} onClick={() => { if (window.innerWidth < 1280) setExpanded(false); }} title={label} aria-label={label}>
