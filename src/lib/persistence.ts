@@ -62,7 +62,7 @@ export async function loadSettings(): Promise<PersistedSettings | null> {
     restaurant: data.restaurant as PersistedSettings["restaurant"],
     riders: data.riders as string[],
     areas: data.areas as string[],
-    menuOverrides: data.menu_overrides as MenuOverrides,
+    menuOverrides: data.menu_overrides as unknown as MenuOverrides,
   };
 }
 
@@ -72,7 +72,7 @@ export async function persistSettings(s: PersistedSettings) {
     restaurant: s.restaurant,
     riders: s.riders,
     areas: s.areas,
-    menu_overrides: s.menuOverrides,
+    menu_overrides: JSON.parse(JSON.stringify(s.menuOverrides)),
     updated_at: new Date().toISOString(),
   });
   if (error) logErr("settings", error);
