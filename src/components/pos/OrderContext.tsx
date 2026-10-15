@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, type ReactNode, type Context } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode, type Context } from "react";
 import type { CartLine } from "@/lib/cart";
 import type { DeliveryStatus } from "@/lib/riders";
 import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
 import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
+import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistSettings } from "@/lib/persistence";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -17,18 +18,65 @@ function useOrderState() {
   const [rider, setRider] = useState("");
   const [area, setArea] = useState("");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  /** Records (or updates) an invoice in this session's history, keyed by order number. */
-  const saveInvoice = (inv: Invoice) => setInvoices((list) => {
-    const prev = list.find((i) => i.orderNo === inv.orderNo);
-    return [{ ...inv, status: prev?.status ?? inv.status }, ...list.filter((i) => i.orderNo !== inv.orderNo)];
-  });
-  const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
-  const [menuOverrides, setMenuOverrides] = useState<MenuOverrides>(emptyOverrides);
-  /** Restaurant profile printed on receipts; editable from Settings (session only). */
-  const [restaurant, setRestaurant] = useState(restaurantInfo);
+  const [menuOverrides, setMenuOverridesState] = useState<MenuOverrides>(emptyOverrides);
+  /** Restaurant profile printed on receipts; editable from Settings. */
+  const [restaurant, setRestaurantState] = useState(restaurantInfo);
   /** Rider names and delivery areas; the owner manages these from Settings. */
-  const [riderList, setRiderList] = useState<string[]>(defaultRiders);
-  const [areaList, setAreaList] = useState<string[]>(defaultAreas);
+  const [riderList, setRiderListState] = useState<string[]>(defaultRiders);
+  const [areaList, setAreaListState] = useState<string[]>(defaultAreas);
+
+  // Load permanently saved data once on startup.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const [savedInvoices, saved] = await Promise.all([loadInvoices(), loadSettings()]);
+      if (cancelled) return;
+      if (savedInvoices.length) {
+        setInvoices(savedInvoices);
+        setOrderNo((n) => Math.max(n, Math.max(...savedInvoices.map((i) => i.orderNo)) + 1));
+      }
+      if (saved) {
+        setRestaurantState(saved.restaurant);
+        setRiderListState(saved.riders);
+        setAreaListState(saved.areas);
+        setMenuOverridesState(saved.menuOverrides);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const saveSettings = (next: { restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides }) =>
+    void persistSettings(next);
+
+  /** Records (or updates) an invoice in history, keyed by order number, and saves it permanently. */
+  const saveInvoice = (inv: Invoice) => {
+    setInvoices((list) => {
+      const prev = list.find((i) => i.orderNo === inv.orderNo);
+      return [{ ...inv, status: prev?.status ?? inv.status }, ...list.filter((i) => i.orderNo !== inv.orderNo)];
+    });
+    void persistInvoice(inv);
+  };
+  const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => {
+    setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
+    void persistInvoiceStatus(orderNo, status);
+  };
+  const setMenuOverrides = (next: MenuOverrides) => {
+    setMenuOverridesState(next);
+    saveSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides: next });
+  };
+  const setRestaurant = (next: typeof restaurantInfo) => {
+    setRestaurantState(next);
+    saveSettings({ restaurant: next, riders: riderList, areas: areaList, menuOverrides });
+  };
+  const setRiderList = (next: string[]) => {
+    setRiderListState(next);
+    saveSettings({ restaurant, riders: next, areas: areaList, menuOverrides });
+  };
+  const setAreaList = (next: string[]) => {
+    setAreaListState(next);
+    saveSettings({ restaurant, riders: riderList, areas: next, menuOverrides });
+  };
+
   return { menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
