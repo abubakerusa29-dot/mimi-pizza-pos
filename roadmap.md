@@ -12,7 +12,7 @@
 - [x] Phase 3 riders, areas & cash settlement (session only)
 - [x] Phase 4 Sales analytics (session data)
 - [ ] Phase 5 Menu management
-- [ ] Phase 6 Settings
+- [x] Phase 6 Settings (restaurant profile, riders & areas — session only)
 - [ ] Phase 7 Cloud persistence
 - [ ] Bulk rider assignment: select many invoices + rider, submit
 - [ ] Real rider names & areas (client will add manually)

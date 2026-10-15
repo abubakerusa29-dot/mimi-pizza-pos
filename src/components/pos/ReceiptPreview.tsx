@@ -8,6 +8,8 @@ import badge from "@/assets/mimis-badge.png.asset.json";
 import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 import { restaurantInfo } from "@/data/menuData";
 import { softwareCredit } from "@/data/softwareCredit";
+
+type RestaurantInfo = typeof restaurantInfo;
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 import type { OrderType } from "./CartPanel";
 
@@ -34,7 +36,7 @@ interface Props {
   area?: string;
 }
 
-interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string; rider?: string; area?: string }
+interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string; rider?: string; area?: string; restaurant: RestaurantInfo }
 
 function Credit() {
   return (
@@ -69,7 +71,7 @@ function SlipBanner({ title, orderType, table }: { title: string; orderType: Ord
   );
 }
 
-function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, rider, area }: SlipProps) {
+function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant }: SlipProps) {
   const { subtotal, total, items } = cartTotals(lines);
   const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const meta = (
@@ -138,8 +140,8 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, ri
     <div className="thermal-receipt">
       <div className="text-center">
         <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
-        <p className="text-[10px] leading-snug">{restaurantInfo.address}</p>
-        <p className="text-[10px]">Ph: {restaurantInfo.phone}</p>
+        <p className="text-[10px] leading-snug">{restaurant.address}</p>
+        <p className="text-[10px]">Ph: {restaurant.phone}</p>
         </div>
       <SlipBanner title="CUSTOMER RECEIPT" orderType={orderType} table={table} />
       <div className="receipt-divider" />
@@ -218,7 +220,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const shown = view === "all" ? available : available.filter((k) => k === view);
   const rider = riderProp ?? order.rider;
   const area = areaProp ?? order.area;
-  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area };
+  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant };
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">

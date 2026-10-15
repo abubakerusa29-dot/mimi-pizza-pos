@@ -1,10 +1,9 @@
-import { Settings, Users, ReceiptText, ChefHat, Contact, Bike, Boxes, Wallet, BadgePercent, Armchair, FileBarChart, Printer, type LucideIcon } from "lucide-react";
+import { Users, ReceiptText, ChefHat, Contact, Bike, Boxes, Wallet, BadgePercent, Armchair, FileBarChart, Printer, type LucideIcon } from "lucide-react";
 
 export type FutureFeature = { slug: string; label: string; icon: LucideIcon; summary: string; actions: string[] };
 
 /** Upcoming modules shown in the sidebar. */
 export const futureFeatures: FutureFeature[] = [
-  { slug: "settings", label: "Settings", icon: Settings, summary: "Restaurant name, address, phone, tax and receipt preferences.", actions: ["Business profile", "Tax & charges", "Receipt footer", "Language"] },
   { slug: "team", label: "Team Members", icon: Users, summary: "Add cashiers, managers and riders with their own access.", actions: ["Add team member", "Roles & permissions", "Shift timings", "PIN login"] },
   { slug: "invoice-templates", label: "Invoice Templates", icon: ReceiptText, summary: "Change the look of the printed bill.", actions: ["Choose template", "Logo & header", "Footer message", "Paper size 58/80mm"] },
   { slug: "kitchen", label: "Kitchen Display", icon: ChefHat, summary: "Send orders straight to the kitchen screen.", actions: ["Live order queue", "Mark as ready", "Kitchen slip print"] },

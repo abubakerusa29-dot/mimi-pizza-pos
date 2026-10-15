@@ -2,6 +2,8 @@ import { createContext, useContext, useState, type ReactNode, type Context } fro
 import type { CartLine } from "@/lib/cart";
 import type { DeliveryStatus } from "@/lib/riders";
 import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
+import { restaurantInfo } from "@/data/menuData";
+import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -22,7 +24,12 @@ function useOrderState() {
   });
   const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
   const [menuOverrides, setMenuOverrides] = useState<MenuOverrides>(emptyOverrides);
-  return { menuOverrides, setMenuOverrides, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  /** Restaurant profile printed on receipts; editable from Settings (session only). */
+  const [restaurant, setRestaurant] = useState(restaurantInfo);
+  /** Rider names and delivery areas; the owner manages these from Settings. */
+  const [riderList, setRiderList] = useState<string[]>(defaultRiders);
+  const [areaList, setAreaList] = useState<string[]>(defaultAreas);
+  return { menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }
