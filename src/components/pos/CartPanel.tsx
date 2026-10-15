@@ -1,4 +1,3 @@
-import { riders, deliveryAreas } from "@/data/riders";
 import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,7 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
-  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea } = useOrder();
+  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList } = useOrder();
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">

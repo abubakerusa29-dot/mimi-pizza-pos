@@ -33,7 +33,7 @@ function Settings() {
 
   const nameList = (title: string, icon: typeof Bike, list: string[], set: (v: string[]) => void, value: string, setValue: (v: string) => void, placeholder: string) => (
     <section className="rounded-xl border bg-card p-4">
-      <h3 className="flex items-center gap-2 text-sm font-semibold">{icon && <Bike className="hidden" />}{(() => { const I = icon; return <I className="size-4 text-primary" />; })()}{title}</h3>
+      <h3 className="flex items-center gap-2 text-sm font-semibold">{(() => { const I = icon; return <I className="size-4 text-primary" />; })()}{title}</h3>
       <div className="mt-3 flex flex-wrap gap-2">
         {list.map((r) => (
           <span key={r} className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold">
