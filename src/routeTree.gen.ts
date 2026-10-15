@@ -17,6 +17,7 @@ import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TablesRouteImport } from './routes/tables'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TablesRoute = TablesRouteImport.update({
+  id: '/tables',
+  path: '/tables',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   id: '/features/$slug',
   path: '/features/$slug',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
+  '/tables': typeof TablesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
+  '/tables': typeof TablesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
+  '/tables': typeof TablesRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/riders'
     | '/sales'
     | '/settings'
+    | '/tables'
     | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/riders'
     | '/sales'
     | '/settings'
+    | '/tables'
     | '/features/$slug'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/riders'
     | '/sales'
     | '/settings'
+    | '/tables'
     | '/features/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   SettingsRoute: typeof SettingsRoute
+  TablesRoute: typeof TablesRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tables': {
+      id: '/tables'
+      path: '/tables'
+      fullPath: '/tables'
+      preLoaderRoute: typeof TablesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/features/$slug': {
       id: '/features/$slug'
       path: '/features/$slug'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   SettingsRoute: SettingsRoute,
+  TablesRoute: TablesRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
 }
 export const routeTree = rootRouteImport
