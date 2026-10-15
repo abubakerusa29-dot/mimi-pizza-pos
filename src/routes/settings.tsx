@@ -71,7 +71,7 @@ function Settings() {
       {nameList("Riders", Bike, riderList, setRiderList, newRider, setNewRider, "New rider name")}
       {nameList("Delivery areas", MapPin, areaList, setAreaList, newArea, setNewArea, "New area name")}
 
-      <p className="text-[11px] text-muted-foreground">Note: yeh settings page refresh par reset ho jati hain — permanent save Phase 7 mein aayega.</p>
+      <p className="text-[11px] text-muted-foreground">Note: yeh settings ab permanently save hoti hain — page refresh par bhi barkarar rehti hain.</p>
     </div>
   );
 }
