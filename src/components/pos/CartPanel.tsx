@@ -1,3 +1,4 @@
+import { findCustomer } from "@/lib/backOffice";
 import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
-  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList, tableList, invoices } = useOrder();
+  const { backOffice, phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList, tableList, invoices } = useOrder();
   const occupied = occupiedTables(invoices);
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
@@ -87,7 +88,9 @@ export function CartPanel(p: Props) {
         )}
         {p.orderType === "Delivery" && (
           <div className="mt-2 grid gap-2">
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+            <input value={phone} onChange={(e) => { setPhone(e.target.value); const c = findCustomer(backOffice.customers, e.target.value); if (c && !address.trim()) setAddress(c.address); }} list="saved-customer-phones" placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+            <datalist id="saved-customer-phones">{backOffice.customers.map((c) => <option key={c.phone} value={c.phone}>{c.name}</option>)}</datalist>
+            {findCustomer(backOffice.customers, phone) && <p className="-mt-1 text-[11px] font-medium text-primary">Saved customer: {findCustomer(backOffice.customers, phone)!.name || "Regular"}</p>}
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address / location" rows={2} aria-label="Delivery address" className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
             <div className="grid grid-cols-2 gap-2">
               <select value={rider} onChange={(e) => setRider(e.target.value)} aria-label="Assign rider" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Assign rider</option>{riderList.map((r) => <option key={r}>{r}</option>)}</select>

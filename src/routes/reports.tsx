@@ -51,8 +51,8 @@ function ReportsPage() {
             <ul className="mt-2 space-y-1 text-sm">{Object.entries(p.byType).sort((a, b) => b[1] - a[1]).map(([t, v]) => <li key={t} className="flex justify-between"><span>{t}</span><b>{formatRs(v)}</b></li>)}</ul>}
         </section>
         <section className="rounded-xl border bg-card p-4"><h3 className="text-sm font-semibold">Best sellers</h3>
-          {s.bestSellers.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">No sales in these dates.</p> :
-            <ul className="mt-2 space-y-1 text-sm">{s.bestSellers.slice(0, 8).map((b) => <li key={b.name} className="flex justify-between"><span>{b.name} × {b.qty}</span><b>{formatRs(b.revenue)}</b></li>)}</ul>}
+          {s.topItems.length === 0 ? <p className="mt-2 text-sm text-muted-foreground">No sales in these dates.</p> :
+            <ul className="mt-2 space-y-1 text-sm">{s.topItems.slice(0, 8).map((b) => <li key={b.name} className="flex justify-between"><span>{b.name} × {b.qty}</span><b>{formatRs(b.revenue)}</b></li>)}</ul>}
         </section>
         <section className="rounded-xl border bg-card p-4 md:col-span-2"><h3 className="text-sm font-semibold">Packing stock</h3>
           <p className="mt-2 text-sm">{backOffice.stock.filter(isLowStock).length} of {backOffice.stock.length} items are low on stock.</p>

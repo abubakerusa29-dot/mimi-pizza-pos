@@ -6,7 +6,7 @@ import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
 import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
 import { defaultInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
-import { emptyBackOffice, type BackOffice } from "@/lib/backOffice";
+import { emptyBackOffice, findCustomer, upsertCustomer, type BackOffice } from "@/lib/backOffice";
 import { defaultTables, type DiningTable } from "@/lib/tables";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
@@ -57,6 +57,15 @@ function useOrderState() {
   const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings; tables: DiningTable[]; backOffice: BackOffice }>) =>
     void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, tables: tableList, backOffice, ...patch });
 
+  /** Customers, packing stock, expenses and team; saved with settings. */
+  const updateBackOffice = (patch: Partial<BackOffice>) => {
+    setBackOfficeState((prev) => {
+      const v = { ...prev, ...patch };
+      saveSettings({ backOffice: v });
+      return v;
+    });
+  };
+
   /** Records (or updates) an invoice in history, keyed by order number, and saves it permanently. */
   const saveInvoice = (inv: Invoice) => {
     setInvoices((list) => {
@@ -64,6 +73,13 @@ function useOrderState() {
       return [{ ...inv, status: prev?.status ?? inv.status }, ...list.filter((i) => i.orderNo !== inv.orderNo)];
     });
     void persistInvoice(inv);
+    // Remember delivery customers so their address fills in next time.
+    if (inv.orderType === "Delivery" && inv.phone.replace(/\D/g, "").length >= 7) {
+      const known = findCustomer(backOffice.customers, inv.phone);
+      if (!known || (inv.address && known.address !== inv.address)) {
+        updateBackOffice({ customers: upsertCustomer(backOffice.customers, { name: known?.name ?? "", notes: known?.notes ?? "", phone: inv.phone, address: inv.address || known?.address || "" }) });
+      }
+    }
   };
   const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => {
     setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
@@ -104,15 +120,6 @@ function useOrderState() {
   const setTableList = (v: DiningTable[]) => {
     setTableListState(v);
     saveSettings({ tables: v });
-  };
-
-  /** Customers, packing stock, expenses and team; saved with settings. */
-  const updateBackOffice = (patch: Partial<BackOffice>) => {
-    setBackOfficeState((prev) => {
-      const v = { ...prev, ...patch };
-      saveSettings({ backOffice: v });
-      return v;
-    });
   };
 
   return { backOffice, updateBackOffice, tableList, setTableList, invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
