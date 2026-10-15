@@ -41,7 +41,7 @@ function Settings() {
             <button onClick={() => set(list.filter((x) => x !== r))} aria-label={`Remove ${r}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-3" /></button>
           </span>
         ))}
-        {!list.length && <p className="text-xs text-muted-foreground">List empty — add at least one.</p>}
+        {!list.length && <p className="text-xs text-muted-foreground">List is empty. Add at least one.</p>}
       </div>
       <div className="mt-3 flex gap-2">
         <Input value={value} onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addTo(list, set, value, () => setValue(""))} placeholder={placeholder} className="h-9 text-sm" aria-label={placeholder} />
@@ -59,7 +59,7 @@ function Settings() {
 
       <section className="rounded-xl border bg-card p-4">
         <h3 className="flex items-center gap-2 text-sm font-semibold"><Store className="size-4 text-primary" /> Restaurant profile</h3>
-        <p className="mt-1 text-[11px] text-muted-foreground">Yeh details customer receipt ke top par aati hain.</p>
+        <p className="mt-1 text-[11px] text-muted-foreground">These details print at the top of the customer receipt.</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {field("address", "Address")}
           {field("phone", "Phone")}
@@ -71,7 +71,7 @@ function Settings() {
       {nameList("Riders", Bike, riderList, setRiderList, newRider, setNewRider, "New rider name")}
       {nameList("Delivery areas", MapPin, areaList, setAreaList, newArea, setNewArea, "New area name")}
 
-      <p className="text-[11px] text-muted-foreground">Note: yeh settings ab permanently save hoti hain — page refresh par bhi barkarar rehti hain.</p>
+      <p className="text-[11px] text-muted-foreground">Note: these settings are saved permanently and stay after a page refresh.</p>
     </div>
   );
 }

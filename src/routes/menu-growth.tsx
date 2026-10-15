@@ -85,9 +85,9 @@ function MenuManagement() {
 
   const save = () => {
     const sizes = form.category === "pizza" ? SIZE_NAMES.filter((n) => sizeRows[n]!.on && Number(sizeRows[n]!.price) > 0).map((n) => `${n}:${sizeRows[n]!.price}`).join(", ") : "";
-    if (form.category === "pizza" && !sizes) { setErr("Kam az kam ek available size ki price likhein."); return; }
+    if (form.category === "pizza" && !sizes) { setErr("Enter a price for at least one available size."); return; }
     const item = makeCustomItem({ ...form, sizes, price: form.category === "pizza" ? "" : form.price }, `custom-${Date.now().toString(36)}`);
-    if (!item) { setErr("Naam aur price zaroori hain."); return; }
+    if (!item) { setErr("Name and price are required."); return; }
     setMenuOverrides((m) => ({ ...m, custom: [...(m.custom ?? []), item], images: photo ? { ...(m.images ?? {}), [item.id]: photo } : (m.images ?? {}) }));
     setForm(blank); setSizeRows(blankSizes()); setPhoto(""); setErr(""); setAdding(false);
   };
@@ -133,7 +133,7 @@ function MenuManagement() {
             <label className="grid gap-1 text-xs font-medium text-muted-foreground sm:col-span-2">Short description / included items<textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} placeholder={form.category === "deals" ? "Add items above or type them here" : "e.g. Chicken, cheese, special sauce"} className="rounded-md border bg-background px-3 py-2 text-sm text-foreground" /></label>
             {form.category === "pizza" ? (
               <div className="space-y-2 sm:col-span-2">
-                <p className="text-xs font-medium text-muted-foreground">Sizes aur prices — jo size nahi banta usay Off kar dein</p>
+                <p className="text-xs font-medium text-muted-foreground">Sizes and prices. Turn Off any size you do not make.</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {SIZE_NAMES.map((n) => (
                     <div key={n} className={`flex items-center gap-2 rounded-md border p-2 ${sizeRows[n]!.on ? "" : "opacity-50"}`}>
@@ -174,7 +174,7 @@ function MenuManagement() {
                     <Input value={part.q} onChange={(e) => setPart({ ...part, q: e.target.value })} placeholder="Type a name to search..." className="h-8 text-sm" />
                     <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                       {partOptions.map((p) => <button type="button" key={p.id} onClick={() => setPart({ ...part, pick: p.id })} className={`rounded-full border px-2.5 py-1 text-xs ${part.pick === p.id ? "border-primary bg-primary text-primary-foreground" : "bg-background"}`}>{p.name}</button>)}
-                      {!partOptions.length && <span className="text-xs text-muted-foreground">Koi item nahi mila.</span>}
+                      {!partOptions.length && <span className="text-xs text-muted-foreground">No item found.</span>}
                     </div>
                   </div>
                 )}
@@ -185,7 +185,7 @@ function MenuManagement() {
             <div className="grid size-20 place-items-center overflow-hidden rounded-md border bg-background">{photo ? <img src={photo} alt="Preview" className="h-full w-full object-contain" /> : <ImagePlus className="text-muted-foreground" />}</div>
             <div className="min-w-[200px] flex-1 space-y-1.5">
               <p className="text-xs font-semibold">Product photo</p>
-              <p className="text-[11px] text-muted-foreground">⚠️ Photo ka background <b>white (safaid)</b> hona chahiye — sirf product nazar aaye, square photo behtar hai. Photo generate karwate waqt bhi "on a plain white background" likhein.</p>
+              <p className="text-[11px] text-muted-foreground">⚠️ The photo background must be <b>white</b> (safaid) so only the product shows. A square photo works best. When generating a photo, add "on a plain white background".</p>
               <input type="file" accept="image/*" onChange={async (e) => { const f = e.target.files?.[0]; if (f) setPhoto(await compress(f)); }} className="text-xs" aria-label="Upload product photo" />
             </div>
           </div>
@@ -224,7 +224,7 @@ function MenuManagement() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{del?.step === 2 ? "Are you sure you want to delete this regular item?" : `Delete "${del?.name}"?`}</AlertDialogTitle>
-            <AlertDialogDescription>{del?.step === 2 ? "Yeh item restaurant ke printed menu mein hai. Delete ke baad POS screen se hamesha ke liye hat jayega." : "Yeh item menu se hat jayega. Sirf chhupana ho to Available switch Off kar dein."}</AlertDialogDescription>
+            <AlertDialogDescription>{del?.step === 2 ? "This item is on the printed menu. After deleting, it will be removed from the POS screen for good." : "This item will be removed from the menu. To only hide it, turn Off the Available switch."}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
