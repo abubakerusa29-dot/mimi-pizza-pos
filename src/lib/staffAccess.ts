@@ -17,9 +17,10 @@ export type AccessKey = (typeof accessAreas)[number]["key"];
 /** Pages only the owner can open, whatever the staff permissions. */
 export const ownerOnlyPaths = ["/team", "/settings"];
 
-export const rolePresets: Record<string, AccessKey[]> = {
+export const cashierAccess: AccessKey[] = ["pos", "invoices", "riders", "tables", "customers"];
+export const rolePresets: Record<string, AccessKey[] | undefined> = {
   Manager: ["pos", "invoices", "riders", "tables", "customers", "inventory", "menu", "setup"],
-  Cashier: ["pos", "invoices", "riders", "tables", "customers"],
+  Cashier: cashierAccess,
   "Order taker": ["pos", "tables"],
   Waiter: ["pos", "tables"],
   Rider: ["riders"],

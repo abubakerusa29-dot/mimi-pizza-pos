@@ -6,7 +6,7 @@ export interface StockItem { id: string; name: string; unit: string; qty: number
 export interface Expense { id: string; date: string; type: string; reason: string; amount: number }
 export interface TeamMember { id: string; name: string; role: string; phone: string; shift: string; active: boolean; pin?: string; permissions?: string[] }
 
-export interface BackOffice { customers: Customer[]; stock: StockItem[]; expenses: Expense[]; team: TeamMember[]; ownerPin?: string }
+export interface BackOffice { customers: Customer[]; stock: StockItem[]; expenses: Expense[]; team: TeamMember[]; ownerPin?: string | undefined }
 
 export const expenseTypes = ["Ingredients", "Packing material", "Salaries", "Rent", "Electricity & gas", "Fuel", "Repairs", "Other"];
 export const teamRoles = ["Owner", "Manager", "Cashier", "Chef", "Kitchen helper", "Rider", "Waiter"];

@@ -5,7 +5,7 @@ import { useOrder } from "@/components/pos/OrderContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { newId, type TeamMember } from "@/lib/backOffice";
-import { accessAreas, isValidPin, rolePresets, staffRoles, type AccessKey } from "@/lib/staffAccess";
+import { accessAreas, cashierAccess, isValidPin, rolePresets, staffRoles, type AccessKey } from "@/lib/staffAccess";
 
 export const Route = createFileRoute("/team")({
   head: () => ({ meta: [{ title: "Team Members | Mimi’s Pizza POS" }, { name: "description", content: "Create staff logins with PIN and choose what each person can use." }, { property: "og:title", content: "Team Members | Mimi’s Pizza POS" }, { property: "og:description", content: "Staff logins and access for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/team")({
 });
 
 type Form = { id?: string; name: string; role: string; phone: string; shift: string; pin: string; permissions: AccessKey[] };
-const blank = (): Form => ({ name: "", role: "Cashier", phone: "", shift: "", pin: "", permissions: [...rolePresets.Cashier] });
+const blank = (): Form => ({ name: "", role: "Cashier", phone: "", shift: "", pin: "", permissions: [...cashierAccess] });
 
 function TeamPage() {
   const { backOffice, updateBackOffice, riderList, setRiderList } = useOrder();

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { canOpen, rolePresets } from "@/lib/staffAccess";
+import { canOpen, cashierAccess } from "@/lib/staffAccess";
 
-const cashier = { id: "c", name: "Ali", isOwner: false, permissions: rolePresets.Cashier };
+const cashier = { id: "c", name: "Ali", isOwner: false, permissions: cashierAccess };
 describe("staff access", () => {
   it("cashier can take orders, assign riders and use tables", () => {
     expect(canOpen(cashier, "/")).toBe(true);
