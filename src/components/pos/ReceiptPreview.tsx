@@ -91,46 +91,63 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, ri
   );
 
   if (kind === "kitchen") {
+    const kt = invoice.kitchenTemplate;
+    const box = kt === "checklist" ? "[ ] " : "";
     return (
-      <div className="thermal-receipt slip-compact">
+      <div className={`thermal-receipt slip-compact ${kt === "large" ? "kitchen-large" : ""}`}>
         <SlipBanner title="KITCHEN SLIP" orderType={orderType} table={table} />
         {meta}
         <div className="receipt-divider" />
         {lines.map((l) => {
           const parts = dealParts(l);
           return (
-            <div key={l.key} className="mt-2">
-              <p className="text-[14px] font-bold">{l.qty} x {l.name}</p>
+            <div key={l.key} className={kt === "checklist" ? "mt-2 border-b border-dashed border-current pb-2" : "mt-2"}>
+              <p className={`${kt === "large" ? "text-[18px]" : "text-[14px]"} font-bold`}>{box}{l.qty} x {l.name}</p>
               {l.variant && <p className="pl-4 font-bold">{parts.length ? "Pizza flavour: " : ""}{l.variant}</p>}
-              {parts.map((p) => <p key={p} className="pl-4">- {p}</p>)}
+              {parts.map((p) => <p key={p} className="pl-4">{box || "- "}{p}</p>)}
               {l.addons?.length ? <p className="pl-4 font-bold">+ ADD: {l.addons.join(", ")}</p> : null}
             </div>
           );
         })}
         <div className="receipt-divider" />
         <p className="text-center font-bold">Total items: {items}</p>
+        {kt === "checklist" && <p className="mt-2">Checked by: ______________</p>}
         <p className="mt-2 text-center text-[9px] leading-tight">Software by {softwareCredit.name}</p>
       </div>
     );
   }
 
   if (kind === "rider") {
+    const rt = invoice.riderTemplate;
+    const items = rt !== "compact" && (
+      <>
+        <div className="receipt-divider" />
+        {lines.map((l) => (
+          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
+        ))}
+      </>
+    );
     return (
       <div className="thermal-receipt slip-compact">
         <p className="text-center text-sm font-bold">Mimi’s Pizza</p>
         <SlipBanner title="DELIVERY RIDER SLIP" orderType={orderType} table={table} />
         {meta}
-        {customerInfo}
+        {rt === "cash" ? (
+          <div className="receipt-box mt-2">
+            {phone && <p className="text-[14px] font-bold">{phone}</p>}
+            {address && <p className="break-words text-[14px] font-bold">{address}</p>}
+            {area && <p>Area: <span className="font-bold">{area}</span></p>}
+          </div>
+        ) : customerInfo}
+        {items}
         <div className="receipt-divider" />
-        {lines.map((l) => (
-          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
-        ))}
+        {rt === "cash"
+          ? <div className="receipt-invert my-1 px-2 py-2 text-center"><p className="text-[12px] font-bold">COLLECT CASH</p><p className="text-xl font-bold">{formatRs(total)}</p></div>
+          : <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>}
         <div className="receipt-divider" />
-        <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
-        <div className="receipt-divider" />
-        {area && <p className="mt-1">Area: <span className="font-bold">{area}</span></p>}
+        {rt !== "cash" && area && <p className="mt-1">Area: <span className="font-bold">{area}</span></p>}
         <p className="mt-3">Rider: {rider ? <span className="font-bold">{rider}</span> : "____________________"}</p>
-        <p className="mt-3">Received by: ______________</p>
+        {rt !== "compact" && <p className="mt-3">Received by: ______________</p>}
         <Credit />
       </div>
     );
