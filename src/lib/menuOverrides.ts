@@ -7,13 +7,15 @@ export interface MenuOverrides {
   custom?: Product[];
   /** Photos for owner-added items, kept separate from pricing data. */
   images?: Record<string, string>;
+  /** Built-in items the owner permanently deleted. */
+  deleted?: string[];
 }
 export const emptyOverrides: MenuOverrides = { prices: {}, hidden: [], custom: [], images: {} };
 
 export const priceKey = (id: string, size?: string) => (size ? `${id}|${size}` : id);
 
 /** Full menu = built-in items + owner-added items. */
-export const fullMenu = (base: Product[], o: MenuOverrides) => [...base, ...(o.custom ?? [])];
+export const fullMenu = (base: Product[], o: MenuOverrides) => [...base, ...(o.custom ?? [])].filter((p) => !(o.deleted ?? []).includes(p.id));
 
 /** Returns the menu (including owner-added items) with edited prices applied. */
 export function applyOverrides(list: Product[], o: MenuOverrides): Product[] {
