@@ -4,7 +4,7 @@ import type { DeliveryStatus } from "@/lib/riders";
 import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
 import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
-import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistSettings } from "@/lib/persistence";
+import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -60,6 +60,12 @@ function useOrderState() {
     setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
     void persistInvoiceStatus(orderNo, status);
   };
+  /** Bulk dispatch: hands many delivery invoices to one rider. */
+  const assignRider = (orderNos: number[], riderName: string) => {
+    const set = new Set(orderNos);
+    setInvoices((list) => list.map((i) => (set.has(i.orderNo) ? { ...i, rider: riderName, status: "On the way" as DeliveryStatus } : i)));
+    void persistRiderAssignment(orderNos, riderName);
+  };
   type Updater<T> = T | ((prev: T) => T);
   const resolve = <T,>(next: Updater<T>, prev: T): T => (typeof next === "function" ? (next as (p: T) => T)(prev) : next);
   const setMenuOverrides = (next: Updater<MenuOverrides>) => {
@@ -83,7 +89,7 @@ function useOrderState() {
     saveSettings({ restaurant, riders: riderList, areas: v, menuOverrides });
   };
 
-  return { menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  return { assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }
