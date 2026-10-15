@@ -3,6 +3,7 @@ import type { Invoice } from "@/components/pos/OrderContext";
 import type { MenuOverrides } from "@/lib/menuOverrides";
 import type { restaurantInfo } from "@/data/menuData";
 import { normalizeInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
+import { normalizeBackOffice, type BackOffice } from "@/lib/backOffice";
 import { defaultTables, normalizeTables, type DiningTable } from "@/lib/tables";
 
 export interface PersistedSettings {
@@ -12,6 +13,7 @@ export interface PersistedSettings {
   menuOverrides: MenuOverrides;
   invoice: InvoiceSettings;
   tables: DiningTable[];
+  backOffice: BackOffice;
 }
 
 const logErr = (what: string, error: unknown) => console.error(`[pos] ${what} save/load failed`, error);
@@ -70,7 +72,7 @@ export async function loadSettings(): Promise<PersistedSettings | null> {
   if (error) { logErr("settings", error); return null; }
   if (!data) return null;
   // Invoice look and dining tables are stored alongside the restaurant profile.
-  const { invoice, tables, ...restaurant } = (data.restaurant ?? {}) as PersistedSettings["restaurant"] & { invoice?: unknown; tables?: unknown };
+  const { invoice, tables, backOffice, ...restaurant } = (data.restaurant ?? {}) as PersistedSettings["restaurant"] & { invoice?: unknown; tables?: unknown; backOffice?: unknown };
   return {
     restaurant: restaurant as PersistedSettings["restaurant"],
     riders: data.riders as string[],
@@ -78,13 +80,14 @@ export async function loadSettings(): Promise<PersistedSettings | null> {
     menuOverrides: data.menu_overrides as unknown as MenuOverrides,
     invoice: normalizeInvoiceSettings(invoice),
     tables: normalizeTables(tables) ?? defaultTables,
+    backOffice: normalizeBackOffice(backOffice),
   };
 }
 
 export async function persistSettings(s: PersistedSettings) {
   const { error } = await supabase.from("pos_settings").upsert({
     id: 1,
-    restaurant: JSON.parse(JSON.stringify({ ...s.restaurant, invoice: s.invoice, tables: s.tables })),
+    restaurant: JSON.parse(JSON.stringify({ ...s.restaurant, invoice: s.invoice, tables: s.tables, backOffice: s.backOffice })),
     riders: s.riders,
     areas: s.areas,
     menu_overrides: JSON.parse(JSON.stringify(s.menuOverrides)),
