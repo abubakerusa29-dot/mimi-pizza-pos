@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, RotateCcw, Plus, Trash2, ImagePlus, X } from "lucide-react";
+import { Search, RotateCcw, Plus, Trash2, ImagePlus, X, Pencil } from "lucide-react";
 import { categories, products, type CategoryId } from "@/data/menuData";
 import { useOrder } from "@/components/pos/OrderContext";
 import { priceKey, fullMenu, makeCustomItem } from "@/lib/menuOverrides";
@@ -54,6 +54,18 @@ function MenuManagement() {
   const [sizeRows, setSizeRows] = useState(blankSizes);
   const [part, setPart] = useState<{ cat: CategoryId; qty: string; size: string; mode: "any" | "specific"; pick: string; q: string }>({ cat: "pizza", qty: "1", size: "Medium", mode: "any", pick: "", q: "" });
   const [del, setDel] = useState<{ id: string; name: string; regular: boolean; step: 1 | 2 } | null>(null);
+  const [edit, setEdit] = useState<{ id: string; name: string; description: string; photo: string } | null>(null);
+  const saveEdit = () => {
+    if (!edit || !edit.name.trim()) return;
+    const e = edit;
+    setMenuOverrides((m) => ({
+      ...m,
+      names: { ...(m.names ?? {}), [e.id]: e.name.trim() },
+      descriptions: { ...(m.descriptions ?? {}), [e.id]: e.description.trim() },
+      images: e.photo ? { ...(m.images ?? {}), [e.id]: e.photo } : (m.images ?? {}),
+    }));
+    setEdit(null);
+  };
   const menuAll = fullMenu(products, o);
   const partOptions = menuAll.filter((p) => p.category === part.cat && p.name.toLowerCase().includes(part.q.trim().toLowerCase()));
   const addPart = () => {
@@ -206,13 +218,14 @@ function MenuManagement() {
           const mine = customIds.has(p.id);
           return (
             <div key={p.id} className={`flex flex-wrap items-center gap-3 p-3 ${on ? "" : "opacity-55"}`}>
-              <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-md border bg-background">{(productImages[p.id] ?? o.images?.[p.id]) ? <img src={productImages[p.id] ?? o.images?.[p.id]} alt={p.name} loading="lazy" className="h-full w-full object-cover" /> : <ImagePlus className="size-5 text-muted-foreground" />}</div>
+              <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-md border bg-background">{(o.images?.[p.id] ?? productImages[p.id]) ? <img src={o.images?.[p.id] ?? productImages[p.id]} alt={p.name} loading="lazy" className="h-full w-full object-cover" /> : <ImagePlus className="size-5 text-muted-foreground" />}</div>
               <div className="min-w-[160px] flex-1"><p className="text-sm font-semibold">{p.name}{mine && <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">NEW</span>}</p><p className="text-[11px] capitalize text-muted-foreground">{p.category}{p.tag ? ` · ${p.tag}` : ""}{on ? "" : " · Unavailable"}</p></div>
               <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                 {p.price !== undefined && <PriceBox k={priceKey(p.id)} base={p.price} />}
                 {p.sizes?.map((s) => <PriceBox key={s.size} k={priceKey(p.id, s.size)} base={s.price} label={s.size} />)}
               </div>
               <label className="flex items-center gap-2 text-xs"><Switch checked={on} onCheckedChange={(v) => toggle(p.id, v)} aria-label={`${p.name} available`} />{on ? "Available" : "Off"}</label>
+              <Button variant="ghost" size="icon" onClick={() => setEdit({ id: p.id, name: p.name, description: p.description ?? "", photo: "" })} aria-label={`Edit ${p.name}`}><Pencil /></Button>
               {<Button variant="ghost" size="icon" onClick={() => setDel({ id: p.id, name: p.name, regular: !mine, step: 1 })} aria-label={`Delete ${p.name}`}><Trash2 className="text-destructive" /></Button>}
             </div>
           );
@@ -220,6 +233,22 @@ function MenuManagement() {
         {!list.length && <p className="p-6 text-center text-sm text-muted-foreground">No items found.</p>}
       </div>
     </div>
+      <AlertDialog open={!!edit} onOpenChange={(v) => !v && setEdit(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>Edit item</AlertDialogTitle><AlertDialogDescription>Change the name, description or photo. Prices are edited in the list.</AlertDialogDescription></AlertDialogHeader>
+          {edit && (
+            <div className="grid gap-3">
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Item name<Input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} aria-label="Item name" /></label>
+              <label className="grid gap-1 text-xs font-medium text-muted-foreground">Description<textarea value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} rows={2} className="rounded-md border bg-background px-3 py-2 text-sm text-foreground" aria-label="Description" /></label>
+              <div className="flex items-center gap-3">
+                <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-md border bg-background">{(edit.photo || o.images?.[edit.id] || productImages[edit.id]) ? <img src={edit.photo || o.images?.[edit.id] || productImages[edit.id]} alt="" className="h-full w-full object-contain" /> : <ImagePlus className="text-muted-foreground" />}</div>
+                <div className="space-y-1"><p className="text-xs font-semibold">Change photo (white background)</p><input type="file" accept="image/*" onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const ph = await compress(f); setEdit((x) => (x ? { ...x, photo: ph } : x)); } }} className="text-xs" aria-label="Change photo" /></div>
+              </div>
+            </div>
+          )}
+          <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={saveEdit}>Save changes</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AlertDialog open={!!del} onOpenChange={(v) => !v && setDel(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

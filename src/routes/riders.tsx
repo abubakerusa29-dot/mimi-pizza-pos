@@ -27,6 +27,12 @@ function Riders() {
   const summaries = riderSummaries(deliveries.map((d) => ({ orderType: d.orderType, rider: d.rider ?? "", status: d.status ?? "On the way", lines: d.lines })));
   const outstanding = summaries.reduce((s, r) => s + r.cashOutstanding, 0);
   const returned = summaries.reduce((s, r) => s + r.cashReturned, 0);
+  /** Owner confirms the rider handed over all cash: every open order of that rider becomes settled. */
+  const collect = (riderName: string, amount: number) => {
+    if (!window.confirm(`Confirm: ${formatRs(amount)} collected from ${riderName}?`)) return;
+    deliveries.filter((d) => d.rider === riderName && (d.status ?? "On the way") !== "Cash returned").forEach((d) => setInvoiceStatus(d.orderNo, "Cash returned"));
+    toast.success(`Payment collected from ${riderName}: ${formatRs(amount)}`);
+  };
   const onRoad = deliveries.filter((d) => (d.status ?? "On the way") === "On the way").length;
 
   return (
@@ -70,8 +76,8 @@ function Riders() {
         <h2 className="mt-6 text-sm font-semibold">Rider settlement</h2>
         <div className="mt-2 overflow-x-auto rounded-xl border border-border bg-card">
           {summaries.length === 0 ? <p className="p-6 text-center text-sm text-muted-foreground">No rider has been assigned yet.</p> : (
-            <table className="w-full text-sm"><thead className="bg-muted text-left text-xs text-muted-foreground"><tr><th className="p-3">Rider</th><th className="p-3">On the way</th><th className="p-3">Delivered</th><th className="p-3">Settled</th><th className="p-3 text-right">Cash outstanding</th></tr></thead>
-              <tbody>{summaries.map((s) => <tr key={s.rider} className="border-t border-border"><td className="p-3 font-semibold">{s.rider}</td><td className="p-3">{s.active}</td><td className="p-3">{s.delivered}</td><td className="p-3">{s.settled}</td><td className="p-3 text-right font-bold text-primary">{formatRs(s.cashOutstanding)}</td></tr>)}</tbody></table>
+            <table className="w-full text-sm"><thead className="bg-muted text-left text-xs text-muted-foreground"><tr><th className="p-3">Rider</th><th className="p-3">On the way</th><th className="p-3">Delivered</th><th className="p-3">Settled</th><th className="p-3 text-right">Cash outstanding</th><th className="p-3 text-right">Collect</th></tr></thead>
+              <tbody>{summaries.map((s) => <tr key={s.rider} className="border-t border-border"><td className="p-3 font-semibold">{s.rider}</td><td className="p-3">{s.active}</td><td className="p-3">{s.delivered}</td><td className="p-3">{s.settled}</td><td className="p-3 text-right font-bold text-primary">{formatRs(s.cashOutstanding)}</td><td className="p-3 text-right">{s.cashOutstanding > 0 ? <Button size="sm" onClick={() => collect(s.rider, s.cashOutstanding)}>Collect {formatRs(s.cashOutstanding)}</Button> : <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary"><CheckCircle2 className="h-4 w-4" /> Payment collected</span>}</td></tr>)}</tbody></table>
           )}
         </div>
 
@@ -86,7 +92,7 @@ function Riders() {
                 <span className="font-bold">{formatRs(cartTotals(d.lines).total)}</span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${status === "Cash returned" ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"}`}>{status}</span>
                 {status === "On the way" && <Button size="sm" variant="outline" onClick={() => setInvoiceStatus(d.orderNo, "Delivered")}>Mark delivered</Button>}
-                {status === "Delivered" && <Button size="sm" onClick={() => setInvoiceStatus(d.orderNo, "Cash returned")}>Cash returned</Button>}
+                {status !== "Cash returned" && <Button size="sm" onClick={() => { if (window.confirm(`Confirm ${formatRs(cartTotals(d.lines).total)} collected from ${d.rider} for #${d.orderNo}?`)) setInvoiceStatus(d.orderNo, "Cash returned"); }}>Payment collected</Button>}
               </div>
             );
           })}

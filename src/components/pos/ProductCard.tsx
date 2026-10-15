@@ -9,7 +9,7 @@ import { formatRs, startingPrice } from "@/lib/cart";
 export function ProductCard({ product, onSelect }: { product: Product; onSelect: (p: Product) => void }) {
   const [failed, setFailed] = useState(false);
   const { menuOverrides } = useOrder();
-  const img = productImages[product.id] ?? menuOverrides.images?.[product.id];
+  const img = menuOverrides.images?.[product.id] ?? productImages[product.id];
   return (
     <Button variant="ghost"
       onClick={() => onSelect(product)}

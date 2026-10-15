@@ -74,10 +74,10 @@ function useOrderState() {
     });
     void persistInvoice(inv);
     // Remember delivery customers so their address fills in next time.
-    if (inv.orderType === "Delivery" && inv.phone.replace(/\D/g, "").length >= 7) {
+    if (inv.orderType === "Delivery" && inv.phone.replace(/\D/g, "").length >= 3) {
       const known = findCustomer(backOffice.customers, inv.phone);
       if (!known || (inv.address && known.address !== inv.address)) {
-        updateBackOffice({ customers: upsertCustomer(backOffice.customers, { name: known?.name ?? "", notes: known?.notes ?? "", phone: inv.phone, address: inv.address || known?.address || "" }) });
+        updateBackOffice({ customers: upsertCustomer(backOffice.customers, { name: known?.name ?? "", notes: known?.notes ?? "", phone: inv.phone, address: inv.address || known?.address || "", area: inv.area || known?.area || "" }) });
       }
     }
   };
