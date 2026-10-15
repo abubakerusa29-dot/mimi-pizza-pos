@@ -220,6 +220,18 @@ function MenuManagement() {
         {!list.length && <p className="p-6 text-center text-sm text-muted-foreground">No items found.</p>}
       </div>
     </div>
+      <AlertDialog open={!!del} onOpenChange={(v) => !v && setDel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{del?.step === 2 ? "Are you sure you want to delete this regular item?" : `"${del?.name}" delete karein?`}</AlertDialogTitle>
+            <AlertDialogDescription>{del?.step === 2 ? "Yeh item restaurant ke printed menu mein hai. Delete ke baad POS screen se hamesha ke liye hat jayega." : "Yeh item menu se hat jayega. Sirf chhupana ho to Available switch Off kar dein."}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={(e) => { if (!del) return; if (del.regular && del.step === 1) { e.preventDefault(); setDel({ ...del, step: 2 }); } else remove(del.id); }}>{del?.regular && del.step === 1 ? "Yes, continue" : "Delete permanently"}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }

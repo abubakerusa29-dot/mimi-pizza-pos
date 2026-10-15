@@ -19,3 +19,11 @@ describe("menu management", () => {
     expect(availableOnly(list, { prices: {}, hidden: ["a"] }).map((p) => p.id)).toEqual(["b"]);
   });
 });
+
+import { fullMenu as fm } from "@/lib/menuOverrides";
+describe("deleted built-in items", () => {
+  it("removes deleted ids from the menu", () => {
+    const base = [{ id: "a", name: "A", category: "burgers" as const, price: 1 }, { id: "b", name: "B", category: "burgers" as const, price: 2 }];
+    expect(fm(base, { prices: {}, hidden: [], deleted: ["a"] }).map((p) => p.id)).toEqual(["b"]);
+  });
+});
