@@ -1,5 +1,5 @@
-import { findCustomer } from "@/lib/backOffice";
-import { Minus, Plus, Trash2, ShoppingBag, Printer, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
+import { findCustomer, searchCustomers } from "@/lib/backOffice";
+import { Minus, Plus, Trash2, ShoppingBag, Printer, Search, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/menuData";
@@ -34,6 +34,9 @@ export function CartPanel(p: Props) {
   const { backOffice, phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList, tableList, invoices } = useOrder();
   const occupied = occupiedTables(invoices);
   const [openAddon, setOpenAddon] = useState<string | null>(null);
+  const [findOpen, setFindOpen] = useState(false);
+  const [findQ, setFindQ] = useState("");
+  const found = searchCustomers(backOffice.customers, findQ);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
       <div className="border-b border-border p-4">
@@ -88,7 +91,24 @@ export function CartPanel(p: Props) {
         )}
         {p.orderType === "Delivery" && (
           <div className="mt-2 grid gap-2">
-            <input value={phone} onChange={(e) => { setPhone(e.target.value); const c = findCustomer(backOffice.customers, e.target.value); if (c && !address.trim()) setAddress(c.address); }} list="saved-customer-phones" placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+            <div className="flex gap-2">
+              <input value={phone} onChange={(e) => { setPhone(e.target.value); const c = findCustomer(backOffice.customers, e.target.value); if (c) { if (!address.trim()) setAddress(c.address); if (c.area && !area) setArea(c.area); } }} list="saved-customer-phones" placeholder="Customer phone number" type="tel" inputMode="tel" aria-label="Customer phone number" className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
+              <Button type="button" variant={findOpen ? "default" : "outline"} size="icon" onClick={() => setFindOpen(!findOpen)} aria-label="Search saved customer" title="Search customer by name, phone or area" className="h-10 w-10 shrink-0"><Search className="h-4 w-4" /></Button>
+            </div>
+            {findOpen && (
+              <div className="rounded-lg border border-input bg-background p-2">
+                <input autoFocus value={findQ} onChange={(e) => setFindQ(e.target.value)} placeholder="Search name, phone or area" aria-label="Search customers" className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:border-primary" />
+                <div className="mt-1 max-h-40 overflow-y-auto">
+                  {findQ.trim() && !found.length && <p className="p-2 text-xs text-muted-foreground">No saved customer found.</p>}
+                  {found.map((c) => (
+                    <button key={c.phone} type="button" onClick={() => { setPhone(c.phone); setAddress(c.address); if (c.area) setArea(c.area); setFindOpen(false); setFindQ(""); }} className="block w-full rounded-md px-2 py-1.5 text-left hover:bg-muted">
+                      <p className="text-sm font-semibold">{c.name || "Customer"} <span className="font-normal text-muted-foreground">{c.phone}</span></p>
+                      <p className="truncate text-[11px] text-muted-foreground">{c.address || "No address"}{c.area ? ` · ${c.area}` : ""}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <datalist id="saved-customer-phones">{backOffice.customers.map((c) => <option key={c.phone} value={c.phone}>{c.name}</option>)}</datalist>
             {findCustomer(backOffice.customers, phone) && <p className="-mt-1 text-[11px] font-medium text-primary">Saved customer: {findCustomer(backOffice.customers, phone)!.name || "Regular"}</p>}
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address / location" rows={2} aria-label="Delivery address" className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
