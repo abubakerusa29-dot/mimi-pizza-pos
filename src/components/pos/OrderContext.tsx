@@ -60,21 +60,27 @@ function useOrderState() {
     setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
     void persistInvoiceStatus(orderNo, status);
   };
-  const setMenuOverrides = (next: MenuOverrides) => {
-    setMenuOverridesState(next);
-    saveSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides: next });
+  type Updater<T> = T | ((prev: T) => T);
+  const resolve = <T,>(next: Updater<T>, prev: T): T => (typeof next === "function" ? (next as (p: T) => T)(prev) : next);
+  const setMenuOverrides = (next: Updater<MenuOverrides>) => {
+    const v = resolve(next, menuOverrides);
+    setMenuOverridesState(v);
+    saveSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides: v });
   };
-  const setRestaurant = (next: typeof restaurantInfo) => {
-    setRestaurantState(next);
-    saveSettings({ restaurant: next, riders: riderList, areas: areaList, menuOverrides });
+  const setRestaurant = (next: Updater<typeof restaurantInfo>) => {
+    const v = resolve(next, restaurant);
+    setRestaurantState(v);
+    saveSettings({ restaurant: v, riders: riderList, areas: areaList, menuOverrides });
   };
-  const setRiderList = (next: string[]) => {
-    setRiderListState(next);
-    saveSettings({ restaurant, riders: next, areas: areaList, menuOverrides });
+  const setRiderList = (next: Updater<string[]>) => {
+    const v = resolve(next, riderList);
+    setRiderListState(v);
+    saveSettings({ restaurant, riders: v, areas: areaList, menuOverrides });
   };
-  const setAreaList = (next: string[]) => {
-    setAreaListState(next);
-    saveSettings({ restaurant, riders: riderList, areas: next, menuOverrides });
+  const setAreaList = (next: Updater<string[]>) => {
+    const v = resolve(next, areaList);
+    setAreaListState(v);
+    saveSettings({ restaurant, riders: riderList, areas: v, menuOverrides });
   };
 
   return { menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
