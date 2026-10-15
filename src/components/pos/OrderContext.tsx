@@ -4,7 +4,7 @@ import type { DeliveryStatus } from "@/lib/riders";
 import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
 import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
-import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistSettings } from "@/lib/persistence";
+import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -59,6 +59,12 @@ function useOrderState() {
   const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => {
     setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
     void persistInvoiceStatus(orderNo, status);
+  };
+  /** Bulk dispatch: hands many delivery invoices to one rider. */
+  const assignRider = (orderNos: number[], riderName: string) => {
+    const set = new Set(orderNos);
+    setInvoices((list) => list.map((i) => (set.has(i.orderNo) ? { ...i, rider: riderName, status: "On the way" as DeliveryStatus } : i)));
+    void persistRiderAssignment(orderNos, riderName);
   };
   type Updater<T> = T | ((prev: T) => T);
   const resolve = <T,>(next: Updater<T>, prev: T): T => (typeof next === "function" ? (next as (p: T) => T)(prev) : next);

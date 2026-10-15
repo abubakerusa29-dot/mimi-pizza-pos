@@ -53,6 +53,13 @@ export async function persistInvoiceStatus(orderNo: number, status: string) {
   if (error) logErr("invoice status", error);
 }
 
+/** Assigns one rider to many invoices at once and marks them on the way. */
+export async function persistRiderAssignment(orderNos: number[], rider: string) {
+  if (!orderNos.length) return;
+  const { error } = await supabase.from("pos_invoices").update({ rider, status: "On the way" }).in("order_no", orderNos);
+  if (error) logErr("rider assignment", error);
+}
+
 /** Loads restaurant profile, riders, areas and menu overrides; null when never saved. */
 export async function loadSettings(): Promise<PersistedSettings | null> {
   const { data, error } = await supabase.from("pos_settings").select("*").eq("id", 1).maybeSingle();
