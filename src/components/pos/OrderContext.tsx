@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode, type Context } from "react";
 import type { CartLine } from "@/lib/cart";
 import type { DeliveryStatus } from "@/lib/riders";
+import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -20,7 +21,8 @@ function useOrderState() {
     return [{ ...inv, status: prev?.status ?? inv.status }, ...list.filter((i) => i.orderNo !== inv.orderNo)];
   });
   const setInvoiceStatus = (orderNo: number, status: DeliveryStatus) => setInvoices((list) => list.map((i) => (i.orderNo === orderNo ? { ...i, status } : i)));
-  return { rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  const [menuOverrides, setMenuOverrides] = useState<MenuOverrides>(emptyOverrides);
+  return { menuOverrides, setMenuOverrides, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }

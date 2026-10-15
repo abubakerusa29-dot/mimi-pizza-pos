@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/pos/ProductCard";
 import { OptionModal } from "@/components/pos/OptionModal";
 import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
+import { applyOverrides, availableOnly } from "@/lib/menuOverrides";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
 
 export const Route = createFileRoute("/")({
@@ -28,17 +29,17 @@ export const Route = createFileRoute("/")({
 function POS() {
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [query, setQuery] = useState("");
-  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, setPhone, setAddress, setRider, setArea } = useOrder();
+  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, setPhone, setAddress, setRider, setArea, menuOverrides } = useOrder();
   const [modal, setModal] = useState<Product | null>(null);
   const [receiptAt, setReceiptAt] = useState<Date | null>(null);
   const [mobileCart, setMobileCart] = useState(false);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products.filter(
+    return availableOnly(applyOverrides(products, menuOverrides), menuOverrides).filter(
       (p) => (category === "all" || p.category === category) && (!q || `${p.name} ${p.tag ?? ""}`.toLowerCase().includes(q)),
     );
-  }, [category, query]);
+  }, [category, query, menuOverrides]);
 
   const add = (item: Omit<CartLine, "qty">) => {
     setLines((l) => addLine(l, item));
