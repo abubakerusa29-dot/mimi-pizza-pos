@@ -24,7 +24,7 @@ export const fullMenu = (base: Product[], o: MenuOverrides) => [...base, ...(o.c
 export function applyOverrides(list: Product[], o: MenuOverrides): Product[] {
   return fullMenu(list, o).map((p) => {
     const next: Product = { ...p, name: o.names?.[p.id] ?? p.name };
-    if (o.descriptions?.[p.id] !== undefined) next.description = o.descriptions[p.id];
+
     if (p.price !== undefined) next.price = o.prices[priceKey(p.id)] ?? p.price;
     if (p.sizes) next.sizes = p.sizes.map((s) => ({ ...s, price: o.prices[priceKey(p.id, s.size)] ?? s.price }));
     return next;
