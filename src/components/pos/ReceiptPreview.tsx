@@ -1,5 +1,6 @@
 import { useOrder } from "./OrderContext";
-import { Printer, ArrowLeft, CheckCircle2, RotateCcw } from "lucide-react";
+import { Printer, ArrowLeft, CheckCircle2, RotateCcw, Bluetooth } from "lucide-react";
+import { buildEscPos, sendToRawBT } from "@/lib/thermalPrint";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import JsBarcode from "jsbarcode";
@@ -342,6 +343,16 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
             <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
           </Button>
         </div>
+        <Button variant="secondary" onClick={() => {
+          if (printing) return;
+          order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined });
+          const raw = shown.map((k) => buildEscPos({ kind: k, lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant, footer: order.invoiceSettings.footer, paper })).join("");
+          sendToRawBT(raw);
+          setPrinted(true);
+        }} className="mt-2 h-10 w-full text-xs font-bold">
+          <Bluetooth className="h-4 w-4" /> Android Bluetooth Print (RawBT)
+        </Button>
+        <p className="mt-1 text-center text-[10px] text-muted-foreground">Android: install RawBT app once, select your Bluetooth printer in it. Slips print directly, each with a cut.</p>
         {printed && !printing && (
           <div className="mt-3 rounded-md border border-primary/40 bg-accent p-3">
             <p className="text-xs font-semibold">Did every slip print? If one was missed or cancelled, print it again:</p>
