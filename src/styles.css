@@ -214,3 +214,10 @@
   #print-root .thermal-receipt { width: 80mm !important; max-width: 80mm !important; min-height: 0 !important; padding: 3mm 3mm 8mm !important; filter: none !important; background: var(--receipt-paper) !important; color: var(--receipt-ink) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #print-root .thermal-receipt::before, #print-root .thermal-receipt::after { display: none; }
 }
+.paper-58 .thermal-receipt { width: 58mm; padding: 18px 8px 22px; font-size: 10.5px; }
+.paper-58 .thermal-receipt img { max-width: 100%; }
+.receipt-divider.tight { margin: 5px 0; }
+.receipt-box { border: 3px double var(--receipt-ink); padding: 4px 6px; margin: 4px 0; }
+.receipt-invert { background: var(--receipt-ink); color: var(--receipt-paper); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.tpl-compact { min-height: 0; padding-top: 14px; line-height: 1.3; }
+.tpl-minimal { min-height: 0; }

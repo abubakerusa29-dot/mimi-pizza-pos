@@ -12,6 +12,7 @@ import { softwareCredit } from "@/data/softwareCredit";
 type RestaurantInfo = typeof restaurantInfo;
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
 import type { OrderType } from "./CartPanel";
+import type { InvoiceSettings } from "@/lib/invoiceTemplates";
 
 export type SlipKind = "customer" | "kitchen" | "rider";
 const slipLabels: Record<SlipKind, string> = { customer: "Customer", kitchen: "Kitchen", rider: "Delivery Rider" };
@@ -36,7 +37,7 @@ interface Props {
   area?: string;
 }
 
-interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string; rider?: string; area?: string; restaurant: RestaurantInfo }
+interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; phone: string; address: string; rider?: string; area?: string; restaurant: RestaurantInfo; invoice: InvoiceSettings }
 
 function Credit() {
   return (
@@ -71,8 +72,8 @@ function SlipBanner({ title, orderType, table }: { title: string; orderType: Ord
   );
 }
 
-function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant }: SlipProps) {
-  const { subtotal, total, items } = cartTotals(lines);
+function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant, invoice }: SlipProps) {
+  const { total, items } = cartTotals(lines);
   const time = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const meta = (
     <>
@@ -135,46 +136,77 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, ri
     );
   }
 
+  return <CustomerSlip {...{ lines, orderNo, orderType, table, date, restaurant, invoice, meta, customerInfo }} />;
+}
 
+/** Customer receipt in the owner's chosen template. The software credit always prints and cannot be turned off. */
+function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, meta, customerInfo }: { lines: CartLine[]; orderNo: number; orderType: OrderType; table: string; date: Date; restaurant: RestaurantInfo; invoice: InvoiceSettings; meta: React.ReactNode; customerInfo: React.ReactNode }) {
+  const { subtotal, total, items } = cartTotals(lines);
+  const t = invoice.template;
+  const compact = t === "compact" || t === "minimal";
+  const logoSrc = invoice.customLogo || badge.url;
+  const showBadge = t !== "minimal" && (invoice.logo === "badge" || invoice.logo === "both");
+  const showWordmark = invoice.logo === "wordmark" || invoice.logo === "both";
+  const badgeSize = t === "bold" ? 170 : compact ? 90 : 138;
+  const boxed = t === "boxed";
   return (
-    <div className="thermal-receipt">
-      <div className="text-center">
-        <img src={badge.url} alt="Mimi’s Pizza" width={150} height={138} className="thermal-logo mx-auto mb-1 h-[138px] w-[150px] object-contain" />
+    <div className={`thermal-receipt tpl-${t}`}>
+      <div className={`text-center ${boxed ? "receipt-box" : ""}`}>
+        {showBadge && <img src={logoSrc} alt="Restaurant logo" style={{ width: badgeSize, height: badgeSize * 0.92 }} className="thermal-logo mx-auto mb-1 object-contain" />}
+        {t === "minimal" && <p className="text-[15px] font-bold">MIMI’S PIZZA</p>}
+        {t === "bold" && showWordmark && <img src={wordmark.url} alt="" width={160} height={33} className="thermal-logo mx-auto mb-1 h-auto w-[160px] object-contain" />}
         <p className="text-[10px] leading-snug">{restaurant.address}</p>
         <p className="text-[10px]">Ph: {restaurant.phone}</p>
-        </div>
-      <SlipBanner title="CUSTOMER RECEIPT" orderType={orderType} table={table} />
-      <div className="receipt-divider" />
-      {meta}
-      {customerInfo}
-      <div className="receipt-divider" />
+      </div>
+      {t === "bold"
+        ? <div className="receipt-invert my-2 py-1 text-center"><p className="text-[15px] font-bold">CUSTOMER RECEIPT</p><p className="text-[12px] font-bold">{orderType === "Dine-in" && table ? `DINE-IN · TABLE ${table}` : orderType.toUpperCase()}</p></div>
+        : t === "minimal" ? <p className="my-2 text-center font-bold">RECEIPT · {orderType.toUpperCase()}</p>
+        : <SlipBanner title="CUSTOMER RECEIPT" orderType={orderType} table={table} />}
+      {!compact && <div className="receipt-divider" />}
+      <div className={boxed ? "receipt-box" : ""}>{meta}{customerInfo}</div>
+      <div className={compact ? "receipt-divider tight" : "receipt-divider"} />
       <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2 font-bold"><span>ITEM</span><span className="text-right">QTY</span><span className="text-right">PKR</span></div>
       {lines.map((l) => (
-        <div key={l.key} className="mt-3">
+        <div key={l.key} className={compact ? "mt-1" : "mt-3"}>
           <div className="grid grid-cols-[minmax(0,1fr)_24px_70px] gap-x-2">
             <span className="min-w-0 break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</span>
             <span className="text-right">{l.qty}</span>
             <span className="text-right">{lineTotal(l).toLocaleString("en-US")}</span>
           </div>
-          <div className="text-[10px] opacity-70">@ {formatRs(l.unitPrice)}</div>
+          {!compact && <div className="text-[10px] opacity-70">@ {formatRs(l.unitPrice)}</div>}
         </div>
       ))}
-      <div className="receipt-divider" />
-      <div className="mb-1 flex justify-between"><span>Items</span><span>{items}</span></div>
-      <div className="flex justify-between"><span>Subtotal</span><span>{formatRs(subtotal)}</span></div>
-      <div className="receipt-divider" />
-      <div className="flex justify-between text-base font-bold"><span>TOTAL</span><span>{formatRs(total)}</span></div>
-      <div className="receipt-divider" />
-      <div className="pt-3 text-center">
-        <p>Thank you for your order!</p>
-        <p className="mt-1 text-[10px]">Please visit again</p>
-        <Barcode orderNo={orderNo} />
-        <p className="mt-2 text-[10px]">MIMI-{orderNo}</p>
-        <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />
+      <div className={compact ? "receipt-divider tight" : "receipt-divider"} />
+      <div className={boxed ? "receipt-box" : ""}>
+        <div className="mb-1 flex justify-between"><span>Items</span><span>{items}</span></div>
+        <div className="flex justify-between"><span>Subtotal</span><span>{formatRs(subtotal)}</span></div>
+      </div>
+      {t === "bold"
+        ? <div className="receipt-invert my-2 flex justify-between px-2 py-1 text-lg font-bold"><span>TOTAL</span><span>{formatRs(total)}</span></div>
+        : <><div className={compact ? "receipt-divider tight" : "receipt-divider"} /><div className={`flex justify-between text-base font-bold ${boxed ? "receipt-box" : ""}`}><span>TOTAL</span><span>{formatRs(total)}</span></div></>}
+      <div className={compact ? "receipt-divider tight" : "receipt-divider"} />
+      <div className={compact ? "pt-1 text-center" : "pt-3 text-center"}>
+        {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
+        {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
+        {t !== "bold" && t !== "minimal" && showWordmark && <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />}
       </div>
       <Credit />
     </div>
   );
+}
+
+/** Sample order used by the template preview and the printer test page. */
+export function SampleCustomerSlip({ invoice, restaurant }: { invoice: InvoiceSettings; restaurant: RestaurantInfo }) {
+  const lines: CartLine[] = [
+    { key: "pz-sample", name: "Chicken Tikka Pizza", variant: "Medium", unitPrice: 1450, qty: 1 } as CartLine,
+    { key: "dr-sample", name: "Drink 1.5L", unitPrice: 250, qty: 2 } as CartLine,
+  ];
+  return <Slip kind="customer" lines={lines} orderNo={1234} orderType="Takeaway" table="" date={new Date()} phone="" address="" restaurant={restaurant} invoice={invoice} />;
+}
+
+/** Sends one browser print job sized for the chosen paper width. */
+export function PaperPrintStyle({ paper }: { paper: "80" | "58" }) {
+  return <style>{`@media print { @page { size: ${paper}mm auto; margin: 0; } html, body { width: ${paper}mm !important; } #print-root .thermal-receipt { width: ${paper}mm !important; max-width: ${paper}mm !important; } }`}</style>;
 }
 
 export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, onBack, phone: phoneProp, address: addressProp, rider: riderProp, area: areaProp }: Props) {
@@ -220,13 +252,14 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const shown = view === "all" ? available : available.filter((k) => k === view);
   const rider = riderProp ?? order.rider;
   const area = areaProp ?? order.area;
-  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant };
+  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant, invoice: order.invoiceSettings };
+  const paper = order.invoiceSettings.paper;
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
-          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `80mm · #${orderNo}`}</span>
+          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `${paper}mm · #${orderNo}`}</span>
         </div>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
           {(["all", ...available] as const).map((k) => (
@@ -252,14 +285,14 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         );
         const side = shown.filter((k) => k !== "customer");
         return (
-          <div className="flex flex-wrap items-start justify-center gap-8">
+          <div className={`flex flex-wrap items-start justify-center gap-8 ${paper === "58" ? "paper-58" : ""}`}>
             {side.length > 0 && <div className="flex flex-col items-center gap-10">{side.map(card)}</div>}
             {shown.includes("customer") && card("customer")}
           </div>
         );
       })()}
       {printing && createPortal(
-        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
+        <div id="print-root" className={paper === "58" ? "paper-58" : ""}><PaperPrintStyle paper={paper} /><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
         document.body,
       )}
     </div>

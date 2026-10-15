@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InvoiceTemplatesRouteImport } from './routes/invoice-templates'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
+import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -22,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvoiceTemplatesRoute = InvoiceTemplatesRouteImport.update({
+  id: '/invoice-templates',
+  path: '/invoice-templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InvoicesRoute = InvoicesRouteImport.update({
   id: '/invoices',
   path: '/invoices',
@@ -30,6 +37,11 @@ const InvoicesRoute = InvoicesRouteImport.update({
 const MenuGrowthRoute = MenuGrowthRouteImport.update({
   id: '/menu-growth',
   path: '/menu-growth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrintersRoute = PrintersRouteImport.update({
+  id: '/printers',
+  path: '/printers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RidersRoute = RidersRouteImport.update({
@@ -55,8 +67,10 @@ const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/printers': typeof PrintersRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -64,8 +78,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/printers': typeof PrintersRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -74,8 +90,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/printers': typeof PrintersRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -85,8 +103,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
+    | '/printers'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -94,8 +114,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
+    | '/printers'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -103,8 +125,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
+    | '/printers'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -113,8 +137,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  InvoiceTemplatesRoute: typeof InvoiceTemplatesRoute
   InvoicesRoute: typeof InvoicesRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
+  PrintersRoute: typeof PrintersRoute
   RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   SettingsRoute: typeof SettingsRoute
@@ -130,6 +156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invoice-templates': {
+      id: '/invoice-templates'
+      path: '/invoice-templates'
+      fullPath: '/invoice-templates'
+      preLoaderRoute: typeof InvoiceTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invoices': {
       id: '/invoices'
       path: '/invoices'
@@ -142,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/menu-growth'
       fullPath: '/menu-growth'
       preLoaderRoute: typeof MenuGrowthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/printers': {
+      id: '/printers'
+      path: '/printers'
+      fullPath: '/printers'
+      preLoaderRoute: typeof PrintersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/riders': {
@@ -177,8 +217,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  InvoiceTemplatesRoute: InvoiceTemplatesRoute,
   InvoicesRoute: InvoicesRoute,
   MenuGrowthRoute: MenuGrowthRoute,
+  PrintersRoute: PrintersRoute,
   RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   SettingsRoute: SettingsRoute,
