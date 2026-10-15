@@ -9,11 +9,11 @@ const list: Product[] = [
 
 describe("menu management", () => {
   it("applies an edited fixed price", () => {
-    expect(applyOverrides(list, { prices: { a: 150 }, hidden: [] })[0].price).toBe(150);
+    expect(applyOverrides(list, { prices: { a: 150 }, hidden: [] })[0]?.price).toBe(150);
   });
   it("applies an edited size price only to that size", () => {
     const b = applyOverrides(list, { prices: { "b|Large": 1700 }, hidden: [] })[1];
-    expect(b.sizes?.map((s) => s.price)).toEqual([650, 1700]);
+    expect(b?.sizes?.map((s) => s.price)).toEqual([650, 1700]);
   });
   it("removes unavailable items from the order screen", () => {
     expect(availableOnly(list, { prices: {}, hidden: ["a"] }).map((p) => p.id)).toEqual(["b"]);
