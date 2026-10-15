@@ -91,46 +91,63 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, ri
   );
 
   if (kind === "kitchen") {
+    const kt = invoice.kitchenTemplate;
+    const box = kt === "checklist" ? "[ ] " : "";
     return (
-      <div className="thermal-receipt slip-compact">
+      <div className={`thermal-receipt slip-compact ${kt === "large" ? "kitchen-large" : ""}`}>
         <SlipBanner title="KITCHEN SLIP" orderType={orderType} table={table} />
         {meta}
         <div className="receipt-divider" />
         {lines.map((l) => {
           const parts = dealParts(l);
           return (
-            <div key={l.key} className="mt-2">
-              <p className="text-[14px] font-bold">{l.qty} x {l.name}</p>
+            <div key={l.key} className={kt === "checklist" ? "mt-2 border-b border-dashed border-current pb-2" : "mt-2"}>
+              <p className={`${kt === "large" ? "text-[18px]" : "text-[14px]"} font-bold`}>{box}{l.qty} x {l.name}</p>
               {l.variant && <p className="pl-4 font-bold">{parts.length ? "Pizza flavour: " : ""}{l.variant}</p>}
-              {parts.map((p) => <p key={p} className="pl-4">- {p}</p>)}
+              {parts.map((p) => <p key={p} className="pl-4">{box || "- "}{p}</p>)}
               {l.addons?.length ? <p className="pl-4 font-bold">+ ADD: {l.addons.join(", ")}</p> : null}
             </div>
           );
         })}
         <div className="receipt-divider" />
         <p className="text-center font-bold">Total items: {items}</p>
+        {kt === "checklist" && <p className="mt-2">Checked by: ______________</p>}
         <p className="mt-2 text-center text-[9px] leading-tight">Software by {softwareCredit.name}</p>
       </div>
     );
   }
 
   if (kind === "rider") {
+    const rt = invoice.riderTemplate;
+    const items = rt !== "compact" && (
+      <>
+        <div className="receipt-divider" />
+        {lines.map((l) => (
+          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
+        ))}
+      </>
+    );
     return (
       <div className="thermal-receipt slip-compact">
         <p className="text-center text-sm font-bold">Mimi’s Pizza</p>
         <SlipBanner title="DELIVERY RIDER SLIP" orderType={orderType} table={table} />
         {meta}
-        {customerInfo}
+        {rt === "cash" ? (
+          <div className="receipt-box mt-2">
+            {phone && <p className="text-[14px] font-bold">{phone}</p>}
+            {address && <p className="break-words text-[14px] font-bold">{address}</p>}
+            {area && <p>Area: <span className="font-bold">{area}</span></p>}
+          </div>
+        ) : customerInfo}
+        {items}
         <div className="receipt-divider" />
-        {lines.map((l) => (
-          <div key={l.key} className="flex justify-between gap-2"><span className="min-w-0 break-words">{l.qty} x {l.name}{l.variant ? ` (${l.variant})` : ""}</span><span className="font-bold">{lineTotal(l).toLocaleString("en-US")}</span></div>
-        ))}
+        {rt === "cash"
+          ? <div className="receipt-invert my-1 px-2 py-2 text-center"><p className="text-[12px] font-bold">COLLECT CASH</p><p className="text-xl font-bold">{formatRs(total)}</p></div>
+          : <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>}
         <div className="receipt-divider" />
-        <div className="flex justify-between text-base font-bold"><span>COLLECT CASH</span><span>{formatRs(total)}</span></div>
-        <div className="receipt-divider" />
-        {area && <p className="mt-1">Area: <span className="font-bold">{area}</span></p>}
+        {rt !== "cash" && area && <p className="mt-1">Area: <span className="font-bold">{area}</span></p>}
         <p className="mt-3">Rider: {rider ? <span className="font-bold">{rider}</span> : "____________________"}</p>
-        <p className="mt-3">Received by: ______________</p>
+        {rt !== "compact" && <p className="mt-3">Received by: ______________</p>}
         <Credit />
       </div>
     );
@@ -149,6 +166,46 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
   const showWordmark = invoice.logo === "wordmark" || invoice.logo === "both";
   const badgeSize = t === "bold" ? 170 : compact ? 90 : 138;
   const boxed = t === "boxed";
+  if (t === "premium" || t === "retail") {
+    const retail = t === "retail";
+    return (
+      <div className={`thermal-receipt tpl-${t}`}>
+        <div className="text-center">
+          {showBadge && <img src={logoSrc} alt="Restaurant logo" style={{ width: 110, height: 101 }} className="thermal-logo mx-auto mb-1 object-contain" />}
+          {showWordmark && <img src={wordmark.url} alt="" width={150} height={31} className="thermal-logo mx-auto mb-1 h-auto w-[150px] object-contain" />}
+          <p className="text-[10px] leading-snug">{restaurant.address}</p>
+          <p className="text-[10px]">Phone # {restaurant.phone}</p>
+        </div>
+        <SlipBanner title={retail ? "SALES INVOICE" : "CUSTOMER RECEIPT"} orderType={orderType} table={table} />
+        <div className={retail ? "" : "receipt-box"}>{meta}{customerInfo}</div>
+        <table className="receipt-table text-[11px]">
+          <thead><tr>{retail && <th>Sr</th>}<th className="text-left">Item</th><th>Qty</th><th className="text-right">Rate</th><th className="text-right">Amnt</th></tr></thead>
+          <tbody>
+            {lines.map((l, i) => (
+              <tr key={l.key}>
+                {retail && <td className="text-center">{i + 1}</td>}
+                <td className="break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</td>
+                <td className="text-center">{l.qty}</td>
+                <td className="text-right">{l.unitPrice.toLocaleString("en-US")}</td>
+                <td className="text-right">{lineTotal(l).toLocaleString("en-US")}</td>
+              </tr>
+            ))}
+            <tr className="font-bold">{retail && <td />}<td>Total</td><td className="text-center">{items}</td><td /><td className="text-right">{subtotal.toLocaleString("en-US")}</td></tr>
+          </tbody>
+        </table>
+        <div className={retail ? "" : "receipt-box"}>
+          <div className="flex justify-between"><span>Sub total</span><span>{formatRs(subtotal)}</span></div>
+          <div className="flex justify-between"><span>Discount</span><span>{formatRs(0)}</span></div>
+          <div className="mt-1 flex justify-between text-lg font-bold"><span>{retail ? "Net Total" : "GRAND TOTAL"}</span><span>{formatRs(total)}</span></div>
+        </div>
+        <div className="pt-3 text-center">
+          {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
+          {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
+        </div>
+        <Credit />
+      </div>
+    );
+  }
   return (
     <div className={`thermal-receipt tpl-${t}`}>
       <div className={`text-center ${boxed ? "receipt-box" : ""}`}>
@@ -196,12 +253,14 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
 }
 
 /** Sample order used by the template preview and the printer test page. */
-export function SampleCustomerSlip({ invoice, restaurant }: { invoice: InvoiceSettings; restaurant: RestaurantInfo }) {
+export function SampleCustomerSlip({ invoice, restaurant, kind = "customer" }: { invoice: InvoiceSettings; restaurant: RestaurantInfo; kind?: SlipKind }) {
   const lines: CartLine[] = [
     { key: "pz-sample", name: "Chicken Tikka Pizza", variant: "Medium", unitPrice: 1450, qty: 1 } as CartLine,
+    { key: "deal-sample", name: "Family Deal", description: "1 Large Pizza, 2 Zinger Burgers, 1.5L Drink", variant: "Fajita", unitPrice: 2899, qty: 1 } as CartLine,
     { key: "dr-sample", name: "Drink 1.5L", unitPrice: 250, qty: 2 } as CartLine,
   ];
-  return <Slip kind="customer" lines={lines} orderNo={1234} orderType="Takeaway" table="" date={new Date()} phone="" address="" restaurant={restaurant} invoice={invoice} />;
+  const delivery = kind === "rider";
+  return <Slip kind={kind} lines={lines} orderNo={1234} orderType={delivery ? "Delivery" : "Takeaway"} table="" date={new Date()} phone={delivery ? "0300 1234567" : ""} address={delivery ? "House 12, Street 4, Model Town" : ""} rider={delivery ? "Rider 1" : ""} area={delivery ? "Model Town" : ""} restaurant={restaurant} invoice={invoice} />;
 }
 
 /** Sends one browser print job sized for the chosen paper width. */
