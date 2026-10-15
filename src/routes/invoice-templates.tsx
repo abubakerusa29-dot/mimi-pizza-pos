@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, RotateCcw, Upload } from "lucide-react";
+import { useState } from "react";
 import { useOrder } from "@/components/pos/OrderContext";
-import { SampleCustomerSlip } from "@/components/pos/ReceiptPreview";
+import { SampleCustomerSlip, type SlipKind } from "@/components/pos/ReceiptPreview";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { defaultInvoiceSettings, templates, type InvoiceSettings, type LogoMode } from "@/lib/invoiceTemplates";
+import { defaultInvoiceSettings, templates, kitchenTemplates, riderTemplates, type InvoiceSettings, type LogoMode } from "@/lib/invoiceTemplates";
 
 export const Route = createFileRoute("/invoice-templates")({
-  head: () => ({ meta: [{ title: "Invoice Templates — Mimi’s Pizza POS" }, { name: "description", content: "Choose and preview the printed customer invoice design." }, { property: "og:title", content: "Invoice Templates — Mimi’s Pizza POS" }, { property: "og:description", content: "Five thermal invoice designs with logo, footer and paper size." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Invoice Templates — Mimi’s Pizza POS" }, { name: "description", content: "Choose and preview the printed customer invoice design." }, { property: "og:title", content: "Invoice Templates — Mimi’s Pizza POS" }, { property: "og:description", content: "Customer, kitchen and rider slip designs with logo, footer and paper size." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: InvoiceTemplates,
 });
 
@@ -17,6 +18,7 @@ const logoModes: { id: LogoMode; label: string }[] = [
 
 function InvoiceTemplates() {
   const { invoiceSettings: s, setInvoiceSettings, restaurant } = useOrder();
+  const [kind, setKind] = useState<SlipKind>("customer");
   const set = (patch: Partial<InvoiceSettings>) => setInvoiceSettings({ ...s, ...patch });
   const onLogo = (file?: File) => {
     if (!file) return;
@@ -32,19 +34,28 @@ function InvoiceTemplates() {
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <div><h2 className="font-display text-xl font-semibold">Invoice Templates</h2><p className="text-xs text-muted-foreground">Choose the customer receipt design. Changes save right away and are used for POS prints.</p></div>
+            <div><h2 className="font-display text-xl font-semibold">Invoice Templates</h2><p className="text-xs text-muted-foreground">Choose the design for customer, kitchen and rider slips. Changes save right away and are used for POS prints.</p></div>
             <Button variant="outline" className="h-9 text-xs" onClick={() => setInvoiceSettings(defaultInvoiceSettings)}><RotateCcw /> Reset</Button>
           </div>
 
           <section className="rounded-xl border bg-card p-4">
             <h3 className="text-sm font-semibold">1. Template</h3>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-              {templates.map((t) => (
-                <button key={t.id} onClick={() => set({ template: t.id })} className={`flex items-start gap-2 rounded-lg border p-3 text-left ${s.template === t.id ? "border-primary bg-primary/10" : "bg-background"}`}>
-                  <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${s.template === t.id ? "border-primary bg-primary text-primary-foreground" : ""}`}>{s.template === t.id && <Check className="size-3" />}</span>
-                  <span><span className="block text-sm font-semibold">{t.name}</span><span className="text-[11px] text-muted-foreground">{t.note}</span></span>
-                </button>
+            <div role="tablist" className="mt-3 flex gap-1 rounded-md bg-muted p-1">
+              {([["customer", "Customer Receipt"], ["kitchen", "Kitchen Slip"], ["rider", "Rider Slip"]] as const).map(([k, label]) => (
+                <button key={k} role="tab" aria-selected={kind === k} onClick={() => setKind(k)} className={`h-8 flex-1 rounded px-2 text-xs font-semibold ${kind === k ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>{label}</button>
               ))}
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {(kind === "customer" ? templates : kind === "kitchen" ? kitchenTemplates : riderTemplates).map((t) => {
+                const on = (kind === "customer" ? s.template : kind === "kitchen" ? s.kitchenTemplate : s.riderTemplate) === t.id;
+                const pick = () => set(kind === "customer" ? { template: t.id as InvoiceSettings["template"] } : kind === "kitchen" ? { kitchenTemplate: t.id as InvoiceSettings["kitchenTemplate"] } : { riderTemplate: t.id as InvoiceSettings["riderTemplate"] });
+                return (
+                  <button key={t.id} onClick={pick} className={`flex items-start gap-2 rounded-lg border p-3 text-left ${on ? "border-primary bg-primary/10" : "bg-background"}`}>
+                    <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${on ? "border-primary bg-primary text-primary-foreground" : ""}`}>{on && <Check className="size-3" />}</span>
+                    <span><span className="block text-sm font-semibold">{t.name}</span><span className="text-[11px] text-muted-foreground">{t.note}</span></span>
+                  </button>
+                );
+              })}
             </div>
           </section>
 
@@ -77,7 +88,7 @@ function InvoiceTemplates() {
         <div className="lg:sticky lg:top-0 lg:self-start">
           <p className="mb-3 text-center text-xs font-semibold text-muted-foreground">Live preview · {s.paper}mm</p>
           <div className={`flex justify-center rounded-xl bg-muted p-6 ${s.paper === "58" ? "paper-58" : ""}`}>
-            <SampleCustomerSlip invoice={s} restaurant={restaurant} />
+            <SampleCustomerSlip invoice={s} restaurant={restaurant} kind={kind} />
           </div>
         </div>
       </div>

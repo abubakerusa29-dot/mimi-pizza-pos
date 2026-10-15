@@ -166,6 +166,46 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
   const showWordmark = invoice.logo === "wordmark" || invoice.logo === "both";
   const badgeSize = t === "bold" ? 170 : compact ? 90 : 138;
   const boxed = t === "boxed";
+  if (t === "premium" || t === "retail") {
+    const retail = t === "retail";
+    return (
+      <div className={`thermal-receipt tpl-${t}`}>
+        <div className="text-center">
+          {showBadge && <img src={logoSrc} alt="Restaurant logo" style={{ width: 110, height: 101 }} className="thermal-logo mx-auto mb-1 object-contain" />}
+          {showWordmark && <img src={wordmark.url} alt="" width={150} height={31} className="thermal-logo mx-auto mb-1 h-auto w-[150px] object-contain" />}
+          <p className="text-[10px] leading-snug">{restaurant.address}</p>
+          <p className="text-[10px]">Phone # {restaurant.phone}</p>
+        </div>
+        <SlipBanner title={retail ? "SALES INVOICE" : "CUSTOMER RECEIPT"} orderType={orderType} table={table} />
+        <div className={retail ? "" : "receipt-box"}>{meta}{customerInfo}</div>
+        <table className="receipt-table text-[11px]">
+          <thead><tr>{retail && <th>Sr</th>}<th className="text-left">Item</th><th>Qty</th><th className="text-right">Rate</th><th className="text-right">Amnt</th></tr></thead>
+          <tbody>
+            {lines.map((l, i) => (
+              <tr key={l.key}>
+                {retail && <td className="text-center">{i + 1}</td>}
+                <td className="break-words">{l.name}{l.variant && <span className="block text-[10px]">{l.variant}</span>}{l.addons?.length ? <span className="block text-[10px]">+ {l.addons.join(", ")}</span> : null}</td>
+                <td className="text-center">{l.qty}</td>
+                <td className="text-right">{l.unitPrice.toLocaleString("en-US")}</td>
+                <td className="text-right">{lineTotal(l).toLocaleString("en-US")}</td>
+              </tr>
+            ))}
+            <tr className="font-bold">{retail && <td />}<td>Total</td><td className="text-center">{items}</td><td /><td className="text-right">{subtotal.toLocaleString("en-US")}</td></tr>
+          </tbody>
+        </table>
+        <div className={retail ? "" : "receipt-box"}>
+          <div className="flex justify-between"><span>Sub total</span><span>{formatRs(subtotal)}</span></div>
+          <div className="flex justify-between"><span>Discount</span><span>{formatRs(0)}</span></div>
+          <div className="mt-1 flex justify-between text-lg font-bold"><span>{retail ? "Net Total" : "GRAND TOTAL"}</span><span>{formatRs(total)}</span></div>
+        </div>
+        <div className="pt-3 text-center">
+          {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
+          {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
+        </div>
+        <Credit />
+      </div>
+    );
+  }
   return (
     <div className={`thermal-receipt tpl-${t}`}>
       <div className={`text-center ${boxed ? "receipt-box" : ""}`}>
@@ -213,12 +253,14 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
 }
 
 /** Sample order used by the template preview and the printer test page. */
-export function SampleCustomerSlip({ invoice, restaurant }: { invoice: InvoiceSettings; restaurant: RestaurantInfo }) {
+export function SampleCustomerSlip({ invoice, restaurant, kind = "customer" }: { invoice: InvoiceSettings; restaurant: RestaurantInfo; kind?: SlipKind }) {
   const lines: CartLine[] = [
     { key: "pz-sample", name: "Chicken Tikka Pizza", variant: "Medium", unitPrice: 1450, qty: 1 } as CartLine,
+    { key: "deal-sample", name: "Family Deal", description: "1 Large Pizza, 2 Zinger Burgers, 1.5L Drink", variant: "Fajita", unitPrice: 2899, qty: 1 } as CartLine,
     { key: "dr-sample", name: "Drink 1.5L", unitPrice: 250, qty: 2 } as CartLine,
   ];
-  return <Slip kind="customer" lines={lines} orderNo={1234} orderType="Takeaway" table="" date={new Date()} phone="" address="" restaurant={restaurant} invoice={invoice} />;
+  const delivery = kind === "rider";
+  return <Slip kind={kind} lines={lines} orderNo={1234} orderType={delivery ? "Delivery" : "Takeaway"} table="" date={new Date()} phone={delivery ? "0300 1234567" : ""} address={delivery ? "House 12, Street 4, Model Town" : ""} rider={delivery ? "Rider 1" : undefined} area={delivery ? "Model Town" : undefined} restaurant={restaurant} invoice={invoice} />;
 }
 
 /** Sends one browser print job sized for the chosen paper width. */
