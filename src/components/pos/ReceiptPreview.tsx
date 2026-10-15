@@ -252,13 +252,14 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const shown = view === "all" ? available : available.filter((k) => k === view);
   const rider = riderProp ?? order.rider;
   const area = areaProp ?? order.area;
-  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant };
+  const slipProps = { lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant, invoice: order.invoiceSettings };
+  const paper = order.invoiceSettings.paper;
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="invoice-title" className="receipt-overlay fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-foreground/70 px-4 pb-12 pt-5">
       <div className="no-print sticky top-0 z-10 mb-6 w-full max-w-[380px] rounded-lg border border-border bg-card p-3 shadow-lg">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
-          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `80mm · #${orderNo}`}</span>
+          <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `${paper}mm · #${orderNo}`}</span>
         </div>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
           {(["all", ...available] as const).map((k) => (
@@ -284,14 +285,14 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         );
         const side = shown.filter((k) => k !== "customer");
         return (
-          <div className="flex flex-wrap items-start justify-center gap-8">
+          <div className={`flex flex-wrap items-start justify-center gap-8 ${paper === "58" ? "paper-58" : ""}`}>
             {side.length > 0 && <div className="flex flex-col items-center gap-10">{side.map(card)}</div>}
             {shown.includes("customer") && card("customer")}
           </div>
         );
       })()}
       {printing && createPortal(
-        <div id="print-root"><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
+        <div id="print-root" className={paper === "58" ? "paper-58" : ""}><PaperPrintStyle paper={paper} /><div key={jobIndex} className="print-page"><Slip kind={printing[jobIndex] ?? "customer"} {...slipProps} /></div></div>,
         document.body,
       )}
     </div>
