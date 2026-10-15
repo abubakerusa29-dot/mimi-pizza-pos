@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { products } from "@/data/menuData";
 import { useOrder, type OrderType } from "./OrderContext";
 import { type Addon, type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
+import { occupiedTables, tableLabel } from "@/lib/tables";
 
 export type { OrderType } from "./OrderContext";
 
@@ -29,7 +30,8 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
-  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList } = useOrder();
+  const { phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList, tableList, invoices } = useOrder();
+  const occupied = occupiedTables(invoices);
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
@@ -59,13 +61,29 @@ export function CartPanel(p: Props) {
           })}
         </div>
         {p.orderType === "Dine-in" && (
-          <input
-            value={p.table}
-            onChange={(e) => p.setTable(e.target.value)}
-            placeholder="Table number (optional)"
-            inputMode="numeric"
-            className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-          />
+          <div className="mt-2">
+            {tableList.length > 0 && (
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label="Choose table">
+                {tableList.map((t) => {
+                  const label = tableLabel(t);
+                  const busy = occupied.has(label) && p.table !== label;
+                  return (
+                    <button key={label} type="button" aria-pressed={p.table === label} onClick={() => p.setTable(p.table === label ? "" : label)} title={busy ? `${label} has an open order` : label}
+                      className={`rounded-md border px-2.5 py-1.5 text-xs font-semibold transition ${p.table === label ? "border-primary bg-primary text-primary-foreground" : busy ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-input bg-background text-foreground hover:border-primary"}`}>
+                      {t.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <input
+              value={p.table}
+              onChange={(e) => p.setTable(e.target.value)}
+              placeholder="Or type a table name (optional)"
+              aria-label="Table"
+              className="mt-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </div>
         )}
         {p.orderType === "Delivery" && (
           <div className="mt-2 grid gap-2">
