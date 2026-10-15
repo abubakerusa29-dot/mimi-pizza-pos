@@ -14,11 +14,11 @@ export interface InvoiceSettings {
 }
 
 export const templates: { id: TemplateId; name: string; note: string }[] = [
-  { id: "classic", name: "Classic", note: "Bara logo, saaf dashed lines, barcode" },
-  { id: "compact", name: "Paper Saver", note: "Kam jagah, kam paper kharch" },
-  { id: "boxed", name: "Boxed", note: "Double borders, table jaisa total" },
-  { id: "bold", name: "Bold Brand", note: "Bara TOTAL, ulta (black) heading" },
-  { id: "minimal", name: "Minimal", note: "Sirf zaroori cheezein, simple" },
+  { id: "classic", name: "Classic", note: "Large logo, clean dashed lines, barcode" },
+  { id: "compact", name: "Paper Saver", note: "Tight layout that saves paper" },
+  { id: "boxed", name: "Boxed", note: "Bordered boxes with a table style total" },
+  { id: "bold", name: "Bold Brand", note: "Big total with black heading bars" },
+  { id: "minimal", name: "Minimal", note: "Only the essentials, simple" },
 ];
 
 export const defaultInvoiceSettings: InvoiceSettings = {

@@ -126,7 +126,7 @@ export function CartPanel(p: Props) {
                         ))}
                       </div>
                     )}
-                    {l.qty > 1 && openAddon === l.key && <p className="mt-1 text-[10px] text-muted-foreground">Applies to 1 of {l.qty} — tap again for more.</p>}
+                    {l.qty > 1 && openAddon === l.key && <p className="mt-1 text-[10px] text-muted-foreground">Applies to 1 of {l.qty}. Tap again for more.</p>}
                   </div>
                 )}
               </li>

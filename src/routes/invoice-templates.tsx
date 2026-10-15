@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Lock, RotateCcw, Upload } from "lucide-react";
+import { Check, RotateCcw, Upload } from "lucide-react";
 import { useOrder } from "@/components/pos/OrderContext";
 import { SampleCustomerSlip } from "@/components/pos/ReceiptPreview";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { softwareCredit } from "@/data/softwareCredit";
 import { defaultInvoiceSettings, templates, type InvoiceSettings, type LogoMode } from "@/lib/invoiceTemplates";
 
 export const Route = createFileRoute("/invoice-templates")({
@@ -13,7 +12,7 @@ export const Route = createFileRoute("/invoice-templates")({
 });
 
 const logoModes: { id: LogoMode; label: string }[] = [
-  { id: "both", label: "Logo + Wordmark" }, { id: "badge", label: "Sirf Logo" }, { id: "wordmark", label: "Sirf Wordmark" }, { id: "none", label: "Koi logo nahi" },
+  { id: "both", label: "Logo + Wordmark" }, { id: "badge", label: "Logo only" }, { id: "wordmark", label: "Wordmark only" }, { id: "none", label: "No logo" },
 ];
 
 function InvoiceTemplates() {
@@ -21,7 +20,7 @@ function InvoiceTemplates() {
   const set = (patch: Partial<InvoiceSettings>) => setInvoiceSettings({ ...s, ...patch });
   const onLogo = (file?: File) => {
     if (!file) return;
-    if (file.size > 400_000) { alert("Logo 400KB se chhota hona chahiye."); return; }
+    if (file.size > 400_000) { alert("Logo must be smaller than 400KB."); return; }
     const r = new FileReader();
     r.onload = () => set({ customLogo: String(r.result) });
     r.readAsDataURL(file);
@@ -33,7 +32,7 @@ function InvoiceTemplates() {
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <div><h2 className="font-display text-xl font-semibold">Invoice Templates</h2><p className="text-xs text-muted-foreground">Customer receipt ka design chunein. Har tabdeeli foran save hoti hai aur POS par print hoti hai.</p></div>
+            <div><h2 className="font-display text-xl font-semibold">Invoice Templates</h2><p className="text-xs text-muted-foreground">Choose the customer receipt design. Changes save right away and are used for POS prints.</p></div>
             <Button variant="outline" className="h-9 text-xs" onClick={() => setInvoiceSettings(defaultInvoiceSettings)}><RotateCcw /> Reset</Button>
           </div>
 
@@ -53,29 +52,25 @@ function InvoiceTemplates() {
             <h3 className="text-sm font-semibold">2. Paper size</h3>
             <div className="mt-3 flex gap-2">
               <button className={chip(s.paper === "80")} onClick={() => set({ paper: "80" })}>80mm (Standard)</button>
-              <button className={chip(s.paper === "58")} onClick={() => set({ paper: "58" })}>58mm (Chhota)</button>
+              <button className={chip(s.paper === "58")} onClick={() => set({ paper: "58" })}>58mm (Small)</button>
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">Apne printer ke roll ki chaurai naap lein: ~8cm = 80mm, ~5.8cm = 58mm. Restaurant counter printers aam tor par 80mm hote hain.</p>
+            <p className="mt-2 text-[11px] text-muted-foreground">Measure your paper roll width (chaurai): about 8cm is 80mm, about 5.8cm is 58mm. Most counter printers use 80mm.</p>
           </section>
 
           <section className="rounded-xl border bg-card p-4">
             <h3 className="text-sm font-semibold">3. Logo</h3>
             <div className="mt-3 flex flex-wrap gap-2">{logoModes.map((m) => <button key={m.id} className={chip(s.logo === m.id)} onClick={() => set({ logo: m.id })}>{m.label}</button>)}</div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border bg-background px-3 text-xs font-semibold"><Upload className="size-4" /> Naya logo upload<input type="file" accept="image/*" className="hidden" onChange={(e) => onLogo(e.target.files?.[0])} /></label>
-              {s.customLogo && <Button variant="ghost" size="sm" className="text-xs" onClick={() => set({ customLogo: "" })}>Asal logo wapas</Button>}
+              <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border bg-background px-3 text-xs font-semibold"><Upload className="size-4" /> Upload new logo<input type="file" accept="image/*" className="hidden" onChange={(e) => onLogo(e.target.files?.[0])} /></label>
+              {s.customLogo && <Button variant="ghost" size="sm" className="text-xs" onClick={() => set({ customLogo: "" })}>Use original logo</Button>}
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">Behtar print ke liye logo black &amp; white aur white background par ho.</p>
+            <p className="mt-2 text-[11px] text-muted-foreground">For the best print, use a black and white logo on a white background.</p>
           </section>
 
           <section className="rounded-xl border bg-card p-4">
             <h3 className="text-sm font-semibold">4. Footer message</h3>
             <Textarea value={s.footer} maxLength={160} onChange={(e) => set({ footer: e.target.value })} className="mt-3 text-sm" rows={2} aria-label="Footer message" />
-            <label className="mt-3 flex items-center gap-2 text-xs font-medium"><input type="checkbox" checked={s.showBarcode} onChange={(e) => set({ showBarcode: e.target.checked })} /> Barcode print karein</label>
-            <div className="mt-3 flex items-start gap-2 rounded-md bg-muted p-3 text-[11px] text-muted-foreground">
-              <Lock className="mt-0.5 size-3.5 shrink-0" />
-              <span>Har slip ke neeche “Software by {softwareCredit.name}” hamesha print hoga. Isay hataya nahi ja sakta.</span>
-            </div>
+            <label className="mt-3 flex items-center gap-2 text-xs font-medium"><input type="checkbox" checked={s.showBarcode} onChange={(e) => set({ showBarcode: e.target.checked })} /> Print barcode</label>
           </section>
         </div>
 
