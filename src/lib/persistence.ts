@@ -3,6 +3,7 @@ import type { Invoice } from "@/components/pos/OrderContext";
 import type { MenuOverrides } from "@/lib/menuOverrides";
 import type { restaurantInfo } from "@/data/menuData";
 import { normalizeInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
+import { defaultTables, normalizeTables, type DiningTable } from "@/lib/tables";
 
 export interface PersistedSettings {
   restaurant: typeof restaurantInfo;
@@ -10,6 +11,7 @@ export interface PersistedSettings {
   areas: string[];
   menuOverrides: MenuOverrides;
   invoice: InvoiceSettings;
+  tables: DiningTable[];
 }
 
 const logErr = (what: string, error: unknown) => console.error(`[pos] ${what} save/load failed`, error);
@@ -67,21 +69,22 @@ export async function loadSettings(): Promise<PersistedSettings | null> {
   const { data, error } = await supabase.from("pos_settings").select("*").eq("id", 1).maybeSingle();
   if (error) { logErr("settings", error); return null; }
   if (!data) return null;
-  // Invoice look is stored alongside the restaurant profile.
-  const { invoice, ...restaurant } = (data.restaurant ?? {}) as PersistedSettings["restaurant"] & { invoice?: unknown };
+  // Invoice look and dining tables are stored alongside the restaurant profile.
+  const { invoice, tables, ...restaurant } = (data.restaurant ?? {}) as PersistedSettings["restaurant"] & { invoice?: unknown; tables?: unknown };
   return {
     restaurant: restaurant as PersistedSettings["restaurant"],
     riders: data.riders as string[],
     areas: data.areas as string[],
     menuOverrides: data.menu_overrides as unknown as MenuOverrides,
     invoice: normalizeInvoiceSettings(invoice),
+    tables: normalizeTables(tables) ?? defaultTables,
   };
 }
 
 export async function persistSettings(s: PersistedSettings) {
   const { error } = await supabase.from("pos_settings").upsert({
     id: 1,
-    restaurant: JSON.parse(JSON.stringify({ ...s.restaurant, invoice: s.invoice })),
+    restaurant: JSON.parse(JSON.stringify({ ...s.restaurant, invoice: s.invoice, tables: s.tables })),
     riders: s.riders,
     areas: s.areas,
     menu_overrides: JSON.parse(JSON.stringify(s.menuOverrides)),

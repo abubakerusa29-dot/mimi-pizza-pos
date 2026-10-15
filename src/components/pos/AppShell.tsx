@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer } from "lucide-react";
+import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair } from "lucide-react";
 import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
@@ -14,6 +14,7 @@ const navigation = [
   { to: "/riders", label: "Riders & Cash", icon: Bike },
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },
   { to: "/menu-growth", label: "Menu Management", icon: BookOpen },
+  { to: "/tables", label: "Table Management", icon: Armchair },
   { to: "/invoice-templates", label: "Invoice Templates", icon: ReceiptText },
   { to: "/printers", label: "Printer Setup", icon: Printer },
   { to: "/settings", label: "Settings", icon: Settings },

@@ -6,6 +6,7 @@ import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
 import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
 import { defaultInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
+import { defaultTables, type DiningTable } from "@/lib/tables";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -26,6 +27,7 @@ function useOrderState() {
   const [riderList, setRiderListState] = useState<string[]>(defaultRiders);
   const [areaList, setAreaListState] = useState<string[]>(defaultAreas);
   const [invoiceSettings, setInvoiceSettingsState] = useState<InvoiceSettings>(defaultInvoiceSettings);
+  const [tableList, setTableListState] = useState<DiningTable[]>(defaultTables);
 
   // Load permanently saved data once on startup.
   useEffect(() => {
@@ -43,13 +45,14 @@ function useOrderState() {
         setAreaListState(saved.areas);
         setMenuOverridesState(saved.menuOverrides);
         setInvoiceSettingsState(saved.invoice);
+        setTableListState(saved.tables);
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings }>) =>
-    void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, ...patch });
+  const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings; tables: DiningTable[] }>) =>
+    void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, tables: tableList, ...patch });
 
   /** Records (or updates) an invoice in history, keyed by order number, and saves it permanently. */
   const saveInvoice = (inv: Invoice) => {
@@ -95,8 +98,12 @@ function useOrderState() {
     setInvoiceSettingsState(v);
     saveSettings({ invoice: v });
   };
+  const setTableList = (v: DiningTable[]) => {
+    setTableListState(v);
+    saveSettings({ tables: v });
+  };
 
-  return { invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  return { tableList, setTableList, invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }
