@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pos_invoices: {
+        Row: {
+          address: string
+          area: string | null
+          created_at: string
+          id: string
+          lines: Json
+          order_no: number
+          order_type: string
+          phone: string
+          rider: string | null
+          status: string | null
+          table_no: string
+        }
+        Insert: {
+          address?: string
+          area?: string | null
+          created_at?: string
+          id?: string
+          lines?: Json
+          order_no: number
+          order_type?: string
+          phone?: string
+          rider?: string | null
+          status?: string | null
+          table_no?: string
+        }
+        Update: {
+          address?: string
+          area?: string | null
+          created_at?: string
+          id?: string
+          lines?: Json
+          order_no?: number
+          order_type?: string
+          phone?: string
+          rider?: string | null
+          status?: string | null
+          table_no?: string
+        }
+        Relationships: []
+      }
+      pos_settings: {
+        Row: {
+          areas: Json
+          id: number
+          menu_overrides: Json
+          restaurant: Json
+          riders: Json
+          updated_at: string
+        }
+        Insert: {
+          areas?: Json
+          id?: number
+          menu_overrides?: Json
+          restaurant?: Json
+          riders?: Json
+          updated_at?: string
+        }
+        Update: {
+          areas?: Json
+          id?: number
+          menu_overrides?: Json
+          restaurant?: Json
+          riders?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
