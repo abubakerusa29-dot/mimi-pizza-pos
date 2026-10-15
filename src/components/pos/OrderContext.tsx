@@ -5,6 +5,7 @@ import { emptyOverrides, type MenuOverrides } from "@/lib/menuOverrides";
 import { restaurantInfo } from "@/data/menuData";
 import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/riders";
 import { loadInvoices, loadSettings, persistInvoice, persistInvoiceStatus, persistRiderAssignment, persistSettings } from "@/lib/persistence";
+import { defaultInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
 
 export type OrderType = "Dine-in" | "Takeaway" | "Delivery";
 
@@ -24,6 +25,7 @@ function useOrderState() {
   /** Rider names and delivery areas; the owner manages these from Settings. */
   const [riderList, setRiderListState] = useState<string[]>(defaultRiders);
   const [areaList, setAreaListState] = useState<string[]>(defaultAreas);
+  const [invoiceSettings, setInvoiceSettingsState] = useState<InvoiceSettings>(defaultInvoiceSettings);
 
   // Load permanently saved data once on startup.
   useEffect(() => {
@@ -36,17 +38,18 @@ function useOrderState() {
         setOrderNo((n) => Math.max(n, Math.max(...savedInvoices.map((i) => i.orderNo)) + 1));
       }
       if (saved) {
-        setRestaurantState(saved.restaurant);
+        setRestaurantState({ ...restaurantInfo, ...saved.restaurant });
         setRiderListState(saved.riders);
         setAreaListState(saved.areas);
         setMenuOverridesState(saved.menuOverrides);
+        setInvoiceSettingsState(saved.invoice);
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const saveSettings = (next: { restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides }) =>
-    void persistSettings(next);
+  const saveSettings = (patch: Partial<{ restaurant: typeof restaurantInfo; riders: string[]; areas: string[]; menuOverrides: MenuOverrides; invoice: InvoiceSettings }>) =>
+    void persistSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides, invoice: invoiceSettings, ...patch });
 
   /** Records (or updates) an invoice in history, keyed by order number, and saves it permanently. */
   const saveInvoice = (inv: Invoice) => {
@@ -71,25 +74,29 @@ function useOrderState() {
   const setMenuOverrides = (next: Updater<MenuOverrides>) => {
     const v = resolve(next, menuOverrides);
     setMenuOverridesState(v);
-    saveSettings({ restaurant, riders: riderList, areas: areaList, menuOverrides: v });
+    saveSettings({ menuOverrides: v });
   };
   const setRestaurant = (next: Updater<typeof restaurantInfo>) => {
     const v = resolve(next, restaurant);
     setRestaurantState(v);
-    saveSettings({ restaurant: v, riders: riderList, areas: areaList, menuOverrides });
+    saveSettings({ restaurant: v });
   };
   const setRiderList = (next: Updater<string[]>) => {
     const v = resolve(next, riderList);
     setRiderListState(v);
-    saveSettings({ restaurant, riders: v, areas: areaList, menuOverrides });
+    saveSettings({ riders: v });
   };
   const setAreaList = (next: Updater<string[]>) => {
     const v = resolve(next, areaList);
     setAreaListState(v);
-    saveSettings({ restaurant, riders: riderList, areas: v, menuOverrides });
+    saveSettings({ areas: v });
+  };
+  const setInvoiceSettings = (v: InvoiceSettings) => {
+    setInvoiceSettingsState(v);
+    saveSettings({ invoice: v });
   };
 
-  return { assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
+  return { invoiceSettings, setInvoiceSettings, assignRider, menuOverrides, setMenuOverrides, restaurant, setRestaurant, riderList, setRiderList, areaList, setAreaList, rider, setRider, area, setArea, setInvoiceStatus, lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, phone, setPhone, address, setAddress, invoices, saveInvoice };
 }
 
 export interface Invoice { orderNo: number; date: Date; lines: CartLine[]; orderType: OrderType; table: string; phone: string; address: string; rider?: string | undefined; area?: string | undefined; status?: DeliveryStatus | undefined }
