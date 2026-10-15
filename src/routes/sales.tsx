@@ -13,6 +13,31 @@ export const Route = createFileRoute("/sales")({
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const parse = (s: string) => { const [y, m, d] = s.split("-").map(Number); return new Date(y!, m! - 1, d); };
 
+const esc = (v: string) => v.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+/** Downloads the sales report as a Word file that opens in MS Word / WPS / Google Docs. */
+function saveWord(s: ReturnType<typeof salesSummary>, from: string, to: string) {
+  const range = from || to ? `${from || "start"} to ${to || "today"}` : "All time";
+  const td = "border:1px solid #999;padding:6px";
+  const rows = (r: string[][]) => r.map((c) => `<tr>${c.map((x) => `<td style="${td}">${esc(x)}</td>`).join("")}</tr>`).join("");
+  const html = `<html><head><meta charset="utf-8"><title>Sales Report</title></head><body style="font-family:Arial">
+<h1>Mimi's Pizza - Sales Report</h1><p>Period: ${esc(range)}</p>
+<table style="border-collapse:collapse">${rows([["Total sales", formatRs(s.revenue)], ["Orders", String(s.orders)], ["Average bill", formatRs(s.average)]])}</table>
+<h2>By order type</h2><table style="border-collapse:collapse">${rows([["Type", "Orders", "Sales"], ...(["Dine-in", "Takeaway", "Delivery"] as const).map((t) => [t, String(s.byType[t]?.orders ?? 0), formatRs(s.byType[t]?.revenue ?? 0)])])}</table>
+<h2>Busy hours</h2><table style="border-collapse:collapse">${rows([["Hour", "Orders"], ...s.peakHours.map((h) => [`${String(h.hour).padStart(2, "0")}:00`, String(h.orders)])])}</table>
+<h2>Best sellers</h2><table style="border-collapse:collapse">${rows([["#", "Item", "Sold", "Sales"], ...s.topItems.slice(0, 20).map((i, n) => [String(n + 1), i.name, String(i.qty), formatRs(i.revenue)])])}</table>
+</body></html>`;
+  const blob = new Blob(["\ufeff", html], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mimis-sales-${from || "all"}${to && to !== from ? `-to-${to}` : ""}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
 function Sales() {
   const { invoices } = useOrder();
   const today = iso(new Date());
