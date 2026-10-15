@@ -1,7 +1,7 @@
 import { lineTotal } from "@/lib/cart";
 import type { CartLine } from "@/lib/cart";
 
-export interface Customer { phone: string; name: string; address: string; notes: string }
+export interface Customer { phone: string; name: string; address: string; notes: string; area?: string }
 export interface StockItem { id: string; name: string; unit: string; qty: number; lowAt: number }
 export interface Expense { id: string; date: string; type: string; reason: string; amount: number }
 export interface TeamMember { id: string; name: string; role: string; phone: string; shift: string; active: boolean }
@@ -33,7 +33,7 @@ export const newId = () => Math.random().toString(36).slice(2, 10);
 export const cleanPhone = (p: string) => p.replace(/\D/g, "");
 export const findCustomer = (list: Customer[], phone: string) => {
   const p = cleanPhone(phone);
-  return p.length >= 7 ? list.find((c) => cleanPhone(c.phone) === p) : undefined;
+  return p.length >= 3 ? list.find((c) => cleanPhone(c.phone) === p) : undefined;
 };
 export const isLowStock = (s: StockItem) => s.qty <= s.lowAt;
 
@@ -62,3 +62,11 @@ export const customerHistory = (invoices: { phone: string; lines: CartLine[] }[]
   const mine = invoices.filter((i) => cleanPhone(i.phone) === p);
   return { orders: mine.length, spent: mine.reduce((s, i) => s + sum(i.lines), 0) };
 };
+
+/** Search saved customers by name, phone, address or area. */
+export function searchCustomers(list: Customer[], q: string): Customer[] {
+  const t = q.trim().toLowerCase();
+  if (!t) return [];
+  const digits = cleanPhone(t);
+  return list.filter((c) => `${c.name} ${c.address} ${c.area ?? ""}`.toLowerCase().includes(t) || (digits.length > 0 && cleanPhone(c.phone).includes(digits))).slice(0, 8);
+}
