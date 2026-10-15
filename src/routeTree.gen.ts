@@ -10,19 +10,39 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as ExpensesRouteImport } from './routes/expenses'
+import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as InvoiceTemplatesRouteImport } from './routes/invoice-templates'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
 import { Route as PrintersRouteImport } from './routes/printers'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TablesRouteImport } from './routes/tables'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExpensesRoute = ExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvoiceTemplatesRoute = InvoiceTemplatesRouteImport.update({
@@ -45,6 +65,11 @@ const PrintersRoute = PrintersRouteImport.update({
   path: '/printers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RidersRoute = RidersRouteImport.update({
   id: '/riders',
   path: '/riders',
@@ -65,6 +90,11 @@ const TablesRoute = TablesRouteImport.update({
   path: '/tables',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   id: '/features/$slug',
   path: '/features/$slug',
@@ -73,90 +103,125 @@ const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/customers': typeof CustomersRoute
+  '/expenses': typeof ExpensesRoute
+  '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
+  '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/team': typeof TeamRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/customers': typeof CustomersRoute
+  '/expenses': typeof ExpensesRoute
+  '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
+  '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/team': typeof TeamRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/customers': typeof CustomersRoute
+  '/expenses': typeof ExpensesRoute
+  '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
+  '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
+  '/team': typeof TeamRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/customers'
+    | '/expenses'
+    | '/inventory'
     | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
     | '/printers'
+    | '/reports'
     | '/riders'
     | '/sales'
     | '/settings'
     | '/tables'
+    | '/team'
     | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/customers'
+    | '/expenses'
+    | '/inventory'
     | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
     | '/printers'
+    | '/reports'
     | '/riders'
     | '/sales'
     | '/settings'
     | '/tables'
+    | '/team'
     | '/features/$slug'
   id:
     | '__root__'
     | '/'
+    | '/customers'
+    | '/expenses'
+    | '/inventory'
     | '/invoice-templates'
     | '/invoices'
     | '/menu-growth'
     | '/printers'
+    | '/reports'
     | '/riders'
     | '/sales'
     | '/settings'
     | '/tables'
+    | '/team'
     | '/features/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CustomersRoute: typeof CustomersRoute
+  ExpensesRoute: typeof ExpensesRoute
+  InventoryRoute: typeof InventoryRoute
   InvoiceTemplatesRoute: typeof InvoiceTemplatesRoute
   InvoicesRoute: typeof InvoicesRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
   PrintersRoute: typeof PrintersRoute
+  ReportsRoute: typeof ReportsRoute
   RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   SettingsRoute: typeof SettingsRoute
   TablesRoute: typeof TablesRoute
+  TeamRoute: typeof TeamRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
 
@@ -167,6 +232,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/expenses': {
+      id: '/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof ExpensesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invoice-templates': {
@@ -197,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrintersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/riders': {
       id: '/riders'
       path: '/riders'
@@ -225,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TablesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/features/$slug': {
       id: '/features/$slug'
       path: '/features/$slug'
@@ -237,14 +337,19 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CustomersRoute: CustomersRoute,
+  ExpensesRoute: ExpensesRoute,
+  InventoryRoute: InventoryRoute,
   InvoiceTemplatesRoute: InvoiceTemplatesRoute,
   InvoicesRoute: InvoicesRoute,
   MenuGrowthRoute: MenuGrowthRoute,
   PrintersRoute: PrintersRoute,
+  ReportsRoute: ReportsRoute,
   RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   SettingsRoute: SettingsRoute,
   TablesRoute: TablesRoute,
+  TeamRoute: TeamRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
 }
 export const routeTree = rootRouteImport
