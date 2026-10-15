@@ -260,7 +260,7 @@ export function SampleCustomerSlip({ invoice, restaurant, kind = "customer" }: {
     { key: "dr-sample", name: "Drink 1.5L", unitPrice: 250, qty: 2 } as CartLine,
   ];
   const delivery = kind === "rider";
-  return <Slip kind={kind} lines={lines} orderNo={1234} orderType={delivery ? "Delivery" : "Takeaway"} table="" date={new Date()} phone={delivery ? "0300 1234567" : ""} address={delivery ? "House 12, Street 4, Model Town" : ""} rider={delivery ? "Rider 1" : undefined} area={delivery ? "Model Town" : undefined} restaurant={restaurant} invoice={invoice} />;
+  return <Slip kind={kind} lines={lines} orderNo={1234} orderType={delivery ? "Delivery" : "Takeaway"} table="" date={new Date()} phone={delivery ? "0300 1234567" : ""} address={delivery ? "House 12, Street 4, Model Town" : ""} rider={delivery ? "Rider 1" : ""} area={delivery ? "Model Town" : ""} restaurant={restaurant} invoice={invoice} />;
 }
 
 /** Sends one browser print job sized for the chosen paper width. */
