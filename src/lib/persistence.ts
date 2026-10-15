@@ -19,7 +19,7 @@ export async function loadInvoices(): Promise<Invoice[]> {
   return data.map((r) => ({
     orderNo: r.order_no,
     date: new Date(r.created_at),
-    lines: r.lines as Invoice["lines"],
+    lines: r.lines as unknown as Invoice["lines"],
     orderType: r.order_type as Invoice["orderType"],
     table: r.table_no,
     phone: r.phone,
@@ -35,7 +35,7 @@ export async function persistInvoice(inv: Invoice) {
   const row = {
     order_no: inv.orderNo,
     created_at: inv.date instanceof Date ? inv.date.toISOString() : new Date(inv.date).toISOString(),
-    lines: inv.lines,
+    lines: JSON.parse(JSON.stringify(inv.lines)),
     order_type: inv.orderType,
     table_no: inv.table,
     phone: inv.phone,
