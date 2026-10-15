@@ -37,7 +37,7 @@ function compress(file: File): Promise<string> {
 const blank = { name: "", category: "pizza" as CategoryId, description: "", price: "", sizes: "" };
 const SIZE_NAMES = ["Small", "Medium", "Large", "Family"] as const;
 type SizeRow = { on: boolean; price: string };
-const blankSizes = (): Record<string, SizeRow> => Object.fromEntries(SIZE_NAMES.map((n) => [n, { on: true, price: "" }]));
+const blankSizes = (): Record<string, SizeRow> => Object.fromEntries(SIZE_NAMES.map((n) => [n, { on: true, price: "" } as SizeRow]));
 const DEAL_PARTS: { id: CategoryId; label: string }[] = [
   { id: "pizza", label: "Pizza" }, { id: "burgers", label: "Burger" }, { id: "drinks", label: "Drink" }, { id: "wings", label: "Wings" },
   { id: "sides", label: "Fries / Side" }, { id: "pasta", label: "Pasta" }, { id: "rolls", label: "Roll / Paratha" },
@@ -84,7 +84,7 @@ function MenuManagement() {
   const changed = Object.keys(o.prices).length + o.hidden.length;
 
   const save = () => {
-    const sizes = form.category === "pizza" ? SIZE_NAMES.filter((n) => sizeRows[n].on && Number(sizeRows[n].price) > 0).map((n) => `${n}:${sizeRows[n].price}`).join(", ") : "";
+    const sizes = form.category === "pizza" ? SIZE_NAMES.filter((n) => sizeRows[n]!.on && Number(sizeRows[n]!.price) > 0).map((n) => `${n}:${sizeRows[n]!.price}`).join(", ") : "";
     if (form.category === "pizza" && !sizes) { setErr("Kam az kam ek available size ki price likhein."); return; }
     const item = makeCustomItem({ ...form, sizes, price: form.category === "pizza" ? "" : form.price }, `custom-${Date.now().toString(36)}`);
     if (!item) { setErr("Naam aur price zaroori hain."); return; }
@@ -136,11 +136,11 @@ function MenuManagement() {
                 <p className="text-xs font-medium text-muted-foreground">Sizes aur prices — jo size nahi banta usay Off kar dein</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {SIZE_NAMES.map((n) => (
-                    <div key={n} className={`flex items-center gap-2 rounded-md border p-2 ${sizeRows[n].on ? "" : "opacity-50"}`}>
-                      <Switch checked={sizeRows[n].on} onCheckedChange={(v) => setSizeRows((r) => ({ ...r, [n]: { ...r[n], on: v } }))} aria-label={`${n} available`} />
+                    <div key={n} className={`flex items-center gap-2 rounded-md border p-2 ${sizeRows[n]!.on ? "" : "opacity-50"}`}>
+                      <Switch checked={sizeRows[n]!.on} onCheckedChange={(v) => setSizeRows((r) => ({ ...r, [n]: { ...r[n]!, on: v } }))} aria-label={`${n} available`} />
                       <span className="w-16 text-sm font-medium">{n}</span>
                       <span className="text-xs text-muted-foreground">Rs.</span>
-                      <Input type="number" min={1} disabled={!sizeRows[n].on} value={sizeRows[n].price} onChange={(e) => setSizeRows((r) => ({ ...r, [n]: { ...r[n], price: e.target.value } }))} placeholder={sizeRows[n].on ? "Price" : "Not available"} className="h-8 text-sm" aria-label={`${n} price`} />
+                      <Input type="number" min={1} disabled={!sizeRows[n]!.on} value={sizeRows[n]!.price} onChange={(e) => setSizeRows((r) => ({ ...r, [n]: { ...r[n]!, price: e.target.value } }))} placeholder={sizeRows[n]!.on ? "Price" : "Not available"} className="h-8 text-sm" aria-label={`${n} price`} />
                     </div>
                   ))}
                 </div>
