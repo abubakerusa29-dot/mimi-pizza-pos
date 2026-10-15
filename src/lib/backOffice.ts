@@ -4,9 +4,9 @@ import type { CartLine } from "@/lib/cart";
 export interface Customer { phone: string; name: string; address: string; notes: string; area?: string }
 export interface StockItem { id: string; name: string; unit: string; qty: number; lowAt: number }
 export interface Expense { id: string; date: string; type: string; reason: string; amount: number }
-export interface TeamMember { id: string; name: string; role: string; phone: string; shift: string; active: boolean }
+export interface TeamMember { id: string; name: string; role: string; phone: string; shift: string; active: boolean; pin?: string; permissions?: string[] }
 
-export interface BackOffice { customers: Customer[]; stock: StockItem[]; expenses: Expense[]; team: TeamMember[] }
+export interface BackOffice { customers: Customer[]; stock: StockItem[]; expenses: Expense[]; team: TeamMember[]; ownerPin?: string }
 
 export const expenseTypes = ["Ingredients", "Packing material", "Salaries", "Rent", "Electricity & gas", "Fuel", "Repairs", "Other"];
 export const teamRoles = ["Owner", "Manager", "Cashier", "Chef", "Kitchen helper", "Rider", "Waiter"];
@@ -26,7 +26,7 @@ export const emptyBackOffice: BackOffice = {
 const arr = <T,>(v: unknown, fallback: T[]): T[] => (Array.isArray(v) ? (v as T[]) : fallback);
 export function normalizeBackOffice(v: unknown): BackOffice {
   const o = (v ?? {}) as Partial<BackOffice>;
-  return { customers: arr(o.customers, []), stock: arr(o.stock, emptyBackOffice.stock), expenses: arr(o.expenses, []), team: arr(o.team, []) };
+  return { customers: arr(o.customers, []), stock: arr(o.stock, emptyBackOffice.stock), expenses: arr(o.expenses, []), team: arr(o.team, []), ownerPin: typeof o.ownerPin === "string" ? o.ownerPin : undefined };
 }
 
 export const newId = () => Math.random().toString(36).slice(2, 10);
