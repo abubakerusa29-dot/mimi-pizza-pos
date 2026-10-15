@@ -2,12 +2,14 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Invoice } from "@/components/pos/OrderContext";
 import type { MenuOverrides } from "@/lib/menuOverrides";
 import type { restaurantInfo } from "@/data/menuData";
+import { normalizeInvoiceSettings, type InvoiceSettings } from "@/lib/invoiceTemplates";
 
 export interface PersistedSettings {
   restaurant: typeof restaurantInfo;
   riders: string[];
   areas: string[];
   menuOverrides: MenuOverrides;
+  invoice: InvoiceSettings;
 }
 
 const logErr = (what: string, error: unknown) => console.error(`[pos] ${what} save/load failed`, error);
@@ -65,18 +67,21 @@ export async function loadSettings(): Promise<PersistedSettings | null> {
   const { data, error } = await supabase.from("pos_settings").select("*").eq("id", 1).maybeSingle();
   if (error) { logErr("settings", error); return null; }
   if (!data) return null;
+  // Invoice look is stored alongside the restaurant profile.
+  const { invoice, ...restaurant } = (data.restaurant ?? {}) as PersistedSettings["restaurant"] & { invoice?: unknown };
   return {
-    restaurant: data.restaurant as PersistedSettings["restaurant"],
+    restaurant: restaurant as PersistedSettings["restaurant"],
     riders: data.riders as string[],
     areas: data.areas as string[],
     menuOverrides: data.menu_overrides as unknown as MenuOverrides,
+    invoice: normalizeInvoiceSettings(invoice),
   };
 }
 
 export async function persistSettings(s: PersistedSettings) {
   const { error } = await supabase.from("pos_settings").upsert({
     id: 1,
-    restaurant: s.restaurant,
+    restaurant: JSON.parse(JSON.stringify({ ...s.restaurant, invoice: s.invoice })),
     riders: s.riders,
     areas: s.areas,
     menu_overrides: JSON.parse(JSON.stringify(s.menuOverrides)),
