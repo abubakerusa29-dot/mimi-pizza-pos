@@ -57,7 +57,7 @@ function MenuCard({ p, image }: { p: Product; image?: string | undefined }) {
   );
 }
 
-function MenuSection({ id, items, isMobile }: { id: CategoryId; items: Product[]; isMobile: boolean }) {
+function MenuSection({ id, items, isMobile, images }: { id: CategoryId; items: Product[]; isMobile: boolean; images?: Record<string, string> | undefined }) {
   const step = id === "deals" ? 4 : isMobile ? 6 : 8;
   const [shown, setShown] = useState(step);
   const label = sectionTitle[id] ?? categories.find((c) => c.id === id)?.label ?? id;
@@ -68,7 +68,7 @@ function MenuSection({ id, items, isMobile }: { id: CategoryId; items: Product[]
         <h3 className="font-display text-2xl font-bold sm:text-3xl"><span className="text-primary">·</span> {label}</h3>
         <span className="text-xs text-muted-foreground">{items.length} items</span>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((p) => <MenuCard key={p.id} p={p} />)}</div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((p) => <MenuCard key={p.id} p={p} image={images?.[p.id]} />)}</div>
       {items.length > visible.length && (
         <div className="mt-5 text-center">
           <button onClick={() => setShown(visible.length + step)} className="inline-flex h-11 items-center gap-1.5 rounded-full border-2 border-primary px-6 text-sm font-bold text-primary hover:bg-primary hover:text-primary-foreground">View all <ChevronDown className="size-4" /> <span className="font-normal opacity-75">({items.length - visible.length} more)</span></button>
@@ -147,7 +147,7 @@ function Home() {
           </div>
         </div>
         <div className="mt-6 space-y-12">
-          {groups.map((g) => <MenuSection key={`${g.id}-${term}-${isMobile}`} id={g.id} items={g.items} isMobile={isMobile} />)}
+          {groups.map((g) => <MenuSection images={overrides.images} key={`${g.id}-${term}-${isMobile}`} id={g.id} items={g.items} isMobile={isMobile} />)}
         </div>
         {!groups.length && <p className="py-10 text-center text-muted-foreground">No items match your search.</p>}
       </section>
