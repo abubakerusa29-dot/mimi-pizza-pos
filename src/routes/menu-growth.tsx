@@ -93,6 +93,7 @@ function MenuManagement() {
     });
   };
   const toggle = (id: string, on: boolean) => setMenuOverrides((m) => ({ ...m, hidden: on ? m.hidden.filter((h) => h !== id) : [...m.hidden, id] }));
+  const toggleList = (key: "posHidden" | "publicHidden", id: string, show: boolean) => setMenuOverrides((m) => { const l = m[key] ?? []; return { ...m, [key]: show ? l.filter((h) => h !== id) : [...l, id] }; });
   const changed = Object.keys(o.prices).length + o.hidden.length;
 
   const save = () => {
@@ -225,6 +226,10 @@ function MenuManagement() {
                 {p.sizes?.map((s) => <PriceBox key={s.size} k={priceKey(p.id, s.size)} base={s.price} label={s.size} />)}
               </div>
               <label className="flex items-center gap-2 text-xs"><Switch checked={on} onCheckedChange={(v) => toggle(p.id, v)} aria-label={`${p.name} available`} />{on ? "Available" : "Off"}</label>
+              <div className="grid gap-1 text-[11px]">
+                <label className="flex items-center gap-1.5"><input type="checkbox" className="accent-primary" checked={!(o.posHidden ?? []).includes(p.id)} onChange={(e) => toggleList("posHidden", p.id, e.target.checked)} />Show in POS</label>
+                <label className="flex items-center gap-1.5"><input type="checkbox" className="accent-primary" checked={!(o.publicHidden ?? []).includes(p.id)} onChange={(e) => toggleList("publicHidden", p.id, e.target.checked)} />Show on website</label>
+              </div>
               <Button variant="ghost" size="icon" onClick={() => setEdit({ id: p.id, name: p.name, description: p.description ?? "", photo: "" })} aria-label={`Edit ${p.name}`}><Pencil /></Button>
               {<Button variant="ghost" size="icon" onClick={() => setDel({ id: p.id, name: p.name, regular: !mine, step: 1 })} aria-label={`Delete ${p.name}`}><Trash2 className="text-destructive" /></Button>}
             </div>
