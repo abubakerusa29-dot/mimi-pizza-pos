@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Lock, Loader2 } from "lucide-react";
+import React, { useEffect, useState, type ReactNode } from "react";
+import { Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,7 @@ function PinForm({ onOk }: { onOk: () => void }) {
           <h1 className="mt-2 font-display text-xl font-bold">Staff PIN</h1>
           <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lock className="size-3" />Step 1 of 2. Enter the 6-digit staff PIN</p>
         </div>
-        <Input autoFocus value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" type="password" placeholder="••••••" aria-label="Staff PIN" className="h-12 text-center text-xl tracking-[0.5em]" />
+        <SecretInput autoFocus value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" placeholder="••••••" aria-label="Staff PIN" className="h-12 text-center text-xl tracking-[0.5em]" />
         {err && <p className="text-xs text-destructive">{err}</p>}
         <Button type="submit" className="h-11 w-full" disabled={busy || pin.length !== 6}>{busy ? <Loader2 className="animate-spin" /> : "Continue"}</Button>
         <a href="/" className="block text-center text-xs text-muted-foreground hover:text-foreground">← Back to website</a>
@@ -73,7 +73,7 @@ function LoginForm() {
           <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lock className="size-3" />Authorised staff only</p>
         </div>
         <label className="grid gap-1 text-xs font-medium">Email<Input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
-        <label className="grid gap-1 text-xs font-medium">Password<Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
+        <label className="grid gap-1 text-xs font-medium">Password<SecretInput autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
         {err && <p className="text-xs text-destructive">{err}</p>}
         <Button type="submit" className="h-11 w-full" disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : "Sign in"}</Button>
         <a href="/" className="block text-center text-xs text-muted-foreground hover:text-foreground">← Back to website</a>
@@ -111,9 +111,9 @@ export function OwnerAccountCard() {
       <h3 className="flex items-center gap-2 text-sm font-semibold"><Lock className="size-4 text-primary" />Owner login (email and password)</h3>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <label className="grid gap-1 text-xs font-medium text-muted-foreground">Login email<Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Current password<Input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} required className="text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">New password (optional)<Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} className="text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Repeat new password<Input type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Current password<SecretInput value={current} onChange={(e) => setCurrent(e.target.value)} required className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">New password (optional)<SecretInput value={pw} onChange={(e) => setPw(e.target.value)} className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Repeat new password<SecretInput value={pw2} onChange={(e) => setPw2(e.target.value)} className="text-sm text-foreground" /></label>
       </div>
       {msg && <p className={`mt-2 text-xs ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.text}</p>}
       <div className="mt-3 flex flex-wrap gap-2">
@@ -146,12 +146,24 @@ export function StaffPinCard() {
     <form onSubmit={save} className="rounded-xl border bg-card p-4">
       <h3 className="flex items-center gap-2 text-sm font-semibold"><Lock className="size-4 text-primary" />Staff PIN (asked before login)</h3>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Current password<Input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} required className="text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">New 6-digit PIN<Input type="password" inputMode="numeric" value={pin} onChange={(e) => setPin(digits(e.target.value))} className="text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Repeat PIN<Input type="password" inputMode="numeric" value={pin2} onChange={(e) => setPin2(digits(e.target.value))} className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Current password<SecretInput value={current} onChange={(e) => setCurrent(e.target.value)} required className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">New 6-digit PIN<SecretInput inputMode="numeric" value={pin} onChange={(e) => setPin(digits(e.target.value))} className="text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-medium text-muted-foreground">Repeat PIN<SecretInput inputMode="numeric" value={pin2} onChange={(e) => setPin2(digits(e.target.value))} className="text-sm text-foreground" /></label>
       </div>
       {msg && <p className={`mt-2 text-xs ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.text}</p>}
       <Button type="submit" size="sm" className="mt-3">Change PIN</Button>
     </form>
+  );
+}
+
+function SecretInput({ className, ...props }: React.ComponentProps<typeof Input>) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input {...props} type={show ? "text" : "password"} className={`${className ?? ""} pr-10`} />
+      <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide" : "Show"} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground">
+        {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+      </button>
+    </div>
   );
 }
