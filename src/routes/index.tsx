@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { loadSettings } from "@/lib/persistence";
+import { emptyOverrides, publicMenu, type MenuOverrides } from "@/lib/menuOverrides";
 import { Search, MapPin, Clock, Bike, Phone, PackageSearch, Pizza, ChevronDown, Navigation, MessageCircle } from "lucide-react";
 import hero from "@/assets/golden-storefront.png.asset.json";
 import { PublicHeader } from "@/components/public/PublicHeader";
@@ -37,8 +39,8 @@ function WhatsAppIcon({ className }: { className?: string }) {
   return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.6-.1 1.8-.7 2-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" /></svg>;
 }
 
-function MenuCard({ p }: { p: Product }) {
-  const img = productImages[p.id];
+function MenuCard({ p, image }: { p: Product; image?: string | undefined }) {
+  const img = image ?? productImages[p.id];
   const name = p.tag ? `${p.name} ${p.tag}` : p.name;
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
@@ -82,14 +84,17 @@ function Home() {
   const [id, setId] = useState("");
   const [trackId, setTrackId] = useState<string>();
   const isMobile = useIsMobile();
+  const [overrides, setOverrides] = useState<MenuOverrides>(emptyOverrides);
+  useEffect(() => { loadSettings().then((s) => s?.menuOverrides && setOverrides({ ...emptyOverrides, ...s.menuOverrides })).catch(() => {}); }, []);
+  const menu = useMemo(() => publicMenu(products, overrides), [overrides]);
   const term = q.trim().toLowerCase();
   const groups = useMemo(() => {
     const ids = categories.filter((c) => c.id !== "all").map((c) => c.id as CategoryId);
     return ids
       .filter((c) => cat === "all" || c === cat)
-      .map((c) => ({ id: c, items: products.filter((p) => p.category === c && (!term || `${p.name} ${p.tag ?? ""} ${p.description ?? ""}`.toLowerCase().includes(term))) }))
+      .map((c) => ({ id: c, items: menu.filter((p) => p.category === c && (!term || `${p.name} ${p.tag ?? ""} ${p.description ?? ""}`.toLowerCase().includes(term))) }))
       .filter((g) => g.items.length);
-  }, [cat, term]);
+  }, [cat, term, menu]);
 
   const pick = (c: CategoryId | "all") => {
     setCat(c);
