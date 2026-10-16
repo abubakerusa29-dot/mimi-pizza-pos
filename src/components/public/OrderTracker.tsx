@@ -21,7 +21,7 @@ const steps = [
 
 
 /** Live status card for one tracking ID. Polls every 20 seconds. */
-export function OrderTracker({ id }: { id?: string }) {
+export function OrderTracker({ id }: { id?: string | undefined }) {
   const [order, setOrder] = useState<Found | null | "none">(null);
   const [loading, setLoading] = useState(false);
 
