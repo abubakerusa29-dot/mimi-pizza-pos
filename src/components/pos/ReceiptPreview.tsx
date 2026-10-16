@@ -9,6 +9,8 @@ import badge from "@/assets/mimis-primary-logo.png.asset.json";
 import wordmark from "@/assets/mimis-wordmark.png.asset.json";
 import { restaurantInfo } from "@/data/menuData";
 import { softwareCredit } from "@/data/softwareCredit";
+import { QRCodeSVG } from "qrcode.react";
+import { TRACK_URL } from "@/data/publicSite";
 
 type RestaurantInfo = typeof restaurantInfo;
 import { type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
@@ -47,6 +49,18 @@ function Credit() {
     <div className="mt-3 border-t border-dashed border-current pt-2 text-center text-[9px] leading-tight">
       <p>Software by {softwareCredit.name}</p>
       <p>{softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "")} · {softwareCredit.phone}</p>
+    </div>
+  );
+}
+
+/** One fixed QR code to the public tracking page; the order number is printed below it. */
+function TrackQr({ orderNo }: { orderNo: number }) {
+  return (
+    <div className="mt-3 border-t border-dashed border-current pt-2">
+      <p className="text-[11px] font-bold">SCAN TO TRACK YOUR ORDER LIVE</p>
+      <QRCodeSVG value={TRACK_URL} size={110} level="M" marginSize={1} bgColor="#ffffff" fgColor="#000000" className="mx-auto my-1" aria-label="Order tracking QR code" />
+      <p className="text-[10px]">{TRACK_URL.replace(/^https?:\/\//, "")}</p>
+      <p className="text-[11px] font-bold">Tracking ID: {orderNo}</p>
     </div>
   );
 }
@@ -203,6 +217,7 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
         </div>
         <div className="pt-3 text-center">
           {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
+          {orderType !== "Dine-in" && <TrackQr orderNo={orderNo} />}
           {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
         </div>
         <Credit />

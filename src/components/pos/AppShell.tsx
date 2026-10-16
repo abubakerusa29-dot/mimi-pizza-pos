@@ -28,6 +28,8 @@ const navigation = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const path = useLocation({ select: (l) => l.pathname });
+  if (isPublicPath(path)) return <>{children}</>;
   return <StaffSessionProvider><Shell>{children}</Shell></StaffSessionProvider>;
 }
 
