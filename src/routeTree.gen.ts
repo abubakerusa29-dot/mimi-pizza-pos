@@ -26,7 +26,6 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TablesRouteImport } from './routes/tables'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TrackRouteImport } from './routes/track'
-import { Route as ApiBootstrapOwnerRouteImport } from './routes/api/bootstrap-owner'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -114,11 +113,6 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBootstrapOwnerRoute = ApiBootstrapOwnerRouteImport.update({
-  id: '/api/bootstrap-owner',
-  path: '/api/bootstrap-owner',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   id: '/features/$slug',
   path: '/features/$slug',
@@ -143,7 +137,6 @@ export interface FileRoutesByFullPath {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/bootstrap-owner': typeof ApiBootstrapOwnerRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesByTo {
@@ -164,7 +157,6 @@ export interface FileRoutesByTo {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/bootstrap-owner': typeof ApiBootstrapOwnerRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesById {
@@ -186,7 +178,6 @@ export interface FileRoutesById {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/bootstrap-owner': typeof ApiBootstrapOwnerRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
@@ -209,7 +200,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/bootstrap-owner'
     | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -230,7 +220,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/bootstrap-owner'
     | '/features/$slug'
   id:
     | '__root__'
@@ -251,7 +240,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/bootstrap-owner'
     | '/features/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -273,7 +261,6 @@ export interface RootRouteChildren {
   TablesRoute: typeof TablesRoute
   TeamRoute: typeof TeamRoute
   TrackRoute: typeof TrackRoute
-  ApiBootstrapOwnerRoute: typeof ApiBootstrapOwnerRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
 
@@ -398,13 +385,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/bootstrap-owner': {
-      id: '/api/bootstrap-owner'
-      path: '/api/bootstrap-owner'
-      fullPath: '/api/bootstrap-owner'
-      preLoaderRoute: typeof ApiBootstrapOwnerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/features/$slug': {
       id: '/features/$slug'
       path: '/features/$slug'
@@ -433,7 +413,6 @@ const rootRouteChildren: RootRouteChildren = {
   TablesRoute: TablesRoute,
   TeamRoute: TeamRoute,
   TrackRoute: TrackRoute,
-  ApiBootstrapOwnerRoute: ApiBootstrapOwnerRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
 }
 export const routeTree = rootRouteImport

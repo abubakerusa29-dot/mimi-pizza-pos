@@ -6,6 +6,7 @@ import { riders as defaultRiders, deliveryAreas as defaultAreas } from "@/data/r
 import { useOrder } from "@/components/pos/OrderContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { OwnerAccountCard } from "@/components/pos/OwnerLogin";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "Settings — Mimi’s Pizza" }, { name: "description", content: "Restaurant profile, riders and delivery areas for Mimi’s Pizza POS." }, { property: "og:title", content: "Settings — Mimi’s Pizza" }, { property: "og:description", content: "Edit restaurant details printed on receipts and manage riders and areas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -56,6 +57,8 @@ function Settings() {
         <div><h2 className="font-display text-xl font-semibold">Settings</h2><p className="text-xs text-muted-foreground">Restaurant details print on receipts. Manage riders and delivery areas here.</p></div>
         <Button variant="outline" className="h-9 text-xs" onClick={() => { setRestaurant(restaurantInfo); setRiderList(defaultRiders); setAreaList(defaultAreas); }}><RotateCcw /> Reset all</Button>
       </div>
+
+      <OwnerAccountCard />
 
       <section className="rounded-xl border bg-card p-4">
         <h3 className="flex items-center gap-2 text-sm font-semibold"><Store className="size-4 text-primary" /> Restaurant profile</h3>
