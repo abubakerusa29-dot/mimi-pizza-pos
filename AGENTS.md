@@ -12,3 +12,4 @@
 - Keep menu imagery in a browser-safe product ID map separate from pricing data, so visual changes cannot change billing.
 - Render invoice previews from the current cart using an auto-height thermal slip and a client-rendered CODE128 barcode; printer integration stays separate from preview rendering.
 - Keep the shared POS shell and in-memory order provider around route content so navigation to frontend-only future-feature pages preserves the active order without persistent storage.
+- The public homepage lives at `/` (digital menu, tracking, contact); the private POS lives at `/pos` behind Staff Access. Why: anyone opening the site URL must never land on the billing counter.
