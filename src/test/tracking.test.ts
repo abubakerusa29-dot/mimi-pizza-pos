@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { stageOf } from "@/routes/track";
+import { stageOf } from "@/components/public/OrderTracker";
 import { TRACK_URL, isPublicPath } from "@/data/publicSite";
 
 describe("order tracking", () => {
@@ -16,6 +16,6 @@ describe("order tracking", () => {
   it("QR points to current domain tracking page and public pages skip POS shell", () => {
     expect(TRACK_URL).toBe("https://demo-mimi-pizza.ebpk.site/track");
     expect(isPublicPath("/track")).toBe(true);
-    expect(isPublicPath("/")).toBe(false);
+    expect(isPublicPath("/pos")).toBe(false); expect(isPublicPath("/")).toBe(true);
   });
 });

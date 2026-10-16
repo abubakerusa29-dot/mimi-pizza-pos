@@ -17,7 +17,7 @@ export function FuturePage({ title, icon: Icon, summary, actions }: { title: str
         {actions.map((a) => <Button key={a} variant="outline" className="h-12 justify-start" onClick={() => setNotice(`“${a}” will be available in an upcoming update.`)}><Plus className="text-primary" /> {a}</Button>)}
       </div>}
       {notice && <p role="status" className="mt-4 rounded-md bg-secondary px-3 py-2 text-xs font-medium text-primary">{notice}</p>}
-      <Button asChild className="mt-7 h-11"><Link to="/"><ArrowLeft /> Back to Point of Sale</Link></Button>
+      <Button asChild className="mt-7 h-11"><Link to="/pos"><ArrowLeft /> Back to Point of Sale</Link></Button>
     </div>
   </main>;
 }

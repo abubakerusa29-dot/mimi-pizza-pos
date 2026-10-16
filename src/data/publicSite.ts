@@ -5,4 +5,4 @@ export const WHATSAPP_NUMBER = "923124607733";
 export const CALL_NUMBER = "+923124607733";
 export const whatsappLink = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 /** Public pages render without the private POS shell. */
-export const isPublicPath = (path: string) => path === "/menu" || path.startsWith("/track");
+export const isPublicPath = (path: string) => path === "/" || path === "/menu" || path.startsWith("/track");

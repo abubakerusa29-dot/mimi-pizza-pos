@@ -83,7 +83,7 @@ function Riders() {
 
         <h2 className="mt-6 text-sm font-semibold">Delivery orders</h2>
         <div className="mt-2 grid gap-2">
-          {deliveries.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">No delivery orders yet. <Link to="/" className="font-semibold text-primary">Take an order</Link></div>}
+          {deliveries.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">No delivery orders yet. <Link to="/pos" className="font-semibold text-primary">Take an order</Link></div>}
           {deliveries.map((d) => {
             const status = d.status ?? "On the way";
             return (

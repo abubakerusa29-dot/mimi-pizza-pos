@@ -1,6 +1,6 @@
 // Staff access rules. Pure functions so they can be tested.
 export const accessAreas = [
-  { key: "pos", label: "Take orders (POS)", group: "counter", paths: ["/"] },
+  { key: "pos", label: "Take orders (POS)", group: "counter", paths: ["/pos"] },
   { key: "invoices", label: "Previous invoices and reprint", group: "counter", paths: ["/invoices"] },
   { key: "riders", label: "Assign riders and collect cash", group: "counter", paths: ["/riders"] },
   { key: "tables", label: "Tables (dine-in)", group: "counter", paths: ["/tables"] },

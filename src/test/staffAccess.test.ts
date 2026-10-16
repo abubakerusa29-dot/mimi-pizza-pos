@@ -4,7 +4,7 @@ import { canOpen, cashierAccess } from "@/lib/staffAccess";
 const cashier = { id: "c", name: "Ali", isOwner: false, permissions: cashierAccess };
 describe("staff access", () => {
   it("cashier can take orders, assign riders and use tables", () => {
-    expect(canOpen(cashier, "/")).toBe(true);
+    expect(canOpen(cashier, "/pos")).toBe(true);
     expect(canOpen(cashier, "/riders")).toBe(true);
     expect(canOpen(cashier, "/tables")).toBe(true);
   });

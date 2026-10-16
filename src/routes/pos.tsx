@@ -12,7 +12,7 @@ import { useOrder } from "@/components/pos/OrderContext";
 import { applyOverrides, availableOnly } from "@/lib/menuOverrides";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/pos")({
   head: () => ({
     meta: [
       { title: "Mimi’s Pizza POS — Counter Billing" },
