@@ -135,7 +135,7 @@ function Home() {
           <h2 className="mt-1 font-display text-3xl font-bold sm:text-4xl">Check Out Our Digital Menu</h2>
           <p className="mt-2 text-sm text-muted-foreground">Tap <b>WhatsApp Order</b> on any item and we will confirm it on WhatsApp.</p>
         </div>
-        <div className="sticky top-[6.25rem] z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur md:top-16">
+        <div className="sticky top-[7.1rem] z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur md:top-[5.5rem]">
           <label className="relative mx-auto block max-w-xl"><Search className="absolute left-3.5 top-3.5 size-5 text-muted-foreground" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pizza, burger, deal…" className="h-12 w-full rounded-full border border-input bg-card pl-11 pr-4 shadow-sm" aria-label="Search menu" /></label>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {categories.map((c) => <button key={c.id} onClick={() => pick(c.id)} className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${cat === c.id ? "bg-primary text-primary-foreground" : "border border-border bg-card"}`}>{c.label}</button>)}
