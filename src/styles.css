@@ -36,6 +36,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -78,6 +80,8 @@
   --popover-foreground: oklch(0.255 0 0);
   --primary: oklch(0.71 0.18 52);
   --primary-foreground: oklch(1 0 0);
+  --whatsapp: oklch(0.62 0.17 149);
+  --whatsapp-foreground: oklch(1 0 0);
   --secondary: oklch(0.965 0.025 70);
   --secondary-foreground: oklch(0.255 0 0);
   --muted: oklch(0.955 0.006 80);

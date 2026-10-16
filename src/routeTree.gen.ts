@@ -17,6 +17,7 @@ import { Route as InvoiceTemplatesRouteImport } from './routes/invoice-templates
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
+import { Route as PosRouteImport } from './routes/pos'
 import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as RidersRouteImport } from './routes/riders'
@@ -65,6 +66,11 @@ const MenuRoute = MenuRouteImport.update({
 const MenuGrowthRoute = MenuGrowthRouteImport.update({
   id: '/menu-growth',
   path: '/menu-growth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PosRoute = PosRouteImport.update({
+  id: '/pos',
+  path: '/pos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrintersRoute = PrintersRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/invoices': typeof InvoicesRoute
   '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/invoices': typeof InvoicesRoute
   '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/invoices': typeof InvoicesRoute
   '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
+  '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
   '/riders': typeof RidersRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/menu'
     | '/menu-growth'
+    | '/pos'
     | '/printers'
     | '/reports'
     | '/riders'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/menu'
     | '/menu-growth'
+    | '/pos'
     | '/printers'
     | '/reports'
     | '/riders'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/menu'
     | '/menu-growth'
+    | '/pos'
     | '/printers'
     | '/reports'
     | '/riders'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   InvoicesRoute: typeof InvoicesRoute
   MenuRoute: typeof MenuRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
+  PosRoute: typeof PosRoute
   PrintersRoute: typeof PrintersRoute
   ReportsRoute: typeof ReportsRoute
   RidersRoute: typeof RidersRoute
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/menu-growth'
       fullPath: '/menu-growth'
       preLoaderRoute: typeof MenuGrowthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pos': {
+      id: '/pos'
+      path: '/pos'
+      fullPath: '/pos'
+      preLoaderRoute: typeof PosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/printers': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvoicesRoute: InvoicesRoute,
   MenuRoute: MenuRoute,
   MenuGrowthRoute: MenuGrowthRoute,
+  PosRoute: PosRoute,
   PrintersRoute: PrintersRoute,
   ReportsRoute: ReportsRoute,
   RidersRoute: RidersRoute,

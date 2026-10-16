@@ -12,7 +12,7 @@ import { softwareCredit } from "@/data/softwareCredit";
 import badge from "@/assets/mimis-primary-logo.png.asset.json";
 
 const navigation = [
-  { to: "/", label: "Point of Sale", icon: UtensilsCrossed },
+  { to: "/pos", label: "Point of Sale", icon: UtensilsCrossed },
   { to: "/invoices", label: "Previous Invoices", icon: History },
   { to: "/riders", label: "Riders & Cash", icon: Bike },
   { to: "/sales", label: "Overall Sales", icon: ChartNoAxesCombined },

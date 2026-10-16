@@ -1,153 +1,174 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupSoda, LayoutGrid } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { categories, products, type CategoryId, type Product } from "@/data/menuData";
-import { addLine, applyAddon, cartTotals, changeQty, formatRs, type Addon, type CartLine } from "@/lib/cart";
-import { ProductCard } from "@/components/pos/ProductCard";
-import { OptionModal } from "@/components/pos/OptionModal";
-import { CartPanel } from "@/components/pos/CartPanel";
-import { useOrder } from "@/components/pos/OrderContext";
-import { applyOverrides, availableOnly } from "@/lib/menuOverrides";
-import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
+import { Search, MapPin, Clock, Bike, Phone, PackageSearch, Pizza, ChevronDown, Navigation, MessageCircle } from "lucide-react";
+import hero from "@/assets/home-hero.jpg";
+import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicFooter } from "@/components/public/PublicFooter";
+import { OrderTracker } from "@/components/public/OrderTracker";
+import { categories, products, restaurantInfo, type CategoryId, type Product } from "@/data/menuData";
+import { productImages } from "@/data/productImages";
+import { CALL_NUMBER, MAPS_URL, whatsappLink } from "@/data/publicSite";
+import { formatRs } from "@/lib/cart";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mimi’s Pizza POS — Counter Billing" },
-      { name: "description", content: "Point of sale for Mimi’s Pizza: take orders, calculate bills and print receipts." },
-      { property: "og:title", content: "Mimi’s Pizza POS — Counter Billing" },
-      { property: "og:description", content: "Take orders, calculate bills and print receipts at Mimi’s Pizza." },
+      { title: "Mimi’s Pizza Lalamusa — Digital Menu & Live Order Tracking" },
+      { name: "description", content: "Browse Mimi’s Pizza deals, pizzas and burgers, order on WhatsApp and track your delivery live in Lalamusa." },
+      { property: "og:title", content: "Mimi’s Pizza Lalamusa — Digital Menu" },
+      { property: "og:description", content: "Deals, pizzas and burgers. Order on WhatsApp and track your order live." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: POS,
+  component: Home,
 });
 
-function POS() {
-  const [category, setCategory] = useState<CategoryId | "all">("all");
-  const [query, setQuery] = useState("");
-  const { lines, setLines, orderNo, setOrderNo, orderType, setOrderType, table, setTable, setPhone, setAddress, setRider, setArea, menuOverrides } = useOrder();
-  const [modal, setModal] = useState<Product | null>(null);
-  const [receiptAt, setReceiptAt] = useState<Date | null>(null);
-  const [mobileCart, setMobileCart] = useState(false);
+function priceOf(p: Product) {
+  if (p.price) return formatRs(p.price);
+  const s = p.sizes?.filter((x) => x.price)?.map((x) => x.price!) ?? [];
+  return s.length ? `From ${formatRs(Math.min(...s))}` : "";
+}
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return availableOnly(applyOverrides(products, menuOverrides), menuOverrides).filter(
-      (p) => (category === "all" || p.category === category) && (!q || `${p.name} ${p.tag ?? ""}`.toLowerCase().includes(q)),
-    );
-  }, [category, query, menuOverrides]);
+const sectionTitle: Partial<Record<CategoryId, string>> = { deals: "Our Deals", pizza: "Our Pizzas", burgers: "Our Burgers" };
 
-  const add = (item: Omit<CartLine, "qty">) => {
-    setLines((l) => addLine(l, item));
-    toast.success(`${item.name}${item.variant ? ` (${item.variant})` : ""} added`, { duration: 1200 });
-  };
+function WhatsAppIcon({ className }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.6-.1 1.8-.7 2-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" /></svg>;
+}
 
-  const select = (p: Product) => {
-    if (p.sizes || p.flavourChoice) return setModal(p);
-    add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
-  };
+function MenuCard({ p }: { p: Product }) {
+  const img = productImages[p.id];
+  const name = p.tag ? `${p.name} ${p.tag}` : p.name;
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
+      <div className="overflow-hidden">
+        {img ? <img src={img} alt={name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105" /> : <div className="flex aspect-[4/3] items-center justify-center bg-muted"><Pizza className="size-10 text-muted-foreground" /></div>}
+      </div>
+      <div className="flex flex-1 flex-col p-3">
+        <h3 className="text-sm font-bold leading-tight sm:text-base">{name}</h3>
+        {p.description && <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>}
+        <p className="mt-auto pt-2 text-sm font-bold text-primary sm:text-base">{priceOf(p)}</p>
+        <a href={whatsappLink(`Assalam-o-alaikum Mimi’s Pizza, I want to order: ${name} (${priceOf(p)})`)} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-whatsapp text-xs font-bold text-whatsapp-foreground sm:text-sm"><WhatsAppIcon className="size-4" />WhatsApp Order</a>
+      </div>
+    </article>
+  );
+}
 
-  const clear = () => {
-    if (lines.length && !window.confirm("Clear all items from this order?")) return;
-    setLines([]);
-  };
-  const newOrder = (skipConfirm?: unknown) => {
-    if (skipConfirm !== true && lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
-    setLines([]);
-    setTable("");
-    setPhone("");
-    setAddress("");
-    setRider("");
-    setArea("");
-    setOrderType("Dine-in");
-    setOrderNo((n) => n + 1);
-    setMobileCart(false);
-  };
+function MenuSection({ id, items, isMobile }: { id: CategoryId; items: Product[]; isMobile: boolean }) {
+  const step = id === "deals" ? 4 : isMobile ? 6 : 8;
+  const [shown, setShown] = useState(step);
+  const label = sectionTitle[id] ?? categories.find((c) => c.id === id)?.label ?? id;
+  const visible = items.slice(0, Math.max(shown, step));
+  return (
+    <section id={`menu-${id}`} className="scroll-mt-32">
+      <div className="mb-4 flex items-end justify-between gap-3 border-b-2 border-primary/20 pb-2">
+        <h3 className="font-display text-2xl font-bold sm:text-3xl"><span className="text-primary">·</span> {label}</h3>
+        <span className="text-xs text-muted-foreground">{items.length} items</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((p) => <MenuCard key={p.id} p={p} />)}</div>
+      {items.length > visible.length && (
+        <div className="mt-5 text-center">
+          <button onClick={() => setShown(visible.length + step)} className="inline-flex h-11 items-center gap-1.5 rounded-full border-2 border-primary px-6 text-sm font-bold text-primary hover:bg-primary hover:text-primary-foreground">View all <ChevronDown className="size-4" /> <span className="font-normal opacity-75">({items.length - visible.length} more)</span></button>
+        </div>
+      )}
+    </section>
+  );
+}
 
-  const { total, items } = cartTotals(lines);
-  const cartProps = {
-    lines, orderNo, orderType, table, setOrderType, setTable,
-    onQty: (k: string, d: number) => setLines((l) => changeQty(l, k, d)),
-    onAddon: (k: string, a: Addon) => { setLines((l) => applyAddon(l, k, a)); toast.success(`${a.name} added`, { duration: 1200 }); },
-    onClear: clear, onNewOrder: newOrder, onPrint: () => setReceiptAt(new Date()),
+function Home() {
+  const [cat, setCat] = useState<CategoryId | "all">("all");
+  const [q, setQ] = useState("");
+  const [id, setId] = useState("");
+  const [trackId, setTrackId] = useState<string>();
+  const isMobile = useIsMobile();
+  const term = q.trim().toLowerCase();
+  const groups = useMemo(() => {
+    const ids = categories.filter((c) => c.id !== "all").map((c) => c.id as CategoryId);
+    return ids
+      .filter((c) => cat === "all" || c === cat)
+      .map((c) => ({ id: c, items: products.filter((p) => p.category === c && (!term || `${p.name} ${p.tag ?? ""} ${p.description ?? ""}`.toLowerCase().includes(term))) }))
+      .filter((g) => g.items.length);
+  }, [cat, term]);
+
+  const pick = (c: CategoryId | "all") => {
+    setCat(c);
+    document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div className="pos-app flex min-h-0 flex-1 flex-col bg-background">
-      <div className="flex min-h-0 flex-1">
-        <main className="flex min-w-0 flex-1 flex-col">
-          <div className="space-y-4 px-4 pt-5 lg:px-6">
-            <div className="flex items-center justify-between gap-3"><div><h2 className="font-display text-xl font-semibold">Point of Sale</h2><p className="mt-0.5 text-xs text-muted-foreground">Mimi’s menu <span className="mx-1">·</span> {products.length} items</p></div><Button variant="outline" onClick={newOrder} className="h-9 text-xs"><RotateCcw /> New Order</Button></div>
-            <label className="relative block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search products..."
-                aria-label="Search products"
-                className="w-full rounded-lg border border-input bg-card py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary"
-              />
-            </label>
-            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
-              {categories.map((c, index) => {
-                const Icon = [LayoutGrid, Package, Pizza, Sandwich, CupSoda][index] ?? LayoutGrid;
-                return <Button
-                  variant="ghost"
-                  key={c.id}
-                  onClick={() => setCategory(c.id)}
-                  className={`h-10 shrink-0 rounded-lg px-3 text-sm font-semibold transition ${category === c.id ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground" : "border border-border bg-card text-muted-foreground hover:border-primary/50"}`}
-                >
-                  <Icon /> {c.label}
-                </Button>;
-              })}
+    <div className="h-dvh overflow-y-auto scroll-smooth bg-background">
+      <PublicHeader />
+
+      <section className="relative isolate overflow-hidden">
+        <img src={hero} alt="Fresh cheesy pizza from Mimi’s Pizza oven" width={1920} height={1088} className="absolute inset-0 -z-10 h-full w-full object-cover object-[70%_center]" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-foreground/95 via-foreground/70 to-foreground/10 max-md:bg-gradient-to-t max-md:from-foreground/95 max-md:via-foreground/70" />
+        <div className="mx-auto flex min-h-[480px] max-w-6xl flex-col justify-end px-4 pb-20 pt-24 text-background sm:min-h-[560px] md:justify-center md:pb-24">
+          <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-primary-foreground"><MapPin className="size-3.5" />Lalamusa · Free home delivery</p>
+          <h1 className="mt-4 max-w-xl font-display text-4xl font-bold leading-[1.05] sm:text-6xl">A Taste That You Will <span className="text-secondary">Remember</span></h1>
+          <p className="mt-3 max-w-md text-sm opacity-90 sm:text-base">Hot pizzas, juicy burgers and family deals, baked fresh every day. Order on WhatsApp and track your order live.</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="#track" className="inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground shadow-lg"><PackageSearch className="size-4" />Track Your Order</a>
+            <a href="#menu" className="inline-flex h-12 items-center gap-2 rounded-full bg-background px-6 text-sm font-bold text-foreground">Digital Menu</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="track" className="relative z-10 mx-auto -mt-12 max-w-3xl scroll-mt-28 px-4">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-xl sm:p-6">
+          <h2 className="flex items-center gap-2 text-xl font-bold"><PackageSearch className="size-5 text-primary" />Track your order live</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Enter the invoice number printed on your receipt. Available for Delivery and Takeaway orders.</p>
+          <form onSubmit={(e) => { e.preventDefault(); if (id.trim()) setTrackId(id.trim()); }} className="mt-3 flex gap-2">
+            <input value={id} onChange={(e) => setId(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder="Invoice number, e.g. 1024" className="h-12 min-w-0 flex-1 rounded-xl border border-input bg-background px-4 text-base" aria-label="Invoice number" />
+            <button className="inline-flex h-12 items-center gap-1 rounded-xl bg-primary px-5 font-bold text-primary-foreground"><Search className="size-4" />Track</button>
+          </form>
+          {trackId && <OrderTracker id={trackId} />}
+        </div>
+      </section>
+
+      <section id="menu" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-14">
+        <div className="text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary">Fresh from our kitchen</p>
+          <h2 className="mt-1 font-display text-3xl font-bold sm:text-4xl">Check Out Our Digital Menu</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Tap <b>WhatsApp Order</b> on any item and we will confirm it on WhatsApp.</p>
+        </div>
+        <div className="sticky top-[6.25rem] z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur md:top-16">
+          <label className="relative mx-auto block max-w-xl"><Search className="absolute left-3.5 top-3.5 size-5 text-muted-foreground" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pizza, burger, deal…" className="h-12 w-full rounded-full border border-input bg-card pl-11 pr-4 shadow-sm" aria-label="Search menu" /></label>
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {categories.map((c) => <button key={c.id} onClick={() => pick(c.id)} className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${cat === c.id ? "bg-primary text-primary-foreground" : "border border-border bg-card"}`}>{c.label}</button>)}
+          </div>
+        </div>
+        <div className="mt-6 space-y-12">
+          {groups.map((g) => <MenuSection key={`${g.id}-${term}-${isMobile}`} id={g.id} items={g.items} isMobile={isMobile} />)}
+        </div>
+        {!groups.length && <p className="py-10 text-center text-muted-foreground">No items match your search.</p>}
+      </section>
+
+      <section id="contact" className="scroll-mt-16 border-t border-border bg-card">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 md:grid-cols-2">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-primary">Contact</p>
+            <h2 className="mt-1 font-display text-3xl font-bold">Visit or call us</h2>
+            <ul className="mt-5 space-y-4 text-sm">
+              <li className="flex gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent"><MapPin className="size-5 text-primary" /></span><span><b className="block">Address</b>{restaurantInfo.address}</span></li>
+              <li className="flex gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent"><Clock className="size-5 text-primary" /></span><span><b className="block">Open daily</b>{restaurantInfo.hours}</span></li>
+              <li className="flex gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent"><Bike className="size-5 text-primary" /></span><span><b className="block">Delivery</b>{restaurantInfo.delivery}</span></li>
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <a href={whatsappLink("Assalam-o-alaikum Mimi’s Pizza, I want to place an order.")} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center gap-2 rounded-xl bg-whatsapp px-5 font-bold text-whatsapp-foreground"><MessageCircle className="size-5" />WhatsApp</a>
+              <a href={`tel:${CALL_NUMBER}`} className="inline-flex h-12 items-center gap-2 rounded-xl border border-border px-5 font-bold"><Phone className="size-5" />{restaurantInfo.phone}</a>
             </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-28 md:pb-4 lg:px-6">
-            {visible.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-16 text-center text-muted-foreground">
-                <SearchX className="h-10 w-10" />
-                <p className="text-sm">No products match “{query}”.</p>
-                <Button variant="link" onClick={() => { setQuery(""); setCategory("all"); }}>Clear search</Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-                {visible.map((p) => <ProductCard key={p.id} product={p} onSelect={select} />)}
-              </div>
-            )}
-          </div>
-        </main>
-
-        <aside className="hidden w-[33%] min-w-[300px] max-w-[390px] border-l border-border md:block">
-          <CartPanel {...cartProps} />
-        </aside>
-      </div>
-
-      {/* Mobile order bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
-        <Button onClick={() => setMobileCart(true)} className="flex h-12 w-full items-center justify-between rounded-lg bg-primary px-4 text-primary-foreground">
-          <span className="flex items-center gap-2 text-sm font-semibold"><ShoppingBag className="h-5 w-5" /> {items} items · {formatRs(total)}</span>
-          <span className="text-sm font-bold">View Order</span>
-        </Button>
-      </div>
-      {mobileCart && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <CartPanel {...cartProps} onCloseMobile={() => setMobileCart(false)} />
+          <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="group relative flex min-h-64 flex-col items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted text-center">
+            <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] [background-size:28px_28px]" />
+            <span className="relative flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-hover:-translate-y-1"><MapPin className="size-8" /></span>
+            <p className="relative mt-3 font-bold">Mimi’s Pizza, Lalamusa</p>
+            <span className="relative mt-3 inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"><Navigation className="size-4" />Open in Google Maps</span>
+          </a>
         </div>
-      )}
+      </section>
 
-      <OptionModal
-        product={modal}
-        onClose={() => setModal(null)}
-        onAdd={(p, option, price) => {
-          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
-          setModal(null);
-        }}
-      />
-      <ReceiptPreview open={!!receiptAt} date={receiptAt ?? new Date()} lines={lines} orderNo={orderNo} orderType={orderType} table={table} onBack={() => setReceiptAt(null)} onDone={() => { setReceiptAt(null); newOrder(true); }} />
+      <PublicFooter />
     </div>
   );
 }
