@@ -225,3 +225,10 @@
 .receipt-table th, .receipt-table td { border: 1px solid var(--receipt-ink); padding: 3px 3px; vertical-align: top; }
 .receipt-table th { font-weight: 700; }
 .kitchen-large { font-size: 15px; line-height: 1.4; }
+
+@keyframes track-cook { 0%,100% { transform: rotate(-8deg) translateY(0) } 50% { transform: rotate(8deg) translateY(-4px) } }
+@keyframes track-ride { 0% { transform: translateX(-14px) } 50% { transform: translateX(14px) } 100% { transform: translateX(-14px) } }
+@keyframes track-pop { 0%,100% { transform: scale(1) } 50% { transform: scale(1.15) } }
+.track-cook { animation: track-cook 1.2s ease-in-out infinite; }
+.track-ride { animation: track-ride 1.6s ease-in-out infinite; }
+.track-pop { animation: track-pop 1.4s ease-in-out infinite; }

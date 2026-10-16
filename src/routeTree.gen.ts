@@ -15,6 +15,7 @@ import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as InvoiceTemplatesRouteImport } from './routes/invoice-templates'
 import { Route as InvoicesRouteImport } from './routes/invoices'
+import { Route as MenuRouteImport } from './routes/menu'
 import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
 import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as ReportsRouteImport } from './routes/reports'
@@ -23,6 +24,7 @@ import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TablesRouteImport } from './routes/tables'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as TrackRouteImport } from './routes/track'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,6 +55,11 @@ const InvoiceTemplatesRoute = InvoiceTemplatesRouteImport.update({
 const InvoicesRoute = InvoicesRouteImport.update({
   id: '/invoices',
   path: '/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenuRoute = MenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MenuGrowthRoute = MenuGrowthRouteImport.update({
@@ -95,6 +102,11 @@ const TeamRoute = TeamRouteImport.update({
   path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   id: '/features/$slug',
   path: '/features/$slug',
@@ -108,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
+  '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
@@ -116,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
+  '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +139,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
+  '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
@@ -133,6 +148,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
+  '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRoutesById {
@@ -143,6 +159,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/invoice-templates': typeof InvoiceTemplatesRoute
   '/invoices': typeof InvoicesRoute
+  '/menu': typeof MenuRoute
   '/menu-growth': typeof MenuGrowthRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
@@ -151,6 +168,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
+  '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
 }
 export interface FileRouteTypes {
@@ -162,6 +180,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/invoice-templates'
     | '/invoices'
+    | '/menu'
     | '/menu-growth'
     | '/printers'
     | '/reports'
@@ -170,6 +189,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tables'
     | '/team'
+    | '/track'
     | '/features/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -179,6 +199,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/invoice-templates'
     | '/invoices'
+    | '/menu'
     | '/menu-growth'
     | '/printers'
     | '/reports'
@@ -187,6 +208,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tables'
     | '/team'
+    | '/track'
     | '/features/$slug'
   id:
     | '__root__'
@@ -196,6 +218,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/invoice-templates'
     | '/invoices'
+    | '/menu'
     | '/menu-growth'
     | '/printers'
     | '/reports'
@@ -204,6 +227,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tables'
     | '/team'
+    | '/track'
     | '/features/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -214,6 +238,7 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   InvoiceTemplatesRoute: typeof InvoiceTemplatesRoute
   InvoicesRoute: typeof InvoicesRoute
+  MenuRoute: typeof MenuRoute
   MenuGrowthRoute: typeof MenuGrowthRoute
   PrintersRoute: typeof PrintersRoute
   ReportsRoute: typeof ReportsRoute
@@ -222,6 +247,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TablesRoute: typeof TablesRoute
   TeamRoute: typeof TeamRoute
+  TrackRoute: typeof TrackRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
 }
 
@@ -267,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/invoices'
       fullPath: '/invoices'
       preLoaderRoute: typeof InvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menu': {
+      id: '/menu'
+      path: '/menu'
+      fullPath: '/menu'
+      preLoaderRoute: typeof MenuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/menu-growth': {
@@ -325,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/features/$slug': {
       id: '/features/$slug'
       path: '/features/$slug'
@@ -342,6 +382,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   InvoiceTemplatesRoute: InvoiceTemplatesRoute,
   InvoicesRoute: InvoicesRoute,
+  MenuRoute: MenuRoute,
   MenuGrowthRoute: MenuGrowthRoute,
   PrintersRoute: PrintersRoute,
   ReportsRoute: ReportsRoute,
@@ -350,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TablesRoute: TablesRoute,
   TeamRoute: TeamRoute,
+  TrackRoute: TrackRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
 }
 export const routeTree = rootRouteImport
