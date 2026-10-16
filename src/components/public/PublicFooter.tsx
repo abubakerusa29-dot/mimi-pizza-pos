@@ -34,7 +34,6 @@ export function PublicFooter() {
       </div>
       <div className="border-t border-background/15 px-4 py-4 text-center text-xs opacity-70">
         © {new Date().getFullYear()} Mimi’s Pizza Lalamusa · Made by <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary">{softwareCredit.name}</a> · {softwareCredit.phone}
-        <a href="/pos" className="mt-2 block opacity-60 hover:opacity-100">🔒 Staff Portal</a>
       </div>
     </footer>
   );

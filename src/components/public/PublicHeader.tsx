@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Phone } from "lucide-react";
+import { Phone, Lock } from "lucide-react";
 import badge from "@/assets/mimis-primary-logo.png.asset.json";
 import { CALL_NUMBER } from "@/data/publicSite";
 
@@ -23,7 +23,8 @@ export function PublicHeader() {
         <nav aria-label="Main" className="hidden items-center gap-1 rounded-full border border-border bg-background p-1 text-sm font-semibold md:flex">
           {links.map((l) => <a key={l.href} href={l.href} className="rounded-full px-4 py-2 transition-colors hover:bg-primary hover:text-primary-foreground">{l.label}</a>)}
         </nav>
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <a href="/pos" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-bold hover:bg-accent"><Lock className="size-3.5" />Staff Access</a>
           <a href={`tel:${CALL_NUMBER}`} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-bold text-primary-foreground"><Phone className="size-3.5" />Call</a>
         </div>
       </div>
