@@ -12,6 +12,10 @@ export interface MenuOverrides {
   /** Renamed items and edited descriptions, by product id. */
   names?: Record<string, string>;
   descriptions?: Record<string, string>;
+  /** Items not shown at the POS counter. */
+  posHidden?: string[];
+  /** Items not shown on the public website menu. */
+  publicHidden?: string[];
 }
 export const emptyOverrides: MenuOverrides = { prices: {}, hidden: [], custom: [], images: {} };
 
@@ -42,3 +46,8 @@ export function makeCustomItem(input: { name: string; category: Product["categor
   if (!sizes.length && !(price > 0)) return null;
   return { id, name, category: input.category, ...(input.description.trim() ? { description: input.description.trim() } : {}), ...(sizes.length ? { sizes } : { price }) };
 }
+
+/** Items for the POS counter: available and not marked POS-off. */
+export const posMenu = (base: Product[], o: MenuOverrides) => availableOnly(applyOverrides(base, o), o).filter((p) => !(o.posHidden ?? []).includes(p.id));
+/** Items for the public website: available and not marked website-off. */
+export const publicMenu = (base: Product[], o: MenuOverrides) => availableOnly(applyOverrides(base, o), o).filter((p) => !(o.publicHidden ?? []).includes(p.id));
