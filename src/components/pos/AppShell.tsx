@@ -1,3 +1,4 @@
+import { isPublicPath } from "@/data/publicSite";
 import { useState, type ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { LogOut, ShieldCheck } from "lucide-react";

@@ -262,6 +262,7 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
       <div className={compact ? "receipt-divider tight" : "receipt-divider"} />
       <div className={compact ? "pt-1 text-center" : "pt-3 text-center"}>
         {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
+        {orderType !== "Dine-in" && <TrackQr orderNo={orderNo} />}
         {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
         {t !== "bold" && t !== "minimal" && showWordmark && <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />}
       </div>
