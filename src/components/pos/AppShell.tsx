@@ -1,4 +1,5 @@
 import { isPublicPath } from "@/data/publicSite";
+import { OwnerLoginGate } from "@/components/pos/OwnerLogin";
 import { useState, type ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { LogOut, ShieldCheck } from "lucide-react";
@@ -31,7 +32,7 @@ const navigation = [
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useLocation({ select: (l) => l.pathname });
   if (isPublicPath(path)) return <>{children}</>;
-  return <StaffSessionProvider><Shell>{children}</Shell></StaffSessionProvider>;
+  return <OwnerLoginGate><StaffSessionProvider><Shell>{children}</Shell></StaffSessionProvider></OwnerLoginGate>;
 }
 
 function Shell({ children }: { children: ReactNode }) {
