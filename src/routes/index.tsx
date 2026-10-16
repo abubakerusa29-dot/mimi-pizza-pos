@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { loadSettings } from "@/lib/persistence";
+import { supabase } from "@/integrations/supabase/client";
 import { emptyOverrides, publicMenu, type MenuOverrides } from "@/lib/menuOverrides";
 import { Search, MapPin, Clock, Bike, Phone, PackageSearch, Pizza, ChevronDown, Navigation, MessageCircle } from "lucide-react";
 import hero from "@/assets/golden-storefront.png.asset.json";
@@ -85,7 +85,7 @@ function Home() {
   const [trackId, setTrackId] = useState<string>();
   const isMobile = useIsMobile();
   const [overrides, setOverrides] = useState<MenuOverrides>(emptyOverrides);
-  useEffect(() => { loadSettings().then((s) => s?.menuOverrides && setOverrides({ ...emptyOverrides, ...s.menuOverrides })).catch(() => {}); }, []);
+  useEffect(() => { supabase.rpc("public_menu_overrides").then(({ data }) => { if (data) setOverrides({ ...emptyOverrides, ...(data as unknown as MenuOverrides) }); }); }, []);
   const menu = useMemo(() => publicMenu(products, overrides), [overrides]);
   const term = q.trim().toLowerCase();
   const groups = useMemo(() => {
