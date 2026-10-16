@@ -112,7 +112,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      public_menu_overrides: { Args: never; Returns: Json }
+      track_order: {
+        Args: { _order_no: number }
+        Returns: {
+          created_at: string
+          order_no: number
+          order_type: string
+          rider: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
