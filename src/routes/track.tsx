@@ -6,7 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { whatsappLink } from "@/data/publicSite";
 
 export const Route = createFileRoute("/track")({
-  validateSearch: (s: Record<string, unknown>) => ({ id: typeof s.id === "string" || typeof s.id === "number" ? String(s.id) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { id?: string } => {
+    const v = s["id"];
+    return typeof v === "string" || typeof v === "number" ? { id: String(v) } : {};
+  },
   head: () => ({
     meta: [
       { title: "Track Your Order — Mimi’s Pizza Lalamusa" },
