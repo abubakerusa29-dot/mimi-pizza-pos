@@ -15,6 +15,13 @@
       "when": 1792181458189,
       "tag": "0001_pos_security",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792188317399,
+      "tag": "0002_lock_pos_tables",
+      "breakpoints": true
     }
   ]
 }

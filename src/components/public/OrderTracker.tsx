@@ -30,7 +30,9 @@ export function OrderTracker({ id }: { id?: string | undefined }) {
     let live = true;
     const load = async () => {
       setLoading(true);
-      const { data } = await supabase.from("pos_invoices").select("order_no, order_type, status, created_at, rider").eq("order_no", Number(id)).neq("order_type", "Dine-in").order("created_at", { ascending: false }).limit(1).maybeSingle();
+      const n = Number(id);
+      const { data: rows } = Number.isInteger(n) ? await supabase.rpc("track_order", { _order_no: n }) : { data: null };
+      const data = (rows?.[0] ?? null) as Found | null;
       if (live) { setOrder(data ?? "none"); setLoading(false); }
     };
     setOrder(null);
