@@ -13,3 +13,4 @@
 - Render invoice previews from the current cart using an auto-height thermal slip and a client-rendered CODE128 barcode; printer integration stays separate from preview rendering.
 - Keep the shared POS shell and in-memory order provider around route content so navigation to frontend-only future-feature pages preserves the active order without persistent storage.
 - The public homepage lives at `/` (digital menu, tracking, contact); the private POS lives at `/pos` behind Staff Access. Why: anyone opening the site URL must never land on the billing counter.
+- POS pages (everything except the public homepage and /track) sit behind Lovable Cloud email/password login in AppShell; public signups are disabled so only the owner account exists. Why: the billing counter must never be open to visitors.
