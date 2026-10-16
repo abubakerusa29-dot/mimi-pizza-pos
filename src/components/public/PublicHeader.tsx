@@ -24,7 +24,7 @@ export function PublicHeader() {
           {links.map((l) => <a key={l.href} href={l.href} className="rounded-full px-4 py-2 transition-colors hover:bg-primary hover:text-primary-foreground">{l.label}</a>)}
         </nav>
         <div className="flex items-center justify-end gap-2">
-          <a href="/pos" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-bold hover:bg-accent"><Lock className="size-3.5" />Staff Access</a>
+          <Link to="/pos" preload="intent" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-bold hover:bg-accent"><Lock className="size-3.5" />Staff Access</Link>
           <a href={`tel:${CALL_NUMBER}`} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-bold text-primary-foreground"><Phone className="size-3.5" />Call</a>
         </div>
       </div>
