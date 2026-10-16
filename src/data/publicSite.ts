@@ -6,3 +6,4 @@ export const CALL_NUMBER = "+923124607733";
 export const whatsappLink = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 /** Public pages render without the private POS shell. */
 export const isPublicPath = (path: string) => path === "/" || path === "/menu" || path.startsWith("/track");
+export const MAPS_URL = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Mimi’s Pizza, Main Qasba Road, Near Muhammadi Masjid, Lalamusa");
