@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, MapPin, Clock, Bike, Phone, PackageSearch, Pizza, ChevronDown, Navigation, MessageCircle } from "lucide-react";
-import hero from "@/assets/storefront-hero.jpg.asset.json";
+import hero from "@/assets/golden-storefront.png.asset.json";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { OrderTracker } from "@/components/public/OrderTracker";
@@ -101,7 +101,7 @@ function Home() {
       <PublicHeader />
 
       <section className="relative isolate overflow-hidden">
-        <img src={hero.url} alt="Mimi’s Pizza shop front in Lalamusa" width={1322} height={682} className="absolute inset-0 -z-10 h-full w-full object-cover object-[35%_center]" />
+        <img src={hero.url} alt="Mimi’s Pizza shop front in Lalamusa" width={1672} height={940} className="absolute inset-0 -z-10 h-full w-full object-cover object-[50%_30%]" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-foreground/90 via-foreground/60 to-foreground/20 max-md:bg-gradient-to-t max-md:from-foreground/95 max-md:via-foreground/60 max-md:to-foreground/10" />
         <div className="mx-auto flex min-h-[440px] max-w-6xl flex-col justify-end px-4 pb-16 pt-40 text-background sm:min-h-[560px] md:justify-center md:pb-24 md:pt-24">
           <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-primary-foreground"><MapPin className="size-3.5" />Lalamusa · Free home delivery</p>
