@@ -9,22 +9,18 @@ import { getPinStatus, verifyStaffPin, changeStaffPin } from "@/lib/staffPin.fun
 
 /** Locks the POS behind the owner email and password login. */
 export function OwnerLoginGate({ children }: { children: ReactNode }) {
+  const status = useServerFn(getPinStatus);
   const [state, setState] = useState<"loading" | "in" | "out">("loading");
+  const [pinOk, setPinOk] = useState(false);
   useEffect(() => {
+    // Run the session check and PIN check in parallel so the screen opens fast.
+    status().then((r) => { if (r.ok) setPinOk(true); }).catch(() => {});
     supabase.auth.getSession().then(({ data }) => setState(data.session ? "in" : "out"));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setState(s ? "in" : "out"));
     return () => data.subscription.unsubscribe();
-  }, []);
+  }, [status]);
+  if (state === "in") return <>{children}</>;
   if (state === "loading") return <div className="flex h-dvh items-center justify-center"><Loader2 className="size-6 animate-spin text-primary" /></div>;
-  if (state === "out") return <PinThenLogin />;
-  return <>{children}</>;
-}
-
-function PinThenLogin() {
-  const status = useServerFn(getPinStatus);
-  const [pinOk, setPinOk] = useState<boolean | null>(null);
-  useEffect(() => { status().then((r) => setPinOk(r.ok)).catch(() => setPinOk(false)); }, [status]);
-  if (pinOk === null) return <div className="flex h-dvh items-center justify-center"><Loader2 className="size-6 animate-spin text-primary" /></div>;
   return pinOk ? <LoginForm /> : <PinForm onOk={() => setPinOk(true)} />;
 }
 
