@@ -56,6 +56,30 @@ export type Database = {
         }
         Relationships: []
       }
+      pos_security: {
+        Row: {
+          failed_attempts: number
+          id: number
+          locked_until: string | null
+          pin_hash: string
+          updated_at: string
+        }
+        Insert: {
+          failed_attempts?: number
+          id?: number
+          locked_until?: string | null
+          pin_hash: string
+          updated_at?: string
+        }
+        Update: {
+          failed_attempts?: number
+          id?: number
+          locked_until?: string | null
+          pin_hash?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pos_settings: {
         Row: {
           areas: Json

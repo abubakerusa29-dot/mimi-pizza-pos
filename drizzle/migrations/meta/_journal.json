@@ -8,6 +8,13 @@
       "when": 1792051121714,
       "tag": "0000_create_pos_persistence_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792181458189,
+      "tag": "0001_pos_security",
+      "breakpoints": true
     }
   ]
 }
