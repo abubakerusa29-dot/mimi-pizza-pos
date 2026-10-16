@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Lock, Loader2 } from "lucide-react";
+import React, { useEffect, useState, type ReactNode } from "react";
+import { Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,7 @@ function PinForm({ onOk }: { onOk: () => void }) {
           <h1 className="mt-2 font-display text-xl font-bold">Staff PIN</h1>
           <p className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground"><Lock className="size-3" />Step 1 of 2. Enter the 6-digit staff PIN</p>
         </div>
-        <Input autoFocus value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" type="password" placeholder="••••••" aria-label="Staff PIN" className="h-12 text-center text-xl tracking-[0.5em]" />
+        <SecretInput autoFocus value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" type="password" placeholder="••••••" aria-label="Staff PIN" className="h-12 text-center text-xl tracking-[0.5em]" />
         {err && <p className="text-xs text-destructive">{err}</p>}
         <Button type="submit" className="h-11 w-full" disabled={busy || pin.length !== 6}>{busy ? <Loader2 className="animate-spin" /> : "Continue"}</Button>
         <a href="/" className="block text-center text-xs text-muted-foreground hover:text-foreground">← Back to website</a>
@@ -153,5 +153,17 @@ export function StaffPinCard() {
       {msg && <p className={`mt-2 text-xs ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.text}</p>}
       <Button type="submit" size="sm" className="mt-3">Change PIN</Button>
     </form>
+  );
+}
+
+function SecretInput({ className, ...props }: React.ComponentProps<typeof Input>) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input {...props} type={show ? "text" : "password"} className={`${className ?? ""} pr-10`} />
+      <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide" : "Show"} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground">
+        {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+      </button>
+    </div>
   );
 }
