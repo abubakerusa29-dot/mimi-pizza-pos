@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { KeyRound, Pencil, Plus, Trash2, UserRound } from "lucide-react";
@@ -89,7 +90,7 @@ function TeamPage() {
                   <button onClick={() => updateBackOffice({ team: team.map((x) => (x.id === m.id ? { ...x, active: !x.active } : x)) })}>{m.active ? "Block login" : "Allow login"}</button>
                 </div>
               </div>
-              <button onClick={() => { if (window.confirm(`Delete ${m.name}?`)) updateBackOffice({ team: team.filter((x) => x.id !== m.id) }); }} aria-label={`Delete ${m.name}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+              <button onClick={async () => { if (await confirmDialog(`Delete ${m.name}?`, { title: "Delete team member", confirmLabel: "Delete" })) updateBackOffice({ team: team.filter((x) => x.id !== m.id) }); }} aria-label={`Delete ${m.name}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
             </div>
           );
         })}

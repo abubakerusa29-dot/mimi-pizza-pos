@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bike, CheckCircle2, Send, Wallet } from "lucide-react";
@@ -28,8 +29,8 @@ function Riders() {
   const outstanding = summaries.reduce((s, r) => s + r.cashOutstanding, 0);
   const returned = summaries.reduce((s, r) => s + r.cashReturned, 0);
   /** Owner confirms the rider handed over all cash: every open order of that rider becomes settled. */
-  const collect = (riderName: string, amount: number) => {
-    if (!window.confirm(`Confirm: ${formatRs(amount)} collected from ${riderName}?`)) return;
+  const collect = async (riderName: string, amount: number) => {
+    if (!(await confirmDialog(`Did you receive ${formatRs(amount)} from ${riderName}?`, { title: "Confirm cash collected", confirmLabel: "Yes, collected" }))) return;
     deliveries.filter((d) => d.rider === riderName && (d.status ?? "Preparing") !== "Cash returned").forEach((d) => setInvoiceStatus(d.orderNo, "Cash returned"));
     toast.success(`Payment collected from ${riderName}: ${formatRs(amount)}`);
   };
@@ -92,7 +93,7 @@ function Riders() {
                 <span className="font-bold">{formatRs(cartTotals(d.lines).total)}</span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${status === "Cash returned" ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"}`}>{status}</span>
                 {status === "On the way" && <Button size="sm" variant="outline" onClick={() => setInvoiceStatus(d.orderNo, "Delivered")}>Mark delivered</Button>}
-                {status !== "Cash returned" && <Button size="sm" onClick={() => { if (window.confirm(`Confirm ${formatRs(cartTotals(d.lines).total)} collected from ${d.rider} for #${d.orderNo}?`)) setInvoiceStatus(d.orderNo, "Cash returned"); }}>Payment collected</Button>}
+                {status !== "Cash returned" && <Button size="sm" onClick={async () => { if (await confirmDialog(`Did you receive ${formatRs(cartTotals(d.lines).total)} from ${d.rider || "the rider"} for order #${d.orderNo}?`, { title: "Confirm cash collected", confirmLabel: "Yes, collected" })) setInvoiceStatus(d.orderNo, "Cash returned"); }}>Payment collected</Button>}
               </div>
             );
           })}

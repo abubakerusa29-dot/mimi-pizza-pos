@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
@@ -48,7 +49,7 @@ function ExpensesPage() {
         {list.map((e) => (
           <div key={e.id} className="flex items-center justify-between gap-3 p-3">
             <div className="min-w-0"><p className="text-sm font-semibold">{e.type}{e.reason && <span className="font-normal text-muted-foreground"> · {e.reason}</span>}</p><p className="text-xs text-muted-foreground">{new Date(e.date + "T00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p></div>
-            <div className="flex items-center gap-3"><b className="text-sm">{formatRs(e.amount)}</b><button onClick={() => { if (window.confirm("Delete this expense?")) updateBackOffice({ expenses: backOffice.expenses.filter((x) => x.id !== e.id) }); }} aria-label="Delete expense" className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button></div>
+            <div className="flex items-center gap-3"><b className="text-sm">{formatRs(e.amount)}</b><button onClick={async () => { if (await confirmDialog("This expense entry will be removed.", { title: "Delete expense", confirmLabel: "Delete" })) updateBackOffice({ expenses: backOffice.expenses.filter((x) => x.id !== e.id) }); }} aria-label="Delete expense" className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button></div>
           </div>
         ))}
       </div>

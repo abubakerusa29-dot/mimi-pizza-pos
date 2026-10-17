@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Trash2, Search } from "lucide-react";
@@ -50,7 +51,7 @@ function CustomersPage() {
                 <p className="text-xs text-muted-foreground">{c.address || "No address"}{c.area && ` · ${c.area}`}{c.notes && ` · ${c.notes}`}</p>
                 <p className="mt-1 text-xs font-medium text-primary">{h.orders} orders · {formatRs(h.spent)}</p>
               </button>
-              <button onClick={() => { if (window.confirm(`Delete ${c.name || c.phone}?`)) updateBackOffice({ customers: backOffice.customers.filter((x) => x.phone !== c.phone) }); }} aria-label="Delete customer" className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+              <button onClick={async () => { if (await confirmDialog(`Delete ${c.name || c.phone}?`, { title: "Delete customer", confirmLabel: "Delete" })) updateBackOffice({ customers: backOffice.customers.filter((x) => x.phone !== c.phone) }); }} aria-label="Delete customer" className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
             </div>
           );
         })}

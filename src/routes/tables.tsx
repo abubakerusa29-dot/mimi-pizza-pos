@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Armchair, Plus, Trash2, Users } from "lucide-react";
@@ -56,7 +57,7 @@ function TablesPage() {
             <div key={label} className={`rounded-xl border p-4 ${busy ? "border-destructive/40 bg-destructive/5" : "bg-card"}`}>
               <div className="flex items-start justify-between gap-2">
                 <Armchair className={`size-6 ${busy ? "text-destructive" : "text-primary"}`} />
-                <button onClick={() => { if (window.confirm(`Delete ${label}?`)) setTableList(tableList.filter((x) => tableLabel(x) !== label)); }} aria-label={`Delete ${label}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+                <button onClick={async () => { if (await confirmDialog(`Delete ${label}?`, { title: "Delete table", confirmLabel: "Delete" })) setTableList(tableList.filter((x) => tableLabel(x) !== label)); }} aria-label={`Delete ${label}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
               </div>
               <p className="mt-2 font-semibold">{t.name}</p>
               <p className="text-xs text-muted-foreground">{t.section || "No section"}</p>

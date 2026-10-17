@@ -31,7 +31,7 @@ const burgerAddons: Addon[] = ["ex-cheese-slice", "ex-patty"].flatMap((id) => {
 
 export function CartPanel(p: Props) {
   const { subtotal, total, items } = cartTotals(p.lines);
-  const { backOffice, phone, setPhone, address, setAddress, rider, setRider, area, setArea, riderList, areaList, tableList, invoices } = useOrder();
+  const { backOffice, phone, setPhone, address, setAddress, area, setArea, areaList, tableList, invoices } = useOrder();
   const occupied = occupiedTables(invoices);
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   const [findOpen, setFindOpen] = useState(false);
@@ -112,10 +112,8 @@ export function CartPanel(p: Props) {
             <datalist id="saved-customer-phones">{backOffice.customers.map((c) => <option key={c.phone} value={c.phone}>{c.name}</option>)}</datalist>
             {findCustomer(backOffice.customers, phone) && <p className="-mt-1 text-[11px] font-medium text-primary">Saved customer: {findCustomer(backOffice.customers, phone)!.name || "Regular"}</p>}
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address / location" rows={2} aria-label="Delivery address" className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />
-            <div className="grid grid-cols-2 gap-2">
-              <select value={rider} onChange={(e) => setRider(e.target.value)} aria-label="Assign rider" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Assign rider</option>{riderList.map((r) => <option key={r}>{r}</option>)}</select>
-              <select value={area} onChange={(e) => setArea(e.target.value)} aria-label="Delivery area" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Area</option>{areaList.map((a) => <option key={a}>{a}</option>)}</select>
-            </div>
+            <select value={area} onChange={(e) => setArea(e.target.value)} aria-label="Delivery area" className="h-9 rounded-lg border border-input bg-background px-2 text-sm"><option value="">Area</option>{areaList.map((a) => <option key={a}>{a}</option>)}</select>
+            <p className="text-[11px] text-muted-foreground">Rider is assigned later from Riders & Cash when the parcel is ready.</p>
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Star, BadgeCheck, MessageSquareQuote, Store } from "lucide-react";
+import { Star, BadgeCheck, MessageSquareQuote, Store, HelpCircle } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { ratingSummary, type PublicReview } from "@/lib/reviews";
 
@@ -8,9 +9,13 @@ export function Stars({ value, onPick, size = "size-4" }: { value: number; onPic
   return (
     <div className="flex gap-0.5" role={onPick ? "radiogroup" : undefined} aria-label="Rating">
       {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} type="button" disabled={!onPick} onClick={() => onPick?.(n)} aria-label={`${n} star`} className={onPick ? "p-0.5" : "cursor-default"}>
-          <Star className={`${onPick ? "size-8" : size} ${n <= Math.round(value) ? "fill-star text-star drop-shadow-sm" : "fill-muted text-border"}`} />
-        </button>
+        onPick ? (
+          <button key={n} type="button" onClick={() => onPick(n)} aria-label={`${n} star`} className="p-0.5">
+            <Star className={`size-8 ${n <= value ? "fill-star text-star drop-shadow-sm" : "fill-muted text-border"}`} />
+          </button>
+        ) : (
+          <Star key={n} aria-hidden className={`${size} ${n <= Math.round(value) ? "fill-star text-star drop-shadow-sm" : "fill-muted text-border"}`} />
+        )
       ))}
     </div>
   );
@@ -30,6 +35,21 @@ export function RatingChip() {
     <Link to="/reviews" className="inline-flex w-fit items-center gap-2 rounded-full bg-background/15 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background/25">
       <Star className="size-4 fill-star text-star" /><b className="text-sm">{summary.average.toFixed(1)}</b> rated by {summary.count}+ customers · <span className="underline">View reviews</span>
     </Link>
+  );
+}
+
+function VerifiedBadge() {
+  return (
+    <Popover>
+      <PopoverTrigger className="inline-flex items-center gap-1 rounded-full bg-verified/15 px-2 py-0.5 text-[11px] font-bold text-verified hover:bg-verified/25" aria-label="What is a verified order?">
+        <BadgeCheck className="size-3.5" />Verified order<HelpCircle className="size-3" />
+      </PopoverTrigger>
+      <PopoverContent className="w-72 text-sm">
+        <p className="flex items-center gap-1.5 font-bold text-verified"><BadgeCheck className="size-4" />Verified order</p>
+        <p className="mt-1.5 text-muted-foreground">This customer entered the invoice number from their receipt. Our system detected it and matched it with a real order, so the review is marked verified.</p>
+        <p className="mt-1.5 text-muted-foreground">All other reviews are also from real customers. Some people simply do not add their invoice number.</p>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -66,6 +86,7 @@ export function ReviewsPageContent() {
           <p className="text-xs font-bold uppercase tracking-widest text-secondary">Customer reviews</p>
           <h1 className="mt-1 font-display text-3xl font-bold sm:text-4xl">What our customers say</h1>
           <div className="mt-3 flex items-center gap-3"><span className="font-display text-5xl font-bold">{summary.average.toFixed(1)}</span><div><Stars value={summary.average} size="size-5" /><p className="mt-1 text-sm opacity-80">from {summary.count}+ customer ratings</p></div></div>
+          <p className="mt-3 flex max-w-xl items-start gap-2 text-sm opacity-90"><BadgeCheck className="mt-0.5 size-4 shrink-0 text-verified" />Want a Verified order badge? Enter the invoice number from your receipt. Our system checks it automatically against our orders.</p>
         </div>
         <button onClick={() => { setOpen(!open); setMsg(""); }} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground"><MessageSquareQuote className="size-4" />Write a review</button>
       </div>
@@ -96,7 +117,7 @@ export function ReviewsPageContent() {
               <div className="flex items-center justify-between"><Stars value={r.rating} /><span className="text-[11px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString("en-GB")}</span></div>
               <p className="mt-2 text-sm">{r.comment}</p>
               <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold">{r.name}
-                {r.verified && <span className="inline-flex items-center gap-1 rounded-full bg-verified/15 px-2 py-0.5 text-[11px] font-bold text-verified"><BadgeCheck className="size-3.5" />Verified order</span>}
+                {r.verified && <VerifiedBadge />}
                 {r.service && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold">{r.service}</span>}
               </p>
               {r.reply && <div className="mt-3 rounded-xl bg-accent p-3 text-xs"><p className="flex items-center gap-1 font-bold"><Store className="size-3.5 text-primary" />Reply from Mimi’s Pizza</p><p className="mt-1">{r.reply}</p></div>}
