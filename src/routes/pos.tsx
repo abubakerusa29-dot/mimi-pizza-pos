@@ -51,12 +51,13 @@ function POS() {
     add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
   };
 
-  const clear = () => {
-    if (lines.length && !window.confirm("Clear all items from this order?")) return;
+  const [ask, setAsk] = useState<"clear" | "new" | null>(null);
+  const clear = (skipConfirm?: unknown) => {
+    if (skipConfirm !== true && lines.length) return setAsk("clear");
     setLines([]);
   };
   const newOrder = (skipConfirm?: unknown) => {
-    if (skipConfirm !== true && lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
+    if (skipConfirm !== true && lines.length) return setAsk("new");
     setLines([]);
     setTable("");
     setPhone("");
