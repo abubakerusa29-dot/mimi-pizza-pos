@@ -169,6 +169,7 @@ export type Database = {
           verified: boolean
         }[]
       }
+      reset_all_data: { Args: never; Returns: undefined }
       track_order: {
         Args: { _order_no: number }
         Returns: {
