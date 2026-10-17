@@ -42,6 +42,7 @@ export function ReviewsPageContent() {
   const [rating, setRating] = useState(5);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [shown, setShown] = useState(10);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +91,7 @@ export function ReviewsPageContent() {
         </div>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((r) => (
+          {reviews.slice(0, shown).map((r) => (
             <article key={r.id} className={`rounded-2xl border bg-card p-4 shadow-sm ${r.starred ? "border-primary" : "border-border"}`}>
               <div className="flex items-center justify-between"><Stars value={r.rating} /><span className="text-[11px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString("en-GB")}</span></div>
               <p className="mt-2 text-sm">{r.comment}</p>
@@ -102,6 +103,9 @@ export function ReviewsPageContent() {
             </article>
           ))}
         </div>
+      )}
+      {reviews.length > shown && (
+        <div className="mt-6 text-center"><button onClick={() => setShown(reviews.length)} className="inline-flex h-11 items-center rounded-full border-2 border-primary px-6 text-sm font-bold text-primary hover:bg-primary hover:text-primary-foreground">View all reviews ({reviews.length})</button></div>
       )}
     </section>
   );

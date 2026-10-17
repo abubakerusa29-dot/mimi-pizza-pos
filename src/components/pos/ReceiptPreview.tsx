@@ -47,7 +47,7 @@ interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderT
 
 function Credit() {
   return (
-    <div className="mt-3 border-t border-dashed border-current pt-2 text-center text-[9px] leading-tight">
+    <div className="mt-3 border-t border-dashed border-current pb-6 pt-2 text-center text-[9px] leading-tight">
       <p>Software by {softwareCredit.name}</p>
       <p>{softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "")} · {softwareCredit.phone}</p>
     </div>
@@ -59,7 +59,7 @@ function TrackQr({ orderNo }: { orderNo: number }) {
   return (
     <div className="mt-3 border-t border-dashed border-current pt-2">
       <p className="text-[11px] font-bold">SCAN TO TRACK YOUR ORDER LIVE</p>
-      <QRCodeSVG value={TRACK_URL} size={110} level="M" marginSize={1} bgColor="#ffffff" fgColor="#000000" className="mx-auto my-1" aria-label="Order tracking QR code" />
+      <QRCodeSVG value={`${TRACK_URL}?id=${orderNo}`} size={110} level="M" marginSize={1} bgColor="#ffffff" fgColor="#000000" className="mx-auto my-1" aria-label="Order tracking QR code" />
       <p className="text-[10px]">{TRACK_URL.replace(/^https?:\/\//, "")}</p>
       <p className="text-[11px] font-bold">Tracking ID: {orderNo}</p>
     </div>
