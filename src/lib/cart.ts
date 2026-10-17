@@ -52,3 +52,24 @@ export function applyAddon(lines: CartLine[], key: string, addon: Addon): CartLi
   const rest = changeQty(lines, key, -1);
   return addLine(rest, next);
 }
+
+export type AdjustKind = "discount" | "charge";
+export const isAdjustment = (l: CartLine) => l.key.startsWith("adj:");
+
+/** Item subtotal excluding discount/charge lines. */
+export const itemsSubtotal = (lines: CartLine[]) =>
+  lines.filter((l) => !isAdjustment(l)).reduce((s, l) => s + lineTotal(l), 0);
+
+/**
+ * Sets (or removes when amount is 0) a single discount or tax/extra charge line.
+ * mode "percent" is calculated on the item subtotal. Discount never exceeds the item subtotal.
+ */
+export function setAdjustment(lines: CartLine[], kind: AdjustKind, value: number, mode: "rs" | "percent", label = ""): CartLine[] {
+  const rest = lines.filter((l) => l.key !== `adj:${kind}`);
+  const sub = itemsSubtotal(rest);
+  let amt = Math.round(mode === "percent" ? (sub * value) / 100 : value);
+  if (kind === "discount") amt = Math.min(amt, sub);
+  if (!(amt > 0)) return rest;
+  const name = kind === "discount" ? "Discount" : label.trim() || "Tax / Extra Charge";
+  return [...rest, { key: `adj:${kind}`, name, variant: mode === "percent" ? `${value}%` : undefined, unitPrice: kind === "discount" ? -amt : amt, qty: 1 }];
+}

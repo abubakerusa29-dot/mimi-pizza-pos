@@ -4,8 +4,9 @@ import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupS
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
-import { addLine, applyAddon, cartTotals, changeQty, formatRs, type Addon, type CartLine } from "@/lib/cart";
+import { addLine, applyAddon, cartTotals, changeQty, formatRs, setAdjustment, type AdjustKind, type Addon, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
+import { dealPizza } from "@/lib/dealPizza";
 import { OptionModal } from "@/components/pos/OptionModal";
 import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
@@ -48,7 +49,7 @@ function POS() {
   };
 
   const select = (p: Product) => {
-    if (p.sizes || p.flavourChoice) return setModal(p);
+    if (p.sizes || p.flavourChoice || dealPizza(p)) return setModal(p);
     add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
   };
 
@@ -74,6 +75,7 @@ function POS() {
   const cartProps = {
     lines, orderNo, orderType, table, setOrderType, setTable,
     onQty: (k: string, d: number) => setLines((l) => changeQty(l, k, d)),
+    onAdjust: (k: AdjustKind, v: number, m: "rs" | "percent", label: string) => setLines((l) => setAdjustment(l, k, v, m, label)),
     onAddon: (k: string, a: Addon) => { setLines((l) => applyAddon(l, k, a)); toast.success(`${a.name} added`, { duration: 1200 }); },
     onClear: clear, onNewOrder: newOrder, onPrint: () => setReceiptAt(new Date()),
   };
