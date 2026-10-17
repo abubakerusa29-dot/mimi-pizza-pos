@@ -15,3 +15,4 @@
 - The public homepage lives at `/` (digital menu, tracking, contact); the private POS lives at `/pos` behind Staff Access. Why: anyone opening the site URL must never land on the billing counter.
 - POS pages (everything except the public homepage and /track) sit behind Lovable Cloud email/password login in AppShell; public signups are disabled so only the owner account exists. Why: the billing counter must never be open to visitors.
 - POS login has a server-checked 6-digit staff PIN step (hashed in pos_security, lockout, 12h httpOnly session cookie) before email/password. Why: extra layer the browser cannot read or bypass.
+- Public reviews are read only through the public_reviews() function (hides phone and hidden reviews); owner moderates at /customer-reviews. Why: customer phone numbers must never be public.
