@@ -1,3 +1,4 @@
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Minus, Trash2, TriangleAlert } from "lucide-react";
@@ -53,7 +54,7 @@ function InventoryPage() {
               <Input value={moveBy[s.id] ?? "1"} onChange={(e) => setMoveBy({ ...moveBy, [s.id]: e.target.value })} type="number" min={0} className="w-20" aria-label={`Amount for ${s.name}`} />
               <Button size="sm" variant="outline" onClick={() => move(s.id, 1)}><Plus /> Add</Button>
               <Button size="sm" variant="outline" onClick={() => move(s.id, -1)}><Minus /> Use</Button>
-              <button onClick={() => { if (window.confirm(`Delete ${s.name}?`)) set(stock.filter((x) => x.id !== s.id)); }} aria-label={`Delete ${s.name}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+              <button onClick={async () => { if (await confirmDialog(`Delete ${s.name}?`, { title: "Delete stock item", confirmLabel: "Delete" })) set(stock.filter((x) => x.id !== s.id)); }} aria-label={`Delete ${s.name}`} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
             </div>
           </div>
         ))}

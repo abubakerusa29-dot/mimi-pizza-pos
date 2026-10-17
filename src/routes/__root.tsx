@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
+import { ConfirmDialogHost } from "@/components/ConfirmDialog";
 import { AppShell } from "@/components/pos/AppShell";
 import { OrderProvider } from "@/components/pos/OrderContext";
 import appCss from "../styles.css?url";
@@ -125,6 +126,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <OrderProvider><AppShell><Outlet /></AppShell></OrderProvider>
       <Toaster position="top-center" />
+      <ConfirmDialogHost />
     </QueryClientProvider>
   );
 }
