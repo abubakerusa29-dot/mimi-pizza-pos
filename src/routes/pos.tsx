@@ -11,6 +11,7 @@ import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
 import { posMenu } from "@/lib/menuOverrides";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/pos")({
   head: () => ({
@@ -149,6 +150,18 @@ function POS() {
         }}
       />
       <ReceiptPreview open={!!receiptAt} date={receiptAt ?? new Date()} lines={lines} orderNo={orderNo} orderType={orderType} table={table} onBack={() => setReceiptAt(null)} onDone={() => { setReceiptAt(null); newOrder(true); }} />
+      <AlertDialog open={!!ask} onOpenChange={(o) => !o && setAsk(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ask === "new" ? "Start a new order?" : "Clear the cart?"}</AlertDialogTitle>
+            <AlertDialogDescription>{ask === "new" ? "The current order will be removed and a new order will start." : "All items will be removed from this order."}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (ask === "new") newOrder(true); else clear(true); setAsk(null); }}>{ask === "new" ? "Yes, new order" : "Yes, clear"}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
