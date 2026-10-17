@@ -7,7 +7,8 @@ import hero from "@/assets/golden-storefront.png.asset.json";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { OrderTracker } from "@/components/public/OrderTracker";
-import { ReviewsSection } from "@/components/public/ReviewsSection";
+import { RatingChip } from "@/components/public/ReviewsSection";
+import { Link } from "@tanstack/react-router";
 import { categories, products, restaurantInfo, type CategoryId, type Product } from "@/data/menuData";
 import { productImages } from "@/data/productImages";
 import { CALL_NUMBER, MAPS_URL, whatsappLink } from "@/data/publicSite";
@@ -18,12 +19,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Mimi’s Pizza Lalamusa — Digital Menu & Live Order Tracking" },
-      { name: "description", content: "Browse Mimi’s Pizza deals, pizzas and burgers, order on WhatsApp and track your delivery live in Lalamusa." },
+      { name: "description", content: "Mimi’s Pizza Lala Musa digital menu: pizza deals, burgers and fries with prices. Order on WhatsApp and track your delivery live." },
+      { name: "keywords", content: "Mimi's Pizza, Mimis Pizza Lalamusa, pizza Lala Musa, pizza delivery Lalamusa, digital menu, order tracking" },
+      { property: "og:url", content: "https://mimispizza.site/" },
       { property: "og:title", content: "Mimi’s Pizza Lalamusa — Digital Menu" },
       { property: "og:description", content: "Deals, pizzas and burgers. Order on WhatsApp and track your order live." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://mimispizza.site/" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify({ "@context": "https://schema.org", "@type": "Restaurant", name: "Mimi’s Pizza", url: "https://mimispizza.site/", telephone: "+923124607733", servesCuisine: ["Pizza", "Burgers", "Fast food"], address: { "@type": "PostalAddress", streetAddress: "Main Qasba Road, Near Muhammadi Masjid", addressLocality: "Lalamusa", addressCountry: "PK" }, hasMenu: "https://mimispizza.site/#menu" }) }],
   }),
   component: Home,
 });
@@ -110,12 +115,14 @@ function Home() {
         <img src={hero.url} alt="Mimi’s Pizza shop front in Lalamusa" width={1672} height={940} className="absolute inset-0 -z-10 h-full w-full object-cover object-[50%_30%]" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-foreground/90 via-foreground/60 to-foreground/20 max-md:bg-gradient-to-t max-md:from-foreground/95 max-md:via-foreground/60 max-md:to-foreground/10" />
         <div className="mx-auto flex min-h-[440px] max-w-6xl flex-col justify-end px-4 pb-16 pt-40 text-background sm:min-h-[560px] md:justify-center md:pb-24 md:pt-24">
-          <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-primary-foreground"><MapPin className="size-3.5" />Lalamusa · Free home delivery</p>
+          <RatingChip />
+          <p className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-primary-foreground"><MapPin className="size-3.5" />Lalamusa · Free home delivery</p>
           <h1 className="mt-3 max-w-xl font-display text-[2rem] font-bold leading-[1.05] sm:text-6xl">A Taste That You Will <span className="text-secondary">Remember</span></h1>
           <p className="mt-2 max-w-md text-sm opacity-90 sm:text-base">Hot pizzas, juicy burgers and family deals, baked fresh every day.</p>
           <div className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:gap-3">
             <a href="#track" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground shadow-lg"><PackageSearch className="size-4" />Track Order</a>
             <a href="#menu" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-background px-5 text-sm font-bold text-foreground">View Menu</a>
+            <Link to="/reviews" className="col-span-2 inline-flex h-11 items-center justify-center rounded-full border border-background/40 px-5 text-sm font-bold sm:col-span-1 sm:h-12">View Reviews</Link>
           </div>
         </div>
       </section>
@@ -141,7 +148,7 @@ function Home() {
           <h2 className="mt-1 font-display text-3xl font-bold sm:text-4xl">Check Out Our Digital Menu</h2>
           <p className="mt-2 text-sm text-muted-foreground">Tap <b>WhatsApp Order</b> on any item and we will confirm it on WhatsApp.</p>
         </div>
-        <div className="sticky top-[7.1rem] z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur md:top-[5.5rem]">
+        <div className="sticky top-[5.2rem] z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur md:top-[5.5rem]">
           <label className="relative mx-auto block max-w-xl"><Search className="absolute left-3.5 top-3.5 size-5 text-muted-foreground" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search pizza, burger, deal…" className="h-12 w-full rounded-full border border-input bg-card pl-11 pr-4 shadow-sm" aria-label="Search menu" /></label>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {categories.map((c) => <button key={c.id} onClick={() => pick(c.id)} className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${cat === c.id ? "bg-primary text-primary-foreground" : "border border-border bg-card"}`}>{c.label}</button>)}
@@ -177,7 +184,6 @@ function Home() {
         </div>
       </section>
 
-      <ReviewsSection />
       <PublicFooter />
     </div>
   );

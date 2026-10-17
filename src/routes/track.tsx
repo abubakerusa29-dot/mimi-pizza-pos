@@ -17,8 +17,10 @@ export const Route = createFileRoute("/track")({
       { property: "og:title", content: "Track Your Order — Mimi’s Pizza" },
       { property: "og:description", content: "See when your pizza is in the oven, on the way and delivered." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://mimispizza.site/track" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://mimispizza.site/track" }],
   }),
   component: TrackPage,
 });

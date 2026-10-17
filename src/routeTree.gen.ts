@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CustomerReviewsRouteImport } from './routes/customer-reviews'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as InventoryRouteImport } from './routes/inventory'
@@ -20,6 +21,7 @@ import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
 import { Route as PosRouteImport } from './routes/pos'
 import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -31,6 +33,11 @@ import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomerReviewsRoute = CustomerReviewsRouteImport.update({
+  id: '/customer-reviews',
+  path: '/customer-reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomersRoute = CustomersRouteImport.update({
@@ -83,6 +90,11 @@ const ReportsRoute = ReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RidersRoute = RidersRouteImport.update({
   id: '/riders',
   path: '/riders',
@@ -121,6 +133,7 @@ const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/customer-reviews': typeof CustomerReviewsRoute
   '/customers': typeof CustomersRoute
   '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
@@ -131,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -141,6 +155,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/customer-reviews': typeof CustomerReviewsRoute
   '/customers': typeof CustomersRoute
   '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
@@ -151,6 +166,7 @@ export interface FileRoutesByTo {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -162,6 +178,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/customer-reviews': typeof CustomerReviewsRoute
   '/customers': typeof CustomersRoute
   '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
@@ -172,6 +189,7 @@ export interface FileRoutesById {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -184,6 +202,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/customer-reviews'
     | '/customers'
     | '/expenses'
     | '/inventory'
@@ -194,6 +213,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -204,6 +224,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/customer-reviews'
     | '/customers'
     | '/expenses'
     | '/inventory'
@@ -214,6 +235,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -224,6 +246,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/customer-reviews'
     | '/customers'
     | '/expenses'
     | '/inventory'
@@ -234,6 +257,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -245,6 +269,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CustomerReviewsRoute: typeof CustomerReviewsRoute
   CustomersRoute: typeof CustomersRoute
   ExpensesRoute: typeof ExpensesRoute
   InventoryRoute: typeof InventoryRoute
@@ -255,6 +280,7 @@ export interface RootRouteChildren {
   PosRoute: typeof PosRoute
   PrintersRoute: typeof PrintersRoute
   ReportsRoute: typeof ReportsRoute
+  ReviewsRoute: typeof ReviewsRoute
   RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   SettingsRoute: typeof SettingsRoute
@@ -271,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customer-reviews': {
+      id: '/customer-reviews'
+      path: '/customer-reviews'
+      fullPath: '/customer-reviews'
+      preLoaderRoute: typeof CustomerReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/customers': {
@@ -343,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/riders': {
       id: '/riders'
       path: '/riders'
@@ -397,6 +437,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CustomerReviewsRoute: CustomerReviewsRoute,
   CustomersRoute: CustomersRoute,
   ExpensesRoute: ExpensesRoute,
   InventoryRoute: InventoryRoute,
@@ -407,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   PosRoute: PosRoute,
   PrintersRoute: PrintersRoute,
   ReportsRoute: ReportsRoute,
+  ReviewsRoute: ReviewsRoute,
   RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   SettingsRoute: SettingsRoute,

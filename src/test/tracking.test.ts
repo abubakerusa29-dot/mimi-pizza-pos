@@ -14,7 +14,7 @@ describe("order tracking", () => {
     expect(stageOf({ status: "Delivered", created_at: t0 }, now)).toBe(3);
   });
   it("QR points to current domain tracking page and public pages skip POS shell", () => {
-    expect(TRACK_URL).toBe("https://demo-mimi-pizza.ebpk.site/track");
+    expect(TRACK_URL).toBe("https://mimispizza.site/track");
     expect(isPublicPath("/track")).toBe(true);
     expect(isPublicPath("/pos")).toBe(false); expect(isPublicPath("/")).toBe(true);
   });

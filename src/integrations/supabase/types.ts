@@ -111,29 +111,41 @@ export type Database = {
         Row: {
           comment: string
           created_at: string
+          hidden: boolean
           id: string
           invoice_no: string
           name: string
           phone: string
           rating: number
+          reply: string
+          service: string
+          starred: boolean
         }
         Insert: {
           comment: string
           created_at?: string
+          hidden?: boolean
           id?: string
           invoice_no?: string
           name: string
           phone: string
           rating: number
+          reply?: string
+          service?: string
+          starred?: boolean
         }
         Update: {
           comment?: string
           created_at?: string
+          hidden?: boolean
           id?: string
           invoice_no?: string
           name?: string
           phone?: string
           rating?: number
+          reply?: string
+          service?: string
+          starred?: boolean
         }
         Relationships: []
       }
@@ -151,6 +163,9 @@ export type Database = {
           id: string
           name: string
           rating: number
+          reply: string
+          service: string
+          starred: boolean
           verified: boolean
         }[]
       }

@@ -17,6 +17,7 @@ export function PublicFooter() {
           <ul className="mt-3 space-y-2 text-sm opacity-75">
             <li><a href="/#track" className="hover:opacity-100">Track your order</a></li>
             <li><a href="/#menu" className="hover:opacity-100">Digital menu</a></li>
+            <li><a href="/reviews" className="hover:opacity-100">Customer reviews</a></li>
             <li><a href="/#contact" className="hover:opacity-100">Contact and location</a></li>
           </ul>
         </div>
@@ -32,8 +33,9 @@ export function PublicFooter() {
           <a href={`tel:${CALL_NUMBER}`} className="mt-2 flex h-11 items-center justify-center gap-2 rounded-xl border border-background/30 font-bold"><Phone className="size-4" />Call {restaurantInfo.phone}</a>
         </div>
       </div>
-      <div className="border-t border-background/15 px-4 py-4 text-center text-xs opacity-70">
-        © {new Date().getFullYear()} Mimi’s Pizza Lalamusa · Made by <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary">{softwareCredit.name}</a> · {softwareCredit.phone}
+      <div className="border-t border-background/15 px-4 py-5 text-center text-sm">
+        <p className="opacity-70">© {new Date().getFullYear()} Mimi’s Pizza Lalamusa</p>
+        <p className="mt-1 font-semibold">Made by <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="text-primary underline-offset-2 hover:underline">{softwareCredit.name}</a> · <a href={`tel:${softwareCredit.phone}`}>{softwareCredit.phone}</a></p>
       </div>
     </footer>
   );
