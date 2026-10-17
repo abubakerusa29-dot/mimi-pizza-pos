@@ -60,6 +60,10 @@ export function ReviewsPageContent() {
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ name: "", phone: "", invoice: "", comment: "", service: "" });
   const [rating, setRating] = useState(5);
+  useEffect(() => {
+    const inv = new URLSearchParams(window.location.search).get("invoice")?.replace(/\D/g, "");
+    if (inv) { setF((x) => ({ ...x, invoice: inv })); setOpen(true); }
+  }, []);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [shown, setShown] = useState(10);
