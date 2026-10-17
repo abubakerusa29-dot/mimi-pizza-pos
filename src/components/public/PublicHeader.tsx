@@ -6,6 +6,7 @@ import { CALL_NUMBER } from "@/data/publicSite";
 const links = [
   { href: "/#track", label: "Track Order" },
   { href: "/#menu", label: "Menu" },
+  { href: "/#reviews", label: "Reviews" },
   { href: "/#contact", label: "Contact" },
 ];
 

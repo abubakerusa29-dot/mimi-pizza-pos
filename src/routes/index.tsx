@@ -7,6 +7,7 @@ import hero from "@/assets/golden-storefront.png.asset.json";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { OrderTracker } from "@/components/public/OrderTracker";
+import { ReviewsSection } from "@/components/public/ReviewsSection";
 import { categories, products, restaurantInfo, type CategoryId, type Product } from "@/data/menuData";
 import { productImages } from "@/data/productImages";
 import { CALL_NUMBER, MAPS_URL, whatsappLink } from "@/data/publicSite";
@@ -176,6 +177,7 @@ function Home() {
         </div>
       </section>
 
+      <ReviewsSection />
       <PublicFooter />
     </div>
   );
