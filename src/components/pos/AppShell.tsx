@@ -5,7 +5,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { StaffSessionProvider, useStaff, PinScreen } from "@/components/pos/StaffSession";
 import { canOpen } from "@/lib/staffAccess";
-import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair, Contact, Boxes, Wallet, FileBarChart, Users } from "lucide-react";
+import { Bike, PanelLeftClose, PanelLeftOpen, UtensilsCrossed, History, ChartNoAxesCombined, BookOpen, ArrowUpRight, Settings, ReceiptText, Printer, Armchair, Contact, Boxes, Wallet, FileBarChart, Users, Star } from "lucide-react";
 import { useOrder } from "@/components/pos/OrderContext";
 import { Button } from "@/components/ui/button";
 import { futureFeatures } from "@/data/futureFeatures";
@@ -23,6 +23,7 @@ const navigation = [
   { to: "/inventory", label: "Inventory", icon: Boxes },
   { to: "/expenses", label: "Expenses", icon: Wallet },
   { to: "/reports", label: "Reports", icon: FileBarChart },
+  { to: "/customer-reviews", label: "Customer Reviews", icon: Star },
   { to: "/team", label: "Team Members", icon: Users },
   { to: "/invoice-templates", label: "Invoice Templates", icon: ReceiptText },
   { to: "/printers", label: "Printer Setup", icon: Printer },
