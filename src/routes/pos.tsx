@@ -4,7 +4,7 @@ import { Search, RotateCcw, ShoppingBag, SearchX, Pizza, Package, Sandwich, CupS
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
-import { addLine, applyAddon, cartTotals, changeQty, formatRs, type Addon, type CartLine } from "@/lib/cart";
+import { addLine, applyAddon, cartTotals, changeQty, formatRs, setAdjustment, type AdjustKind, type Addon, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
 import { dealPizza } from "@/lib/dealPizza";
 import { OptionModal } from "@/components/pos/OptionModal";
