@@ -10,7 +10,7 @@ export function toWhatsAppNumber(phone: string): string {
   return /^923\d{9}$/.test(d) ? d : "";
 }
 
-export function trackingMessage(o: { name?: string; orderNo: number; total: number }): string {
+export function trackingMessage(o: { name?: string | undefined; orderNo: number; total: number }): string {
   const hi = o.name ? `Assalam-o-alaikum ${o.name}!` : "Assalam-o-alaikum!";
   return `${hi} Aapka Mimi's Pizza order #${o.orderNo} confirm ho gaya hai.\nTotal bill: ${formatRs(o.total)}\n\nApna order live track karein:\n${TRACK_URL}?id=${o.orderNo}\n\nShukriya! Mimi's Pizza Lalamusa`;
 }
