@@ -107,12 +107,53 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          invoice_no: string
+          name: string
+          phone: string
+          rating: number
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          invoice_no?: string
+          name: string
+          phone: string
+          rating: number
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          invoice_no?: string
+          name?: string
+          phone?: string
+          rating?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       public_menu_overrides: { Args: never; Returns: Json }
+      public_reviews: {
+        Args: never
+        Returns: {
+          comment: string
+          created_at: string
+          id: string
+          name: string
+          rating: number
+          verified: boolean
+        }[]
+      }
       track_order: {
         Args: { _order_no: number }
         Returns: {
