@@ -60,7 +60,7 @@ export function OrderTracker({ id }: { id?: string | undefined }) {
                 {stage === 2 && <Bike className="track-ride size-14 text-primary" />}
                 {stage === 3 && <PartyPopper className="track-pop size-14 text-primary" />}
               </div>
-              <h2 className="font-display text-2xl font-bold">{["We got your order!", "Your pizza is being prepared", order.order_type === "Delivery" ? "Your food is on the way!" : "Your order is ready", "Delivered. Enjoy your meal!"][stage]}</h2>
+              <h2 className="font-display text-2xl font-bold">{["We got your order!", "Your order is being prepared", order.order_type === "Delivery" ? "Your food is on the way!" : "Your order is ready", "Delivered. Enjoy your meal!"][stage]}</h2>
               <p className="mt-1 text-sm text-muted-foreground">{["The kitchen is starting now.", order.order_type === "Delivery" ? "Our chef is cooking it fresh. It will leave with a rider once it is ready." : "Our chef is cooking it fresh in the oven.", order.rider ? `Rider ${order.rider} is coming. Arriving in about 5 to 7 minutes.` : "Arriving in about 5 to 7 minutes.", "Thank you for choosing Mimi’s Pizza."][stage]}</p>
             </div>
             <ol className="p-6">
@@ -71,11 +71,18 @@ export function OrderTracker({ id }: { id?: string | undefined }) {
                   <li key={s.label} className="relative flex gap-3 pb-6 last:pb-0">
                     {i < steps.length - 1 && <span className={`absolute left-[17px] top-9 h-[calc(100%-2.25rem)] w-0.5 ${i < stage ? "bg-primary" : "bg-border"}`} />}
                     <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} ${i === stage && stage < 3 ? "animate-pulse" : ""}`}><Icon className="size-5" /></span>
-                    <div><p className={`font-semibold ${done ? "" : "text-muted-foreground"}`}>{s.label}</p><p className="text-xs text-muted-foreground">{i === 0 && placed ? fmt(placed) : i === 2 && done && order.dispatched_at ? `Left at ${fmt(new Date(order.dispatched_at))}` : i === stage && stage < 3 ? "In progress" : done ? "Done" : i === stage + 1 ? "Next" : "Waiting"}</p></div>
+                    <div><p className={`font-semibold ${done ? "" : "text-muted-foreground"}`}>{s.label}</p><p className="text-xs text-muted-foreground">{i === 0 && placed ? fmt(placed) : i === 2 && done && order.dispatched_at ? `Left at ${fmt(new Date(order.dispatched_at))}` : i === 1 && stage === 1 ? "Preparing…" : i === stage && stage < 3 ? "In progress" : done ? "Done" : i === stage + 1 ? "Next" : "Waiting"}</p></div>
                   </li>
                 );
               })}
             </ol>
+            {stage === 3 && (
+              <div className="mx-6 mb-6 rounded-2xl border border-primary/30 bg-primary/10 p-5 text-center">
+                <p className="font-display text-lg font-bold">Your review is very valuable to us ⭐</p>
+                <p className="mt-1 text-sm text-muted-foreground">Enjoyed your meal? Share your experience and get featured on our reviews page.</p>
+                <a href={`/reviews?invoice=${order.order_no}`} className="mt-3 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">Write a review</a>
+              </div>
+            )}
             <p className="border-t border-border px-6 py-3 text-center text-xs text-muted-foreground">This page updates automatically.</p>
           </section>
         )}
