@@ -20,6 +20,7 @@ import { Route as MenuGrowthRouteImport } from './routes/menu-growth'
 import { Route as PosRouteImport } from './routes/pos'
 import { Route as PrintersRouteImport } from './routes/printers'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as RidersRouteImport } from './routes/riders'
 import { Route as SalesRouteImport } from './routes/sales'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -83,6 +84,11 @@ const ReportsRoute = ReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RidersRoute = RidersRouteImport.update({
   id: '/riders',
   path: '/riders',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/pos': typeof PosRoute
   '/printers': typeof PrintersRoute
   '/reports': typeof ReportsRoute
+  '/reviews': typeof ReviewsRoute
   '/riders': typeof RidersRoute
   '/sales': typeof SalesRoute
   '/settings': typeof SettingsRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/printers'
     | '/reports'
+    | '/reviews'
     | '/riders'
     | '/sales'
     | '/settings'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   PosRoute: typeof PosRoute
   PrintersRoute: typeof PrintersRoute
   ReportsRoute: typeof ReportsRoute
+  ReviewsRoute: typeof ReviewsRoute
   RidersRoute: typeof RidersRoute
   SalesRoute: typeof SalesRoute
   SettingsRoute: typeof SettingsRoute
@@ -343,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/riders': {
       id: '/riders'
       path: '/riders'
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   PosRoute: PosRoute,
   PrintersRoute: PrintersRoute,
   ReportsRoute: ReportsRoute,
+  ReviewsRoute: ReviewsRoute,
   RidersRoute: RidersRoute,
   SalesRoute: SalesRoute,
   SettingsRoute: SettingsRoute,
