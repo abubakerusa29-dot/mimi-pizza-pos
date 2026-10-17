@@ -43,13 +43,6 @@
       "when": 1792230662634,
       "tag": "0005_reset_all_data",
       "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1792300000000,
-      "tag": "0006_dispatch_time",
-      "breakpoints": true
     }
   ]
 }
