@@ -11,6 +11,7 @@ import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
 import { posMenu } from "@/lib/menuOverrides";
 import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/pos")({
   head: () => ({
@@ -51,12 +52,13 @@ function POS() {
     add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
   };
 
-  const clear = () => {
-    if (lines.length && !window.confirm("Clear all items from this order?")) return;
+  const [ask, setAsk] = useState<"clear" | "new" | null>(null);
+  const clear = (skipConfirm?: unknown) => {
+    if (skipConfirm !== true && lines.length) return setAsk("clear");
     setLines([]);
   };
   const newOrder = (skipConfirm?: unknown) => {
-    if (skipConfirm !== true && lines.length && !window.confirm("Start a new order? The current order will be discarded.")) return;
+    if (skipConfirm !== true && lines.length) return setAsk("new");
     setLines([]);
     setTable("");
     setPhone("");
@@ -148,6 +150,18 @@ function POS() {
         }}
       />
       <ReceiptPreview open={!!receiptAt} date={receiptAt ?? new Date()} lines={lines} orderNo={orderNo} orderType={orderType} table={table} onBack={() => setReceiptAt(null)} onDone={() => { setReceiptAt(null); newOrder(true); }} />
+      <AlertDialog open={!!ask} onOpenChange={(o) => !o && setAsk(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ask === "new" ? "Start a new order?" : "Clear the cart?"}</AlertDialogTitle>
+            <AlertDialogDescription>{ask === "new" ? "The current order will be removed and a new order will start." : "All items will be removed from this order."}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (ask === "new") newOrder(true); else clear(true); setAsk(null); }}>{ask === "new" ? "Yes, new order" : "Yes, clear"}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

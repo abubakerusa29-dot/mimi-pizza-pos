@@ -1,5 +1,6 @@
 import { useOrder } from "./OrderContext";
-import { Printer, ArrowLeft, CheckCircle2, RotateCcw, Bluetooth } from "lucide-react";
+import { Printer, ArrowLeft, CheckCircle2, RotateCcw, Bluetooth, MessageCircle } from "lucide-react";
+import { customerWhatsAppLink, trackingMessage } from "@/lib/whatsappInvoice";
 import { buildEscPos, sendToRawBT } from "@/lib/thermalPrint";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -375,6 +376,13 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
             <div className="mt-2 flex flex-wrap gap-1.5">
               {available.map((k) => <Button key={k} size="sm" variant="outline" className="h-8 text-[11px]" onClick={() => startPrint([k])}><RotateCcw className="h-3.5 w-3.5" /> {slipLabels[k]}</Button>)}
             </div>
+            {(() => {
+              const name = order.backOffice.customers.find((c) => c.phone.replace(/\D/g, "") === phone.replace(/\D/g, ""))?.name;
+              const link = customerWhatsAppLink(phone, trackingMessage({ name, orderNo, total: cartTotals(lines).total }));
+              return link
+                ? <a href={link} target="_blank" rel="noopener noreferrer" className="mt-2 flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-whatsapp text-xs font-bold text-whatsapp-foreground"><MessageCircle className="h-4 w-4" /> Send tracking message on WhatsApp</a>
+                : orderType === "Delivery" && <p className="mt-2 text-[11px] text-muted-foreground">Add a valid mobile number (03xx) to send a WhatsApp message.</p>;
+            })()}
             {onDone && <Button className="mt-2 h-10 w-full text-xs font-bold" onClick={onDone}><CheckCircle2 className="h-4 w-4" /> All printed. Start next order</Button>}
           </div>
         )}
