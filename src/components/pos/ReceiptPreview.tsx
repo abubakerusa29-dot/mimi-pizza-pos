@@ -293,14 +293,15 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const phone = phoneProp ?? order.phone;
   const address = addressProp ?? order.address;
   const available = slipsFor(orderType);
-  const [view, setView] = useState<SlipKind | "all">("all");
+  // Default print is the customer copy only; other slips stay available as separate options.
+  const [view, setView] = useState<SlipKind | "all">("customer");
   const [printing, setPrinting] = useState<SlipKind[] | null>(null);
   const [jobIndex, setJobIndex] = useState(0);
   const sentJob = useRef("");
   const printRun = useRef(0);
   const openedAt = useRef(0);
   const [printed, setPrinted] = useState(false);
-  useEffect(() => { if (open) { setView("all"); setPrinted(false); openedAt.current = Date.now(); } }, [open]);
+  useEffect(() => { if (open) { setView("customer"); setPrinted(false); openedAt.current = Date.now(); } }, [open]);
   useEffect(() => {
     if (!open) return;
     const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onBack(); };
@@ -347,17 +348,18 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
           <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `${paper}mm · #${orderNo}`}</span>
         </div>
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Other copies (optional)</p>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
-          {(["all", ...available] as const).map((k) => (
+          {(["customer", ...available.filter((k) => k !== "customer"), "all"] as const).map((k) => (
             <button key={k} role="tab" aria-selected={view === k} onClick={() => setView(k)} className={`h-8 rounded px-1 text-[11px] font-semibold ${view === k ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-              {k === "all" ? `All (${available.length})` : slipLabels[k]}
+              {k === "all" ? `All (${available.length})` : k === "customer" ? "Customer ✓" : slipLabels[k]}
             </button>
           ))}
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onBack} className="h-10 flex-1 text-xs"><ArrowLeft className="h-4 w-4" /> Back</Button>
           <Button autoFocus onClick={() => startPrint(shown)} className="h-10 flex-[2] text-xs font-bold">
-            <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Slip`}
+            <Printer className="h-4 w-4" /> {view === "all" ? `Print All ${available.length} Slips` : `Print ${slipLabels[view]} Copy`}
           </Button>
         </div>
         <Button variant="secondary" onClick={() => {
