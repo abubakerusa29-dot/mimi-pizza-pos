@@ -19,6 +19,7 @@ export type Database = {
           address: string
           area: string | null
           created_at: string
+          dispatched_at: string | null
           id: string
           lines: Json
           order_no: number
@@ -32,6 +33,7 @@ export type Database = {
           address?: string
           area?: string | null
           created_at?: string
+          dispatched_at?: string | null
           id?: string
           lines?: Json
           order_no: number
@@ -45,6 +47,7 @@ export type Database = {
           address?: string
           area?: string | null
           created_at?: string
+          dispatched_at?: string | null
           id?: string
           lines?: Json
           order_no?: number
@@ -174,6 +177,7 @@ export type Database = {
         Args: { _order_no: number }
         Returns: {
           created_at: string
+          dispatched_at: string
           order_no: number
           order_type: string
           rider: string

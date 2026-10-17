@@ -1,6 +1,6 @@
 import { cartTotals, type CartLine } from "@/lib/cart";
 
-export type DeliveryStatus = "On the way" | "Delivered" | "Cash returned";
+export type DeliveryStatus = "Preparing" | "On the way" | "Delivered" | "Cash returned";
 export interface DeliveryRecord { orderType: string; rider: string; status: DeliveryStatus; lines: CartLine[] }
 export interface RiderSummary { rider: string; active: number; delivered: number; settled: number; cashOutstanding: number; cashReturned: number }
 

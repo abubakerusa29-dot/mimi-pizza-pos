@@ -3,12 +3,13 @@ import { CheckCircle2, ChefHat, Bike, PartyPopper } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { whatsappLink } from "@/data/publicSite";
 
-export type Found = { order_no: number; order_type: string; status: string | null; created_at: string; rider: string | null };
+export type Found = { order_no: number; order_type: string; status: string | null; created_at: string; rider: string | null; dispatched_at?: string | null };
 
 /** 0 confirmed, 1 preparing, 2 on the way, 3 delivered */
-export function stageOf(o: Pick<Found, "status" | "created_at">, now = Date.now()): number {
+export function stageOf(o: Pick<Found, "status" | "created_at" | "order_type"> & { rider?: string | null }, now = Date.now()): number {
   if (o.status === "Delivered" || o.status === "Cash returned") return 3;
-  if (o.status === "On the way") return 2;
+  // Delivery is only "on the way" once the owner dispatches it to a rider.
+  if (o.status === "On the way" && (o.order_type !== "Delivery" || o.rider)) return 2;
   return now - new Date(o.created_at).getTime() > 60_000 ? 1 : 0;
 }
 
@@ -60,7 +61,7 @@ export function OrderTracker({ id }: { id?: string | undefined }) {
                 {stage === 3 && <PartyPopper className="track-pop size-14 text-primary" />}
               </div>
               <h2 className="font-display text-2xl font-bold">{["We got your order!", "Your pizza is being prepared", order.order_type === "Delivery" ? "Your food is on the way!" : "Your order is ready", "Delivered. Enjoy your meal!"][stage]}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{["The kitchen is starting now.", "Our chef is cooking it fresh in the oven.", order.rider ? `Rider ${order.rider} is coming. Arriving in about 5 to 7 minutes.` : "Arriving in about 5 to 7 minutes.", "Thank you for choosing Mimi’s Pizza."][stage]}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{["The kitchen is starting now.", order.order_type === "Delivery" ? "Our chef is cooking it fresh. It will leave with a rider once it is ready." : "Our chef is cooking it fresh in the oven.", order.rider ? `Rider ${order.rider} is coming. Arriving in about 5 to 7 minutes.` : "Arriving in about 5 to 7 minutes.", "Thank you for choosing Mimi’s Pizza."][stage]}</p>
             </div>
             <ol className="p-6">
               {steps.map((s, i) => {
@@ -70,7 +71,7 @@ export function OrderTracker({ id }: { id?: string | undefined }) {
                   <li key={s.label} className="relative flex gap-3 pb-6 last:pb-0">
                     {i < steps.length - 1 && <span className={`absolute left-[17px] top-9 h-[calc(100%-2.25rem)] w-0.5 ${i < stage ? "bg-primary" : "bg-border"}`} />}
                     <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} ${i === stage && stage < 3 ? "animate-pulse" : ""}`}><Icon className="size-5" /></span>
-                    <div><p className={`font-semibold ${done ? "" : "text-muted-foreground"}`}>{s.label}</p><p className="text-xs text-muted-foreground">{i === 0 && placed ? fmt(placed) : done ? "Done" : i === stage + 1 ? "Next" : "Waiting"}</p></div>
+                    <div><p className={`font-semibold ${done ? "" : "text-muted-foreground"}`}>{s.label}</p><p className="text-xs text-muted-foreground">{i === 0 && placed ? fmt(placed) : i === 2 && done && order.dispatched_at ? `Left at ${fmt(new Date(order.dispatched_at))}` : i === stage && stage < 3 ? "In progress" : done ? "Done" : i === stage + 1 ? "Next" : "Waiting"}</p></div>
                   </li>
                 );
               })}

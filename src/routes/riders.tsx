@@ -24,16 +24,16 @@ function Riders() {
   const allSelected = pending.length > 0 && selectedPending.length === pending.length;
   const toggle = (n: number) => setSelected((s) => (s.includes(n) ? s.filter((x) => x !== n) : [...s, n]));
   const deliveries = invoices.filter((i) => i.orderType === "Delivery" && i.rider);
-  const summaries = riderSummaries(deliveries.map((d) => ({ orderType: d.orderType, rider: d.rider ?? "", status: d.status ?? "On the way", lines: d.lines })));
+  const summaries = riderSummaries(deliveries.map((d) => ({ orderType: d.orderType, rider: d.rider ?? "", status: d.status ?? "Preparing", lines: d.lines })));
   const outstanding = summaries.reduce((s, r) => s + r.cashOutstanding, 0);
   const returned = summaries.reduce((s, r) => s + r.cashReturned, 0);
   /** Owner confirms the rider handed over all cash: every open order of that rider becomes settled. */
   const collect = (riderName: string, amount: number) => {
     if (!window.confirm(`Confirm: ${formatRs(amount)} collected from ${riderName}?`)) return;
-    deliveries.filter((d) => d.rider === riderName && (d.status ?? "On the way") !== "Cash returned").forEach((d) => setInvoiceStatus(d.orderNo, "Cash returned"));
+    deliveries.filter((d) => d.rider === riderName && (d.status ?? "Preparing") !== "Cash returned").forEach((d) => setInvoiceStatus(d.orderNo, "Cash returned"));
     toast.success(`Payment collected from ${riderName}: ${formatRs(amount)}`);
   };
-  const onRoad = deliveries.filter((d) => (d.status ?? "On the way") === "On the way").length;
+  const onRoad = deliveries.filter((d) => (d.status ?? "Preparing") === "On the way").length;
 
   return (
     <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
@@ -85,10 +85,10 @@ function Riders() {
         <div className="mt-2 grid gap-2">
           {deliveries.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">No delivery orders yet. <Link to="/pos" className="font-semibold text-primary">Take an order</Link></div>}
           {deliveries.map((d) => {
-            const status = d.status ?? "On the way";
+            const status = d.status ?? "Preparing";
             return (
               <div key={d.orderNo} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3">
-                <div className="min-w-0 flex-1"><p className="font-semibold">#{d.orderNo} · {d.rider || "No rider"}{d.area ? ` · ${d.area}` : ""}</p><p className="truncate text-xs text-muted-foreground">{d.phone || "No phone"} · {d.address || "No address"}</p></div>
+                <div className="min-w-0 flex-1"><p className="font-semibold">#{d.orderNo} · {d.rider || "No rider"}{d.dispatchedAt ? ` · left ${d.dispatchedAt.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}` : ""}{d.area ? ` · ${d.area}` : ""}</p><p className="truncate text-xs text-muted-foreground">{d.phone || "No phone"} · {d.address || "No address"}</p></div>
                 <span className="font-bold">{formatRs(cartTotals(d.lines).total)}</span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${status === "Cash returned" ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"}`}>{status}</span>
                 {status === "On the way" && <Button size="sm" variant="outline" onClick={() => setInvoiceStatus(d.orderNo, "Delivered")}>Mark delivered</Button>}
