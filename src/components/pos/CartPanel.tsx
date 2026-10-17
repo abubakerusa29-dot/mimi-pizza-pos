@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/menuData";
 import { useOrder, type OrderType } from "./OrderContext";
-import { type Addon, type CartLine, cartTotals, formatRs, lineTotal } from "@/lib/cart";
+import { type Addon, type AdjustKind, type CartLine, cartTotals, formatRs, lineTotal, isAdjustment } from "@/lib/cart";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Percent, Receipt } from "lucide-react";
 import { occupiedTables, tableLabel } from "@/lib/tables";
 
 export type { OrderType } from "./OrderContext";
@@ -18,6 +20,7 @@ interface Props {
   setTable: (t: string) => void;
   onQty: (key: string, d: number) => void;
   onAddon: (key: string, addon: Addon) => void;
+  onAdjust: (kind: AdjustKind, value: number, mode: "rs" | "percent", label: string) => void;
   onClear: () => void;
   onNewOrder: () => void;
   onPrint: () => void;
@@ -36,6 +39,11 @@ export function CartPanel(p: Props) {
   const [openAddon, setOpenAddon] = useState<string | null>(null);
   const [findOpen, setFindOpen] = useState(false);
   const [findQ, setFindQ] = useState("");
+  const [adj, setAdj] = useState<AdjustKind | null>(null);
+  const [adjVal, setAdjVal] = useState("");
+  const [adjMode, setAdjMode] = useState<"rs" | "percent">("rs");
+  const [adjLabel, setAdjLabel] = useState("");
+  const openAdj = (k: AdjustKind) => { setAdj(k); setAdjVal(""); setAdjMode(k === "charge" ? "percent" : "rs"); setAdjLabel(k === "charge" ? "Tax" : ""); };
   const found = searchCustomers(backOffice.customers, findQ);
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
@@ -136,14 +144,14 @@ export function CartPanel(p: Props) {
                     {l.variant && <p className="text-xs font-medium text-primary">{l.variant}</p>}
                     {l.addons?.length ? <p className="text-xs font-medium text-primary">+ {l.addons.join(", ")}</p> : null}
                     {l.description && <p className="line-clamp-2 text-[11px] text-muted-foreground">{l.description}</p>}
-                    <p className="text-xs text-muted-foreground">{formatRs(l.unitPrice)} each</p>
+                    {!isAdjustment(l) && <p className="text-xs text-muted-foreground">{formatRs(l.unitPrice)} each</p>}
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => p.onQty(l.key, -l.qty)} aria-label={`Remove ${l.name}`} className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center gap-1">
+                  <div className={`flex items-center gap-1 ${isAdjustment(l) ? "invisible" : ""}`}>
                     <Button variant="outline" size="icon" onClick={() => p.onQty(l.key, -1)} aria-label="Decrease" className="h-8 w-8"><Minus /></Button>
                     <span className="w-8 text-center text-sm font-bold">{l.qty}</span>
                     <Button size="icon" onClick={() => p.onQty(l.key, 1)} aria-label="Increase" className="h-8 w-8"><Plus /></Button>
@@ -176,7 +184,11 @@ export function CartPanel(p: Props) {
 
       <div className="border-t border-border p-4">
         <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal ({items} items)</span><span>{formatRs(subtotal)}</span></div>
-        <div className="mt-1 flex justify-between text-lg font-bold"><span>Total</span><span className="text-primary">{formatRs(total)}</span></div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Button variant="outline" size="sm" onClick={() => openAdj("discount")} disabled={!p.lines.length} className="h-8 gap-1 text-[11px] font-semibold"><Percent className="h-3.5 w-3.5" /> Discount</Button>
+          <Button variant="outline" size="sm" onClick={() => openAdj("charge")} disabled={!p.lines.length} className="h-8 gap-1 text-[11px] font-semibold"><Receipt className="h-3.5 w-3.5" /> Tax / Extra</Button>
+        </div>
+        <div className="mt-2 flex justify-between text-lg font-bold"><span>Total</span><span className="text-primary">{formatRs(total)}</span></div>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Button variant="outline" onClick={p.onClear} disabled={!p.lines.length} className="h-10 gap-1.5 text-xs font-semibold">
             <Trash2 className="h-4 w-4" /> Clear Cart
@@ -189,6 +201,27 @@ export function CartPanel(p: Props) {
           <Printer className="h-5 w-5" /> Print Bill
         </Button>
       </div>
+      <Dialog open={!!adj} onOpenChange={(o) => !o && setAdj(null)}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader>
+            <DialogTitle>{adj === "discount" ? "Add Discount" : "Add Tax / Extra Charge"}</DialogTitle>
+            <DialogDescription>Enter an amount in Rs. or a percentage of the items total. Enter 0 to remove.</DialogDescription>
+          </DialogHeader>
+          <form className="grid gap-2" onSubmit={(e) => { e.preventDefault(); if (adj) p.onAdjust(adj, Number(adjVal) || 0, adjMode, adjLabel); setAdj(null); }}>
+            {adj === "charge" && <input value={adjLabel} onChange={(e) => setAdjLabel(e.target.value)} placeholder="Name (e.g. Tax, Service charge)" aria-label="Charge name" className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary" />}
+            <div className="flex gap-2">
+              <input autoFocus value={adjVal} onChange={(e) => setAdjVal(e.target.value.replace(/[^\d.]/g, ""))} inputMode="decimal" placeholder="0" aria-label="Amount" className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-lg font-bold outline-none focus:border-primary" />
+              <div className="grid grid-cols-2 rounded-lg bg-muted p-1">
+                {(["rs", "percent"] as const).map((m) => <button key={m} type="button" aria-pressed={adjMode === m} onClick={() => setAdjMode(m)} className={`rounded-md px-3 text-sm font-bold ${adjMode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{m === "rs" ? "Rs" : "%"}</button>)}
+              </div>
+            </div>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setAdj(null)}>Cancel</Button>
+              <Button type="submit">Apply</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

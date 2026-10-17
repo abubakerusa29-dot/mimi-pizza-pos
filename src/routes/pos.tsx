@@ -75,6 +75,7 @@ function POS() {
   const cartProps = {
     lines, orderNo, orderType, table, setOrderType, setTable,
     onQty: (k: string, d: number) => setLines((l) => changeQty(l, k, d)),
+    onAdjust: (k: AdjustKind, v: number, m: "rs" | "percent", label: string) => setLines((l) => setAdjustment(l, k, v, m, label)),
     onAddon: (k: string, a: Addon) => { setLines((l) => applyAddon(l, k, a)); toast.success(`${a.name} added`, { duration: 1200 }); },
     onClear: clear, onNewOrder: newOrder, onPrint: () => setReceiptAt(new Date()),
   };
