@@ -9,7 +9,7 @@ export function Stars({ value, onPick, size = "size-4" }: { value: number; onPic
     <div className="flex gap-0.5" role={onPick ? "radiogroup" : undefined} aria-label="Rating">
       {[1, 2, 3, 4, 5].map((n) => (
         <button key={n} type="button" disabled={!onPick} onClick={() => onPick?.(n)} aria-label={`${n} star`} className={onPick ? "p-0.5" : "cursor-default"}>
-          <Star className={`${onPick ? "size-8" : size} ${n <= Math.round(value) ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
+          <Star className={`${onPick ? "size-8" : size} ${n <= Math.round(value) ? "fill-star text-star drop-shadow-sm" : "fill-muted text-border"}`} />
         </button>
       ))}
     </div>
@@ -28,7 +28,7 @@ export function RatingChip() {
   const { summary } = usePublicReviews();
   return (
     <Link to="/reviews" className="inline-flex w-fit items-center gap-2 rounded-full bg-background/15 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background/25">
-      <Star className="size-4 fill-secondary text-secondary" /><b className="text-sm">{summary.average.toFixed(1)}</b> rated by {summary.count}+ customers · <span className="underline">View reviews</span>
+      <Star className="size-4 fill-star text-star" /><b className="text-sm">{summary.average.toFixed(1)}</b> rated by {summary.count}+ customers · <span className="underline">View reviews</span>
     </Link>
   );
 }
@@ -96,7 +96,7 @@ export function ReviewsPageContent() {
               <div className="flex items-center justify-between"><Stars value={r.rating} /><span className="text-[11px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString("en-GB")}</span></div>
               <p className="mt-2 text-sm">{r.comment}</p>
               <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold">{r.name}
-                {r.verified && <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-primary"><BadgeCheck className="size-3.5" />Verified order</span>}
+                {r.verified && <span className="inline-flex items-center gap-1 rounded-full bg-verified/15 px-2 py-0.5 text-[11px] font-bold text-verified"><BadgeCheck className="size-3.5" />Verified order</span>}
                 {r.service && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold">{r.service}</span>}
               </p>
               {r.reply && <div className="mt-3 rounded-xl bg-accent p-3 text-xs"><p className="flex items-center gap-1 font-bold"><Store className="size-3.5 text-primary" />Reply from Mimi’s Pizza</p><p className="mt-1">{r.reply}</p></div>}

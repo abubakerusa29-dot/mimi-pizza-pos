@@ -37,6 +37,8 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-whatsapp: var(--whatsapp);
+  --color-star: var(--star);
+  --color-verified: var(--verified);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -81,6 +83,8 @@
   --primary: oklch(0.71 0.18 52);
   --primary-foreground: oklch(1 0 0);
   --whatsapp: oklch(0.62 0.17 149);
+  --star: oklch(0.8 0.17 80);
+  --verified: oklch(0.55 0.15 150);
   --whatsapp-foreground: oklch(1 0 0);
   --secondary: oklch(0.965 0.025 70);
   --secondary-foreground: oklch(0.255 0 0);
