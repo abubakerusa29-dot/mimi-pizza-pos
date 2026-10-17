@@ -348,7 +348,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
           <h2 id="invoice-title" className="text-sm font-semibold">Print Preview</h2>
           <span className="font-mono text-xs text-muted-foreground">{printing ? `Printing ${jobIndex + 1}/${printing.length}` : `${paper}mm · #${orderNo}`}</span>
         </div>
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Other copies (optional)</p>
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Copy to print (Customer is default)</p>
         <div role="tablist" aria-label="Slip type" className="mb-3 grid gap-1 rounded-md bg-muted p-1" style={{ gridTemplateColumns: `repeat(${available.length + 1}, minmax(0, 1fr))` }}>
           {(["customer", ...available.filter((k) => k !== "customer"), "all"] as const).map((k) => (
             <button key={k} role="tab" aria-selected={view === k} onClick={() => setView(k)} className={`h-8 rounded px-1 text-[11px] font-semibold ${view === k ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>

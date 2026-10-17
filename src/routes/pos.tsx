@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { categories, products, type CategoryId, type Product } from "@/data/menuData";
 import { addLine, applyAddon, cartTotals, changeQty, formatRs, type Addon, type CartLine } from "@/lib/cart";
 import { ProductCard } from "@/components/pos/ProductCard";
+import { dealPizza } from "@/lib/dealPizza";
 import { OptionModal } from "@/components/pos/OptionModal";
 import { CartPanel } from "@/components/pos/CartPanel";
 import { useOrder } from "@/components/pos/OrderContext";
@@ -48,7 +49,7 @@ function POS() {
   };
 
   const select = (p: Product) => {
-    if (p.sizes || p.flavourChoice) return setModal(p);
+    if (p.sizes || p.flavourChoice || dealPizza(p)) return setModal(p);
     add({ key: p.id, name: p.tag ? `${p.name} ${p.tag}` : p.name, description: p.description, unitPrice: p.price ?? 0, addonGroup: p.category === "burgers" ? "burger" : undefined });
   };
 
