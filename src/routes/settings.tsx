@@ -7,6 +7,7 @@ import { useOrder } from "@/components/pos/OrderContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OwnerAccountCard, StaffPinCard } from "@/components/pos/OwnerLogin";
+import { DangerZone } from "@/components/pos/DangerZone";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "Settings — Mimi’s Pizza" }, { name: "description", content: "Restaurant profile, riders and delivery areas for Mimi’s Pizza POS." }, { property: "og:title", content: "Settings — Mimi’s Pizza" }, { property: "og:description", content: "Edit restaurant details printed on receipts and manage riders and areas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -74,6 +75,8 @@ function Settings() {
 
       {nameList("Riders", Bike, riderList, setRiderList, newRider, setNewRider, "New rider name")}
       {nameList("Delivery areas", MapPin, areaList, setAreaList, newArea, setNewArea, "New area name")}
+
+      <DangerZone />
 
       <p className="text-[11px] text-muted-foreground">Note: these settings are saved permanently and stay after a page refresh.</p>
     </div>

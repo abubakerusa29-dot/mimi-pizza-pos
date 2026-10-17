@@ -14,7 +14,7 @@ export interface ThermalOrder {
 const ESC = "\x1b", GS = "\x1d";
 const INIT = ESC + "@", CENTER = ESC + "a1", LEFT = ESC + "a0";
 const BOLD = ESC + "E1", NOBOLD = ESC + "E0", BIG = GS + "!\x11", NORMAL = GS + "!\x00";
-const CUT = "\n\n\n\n" + GS + "V\x41\x03";
+const CUT = "\n\n\n\n\n\n" + GS + "V\x41\x03";
 
 const clean = (s: string) => s.replace(/[’‘]/g, "'").replace(/[–—]/g, "-").replace(/·/g, "-").replace(/[^\x20-\x7e\n]/g, "");
 const row = (l: string, r: string, w: number) => {
