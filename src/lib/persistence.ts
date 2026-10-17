@@ -33,6 +33,7 @@ export async function loadInvoices(): Promise<Invoice[]> {
     rider: r.rider ?? undefined,
     area: r.area ?? undefined,
     status: (r.status ?? undefined) as Invoice["status"],
+    dispatchedAt: r.dispatched_at ? new Date(r.dispatched_at) : undefined,
   }));
 }
 
@@ -62,7 +63,7 @@ export async function persistInvoiceStatus(orderNo: number, status: string) {
 /** Assigns one rider to many invoices at once and marks them on the way. */
 export async function persistRiderAssignment(orderNos: number[], rider: string) {
   if (!orderNos.length) return;
-  const { error } = await supabase.from("pos_invoices").update({ rider, status: "On the way" }).in("order_no", orderNos);
+  const { error } = await supabase.from("pos_invoices").update({ rider, status: "On the way", dispatched_at: new Date().toISOString() }).in("order_no", orderNos);
   if (error) logErr("rider assignment", error);
 }
 

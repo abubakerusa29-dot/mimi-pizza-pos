@@ -88,7 +88,7 @@ function useOrderState() {
   /** Bulk dispatch: hands many delivery invoices to one rider. */
   const assignRider = (orderNos: number[], riderName: string) => {
     const set = new Set(orderNos);
-    setInvoices((list) => list.map((i) => (set.has(i.orderNo) ? { ...i, rider: riderName, status: "On the way" as DeliveryStatus } : i)));
+    setInvoices((list) => list.map((i) => (set.has(i.orderNo) ? { ...i, rider: riderName, status: "On the way" as DeliveryStatus, dispatchedAt: new Date() } : i)));
     void persistRiderAssignment(orderNos, riderName);
   };
   type Updater<T> = T | ((prev: T) => T);

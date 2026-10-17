@@ -337,7 +337,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
   const startPrint = (kinds: SlipKind[]) => {
     if (printing || Date.now() - openedAt.current < 500) return;
     printRun.current++;
-    order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined });
+    order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? (rider ? ("On the way" as const) : ("Preparing" as const)) : undefined });
     setJobIndex(0); setPrinting(kinds);
   };
   return (
@@ -362,7 +362,7 @@ export function ReceiptPreview({ open, lines, orderNo, orderType, table, date, o
         </div>
         <Button variant="secondary" onClick={() => {
           if (printing) return;
-          order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? ("On the way" as const) : undefined });
+          order.saveInvoice({ orderNo, date, lines, orderType, table, phone, address, rider, area, status: orderType === "Delivery" ? (rider ? ("On the way" as const) : ("Preparing" as const)) : undefined });
           const raw = shown.map((k) => buildEscPos({ kind: k, lines, orderNo, orderType, table, date, phone, address, rider, area, restaurant: order.restaurant, footer: order.invoiceSettings.footer, paper })).join("");
           sendToRawBT(raw);
           setPrinted(true);
