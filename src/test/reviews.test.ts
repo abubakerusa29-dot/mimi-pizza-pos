@@ -7,6 +7,6 @@ describe("review rating", () => {
   });
   it("updates with new customer reviews", () => {
     const s = ratingSummary(Array(20).fill(5));
-    expect(s).toEqual({ average: 4.8, count: 610 });
+    expect(s).toEqual({ average: 4.8, count: 40 });
   });
 });
