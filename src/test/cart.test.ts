@@ -33,3 +33,17 @@ describe("burger add-ons", () => {
     expect(cartTotals(c).total).toBe(860);
   });
 });
+
+import { setAdjustment as _setAdj, cartTotals as _ct } from "@/lib/cart";
+describe("discount and tax", () => {
+  const base = [{ key: "a", name: "A", unitPrice: 1000, qty: 2 }];
+  it("Rs. 200 discount lowers total to 1800", () => {
+    expect(_ct(_setAdj(base, "discount", 200, "rs")).total).toBe(1800);
+  });
+  it("10% tax adds 200", () => {
+    expect(_ct(_setAdj(base, "charge", 10, "percent")).total).toBe(2200);
+  });
+  it("discount cannot exceed items", () => {
+    expect(_ct(_setAdj(base, "discount", 5000, "rs")).total).toBe(0);
+  });
+});
