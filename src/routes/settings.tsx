@@ -10,7 +10,7 @@ import { OwnerAccountCard, StaffPinCard } from "@/components/pos/OwnerLogin";
 import { DangerZone } from "@/components/pos/DangerZone";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings — Mimi’s Pizza" }, { name: "description", content: "Restaurant profile, riders and delivery areas for Mimi’s Pizza POS." }, { property: "og:title", content: "Settings — Mimi’s Pizza" }, { property: "og:description", content: "Edit restaurant details printed on receipts and manage riders and areas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Settings — Mimi’s Pizza" }, { name: "description", content: "Restaurant profile, riders and delivery areas for Mimi’s Pizza POS." }, { property: "og:title", content: "Settings — Mimi’s Pizza" }, { property: "og:description", content: "Edit restaurant details printed on receipts and manage riders and areas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: Settings,
 });
 

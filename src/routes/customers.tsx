@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { cleanPhone, customerHistory, upsertCustomer } from "@/lib/backOffice";
 
 export const Route = createFileRoute("/customers")({
-  head: () => ({ meta: [{ title: "Customers | Mimi’s Pizza POS" }, { name: "description", content: "Save regular customers and their addresses for fast delivery orders." }, { property: "og:title", content: "Customers | Mimi’s Pizza POS" }, { property: "og:description", content: "Regular customer list with order history." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Customers | Mimi’s Pizza POS" }, { name: "description", content: "Save regular customers and their addresses for fast delivery orders." }, { property: "og:title", content: "Customers | Mimi’s Pizza POS" }, { property: "og:description", content: "Regular customer list with order history." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: CustomersPage,
 });
 

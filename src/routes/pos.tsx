@@ -17,6 +17,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export const Route = createFileRoute("/pos")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Mimi’s Pizza POS — Counter Billing" },
       { name: "description", content: "Point of sale for Mimi’s Pizza: take orders, calculate bills and print receipts." },
       { property: "og:title", content: "Mimi’s Pizza POS — Counter Billing" },

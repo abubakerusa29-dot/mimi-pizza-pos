@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { occupiedTables, tableLabel } from "@/lib/tables";
 
 export const Route = createFileRoute("/tables")({
-  head: () => ({ meta: [{ title: "Table Management | Mimi’s Pizza POS" }, { name: "description", content: "Add dine-in tables and see which tables are free or busy." }, { property: "og:title", content: "Table Management | Mimi’s Pizza POS" }, { property: "og:description", content: "Set up dine-in tables for Mimi’s Pizza and track open orders." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Table Management | Mimi’s Pizza POS" }, { name: "description", content: "Add dine-in tables and see which tables are free or busy." }, { property: "og:title", content: "Table Management | Mimi’s Pizza POS" }, { property: "og:description", content: "Set up dine-in tables for Mimi’s Pizza and track open orders." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: TablesPage,
 });
 

@@ -9,7 +9,7 @@ import { newId, type TeamMember } from "@/lib/backOffice";
 import { accessAreas, cashierAccess, isValidPin, rolePresets, staffRoles, type AccessKey } from "@/lib/staffAccess";
 
 export const Route = createFileRoute("/team")({
-  head: () => ({ meta: [{ title: "Team Members | Mimi’s Pizza POS" }, { name: "description", content: "Create staff logins with PIN and choose what each person can use." }, { property: "og:title", content: "Team Members | Mimi’s Pizza POS" }, { property: "og:description", content: "Staff logins and access for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Team Members | Mimi’s Pizza POS" }, { name: "description", content: "Create staff logins with PIN and choose what each person can use." }, { property: "og:title", content: "Team Members | Mimi’s Pizza POS" }, { property: "og:description", content: "Staff logins and access for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: TeamPage,
 });
 
