@@ -11,7 +11,7 @@ import { cartTotals, formatRs } from "@/lib/cart";
 import { pendingDispatch, riderSummaries } from "@/lib/riders";
 
 export const Route = createFileRoute("/riders")({
-  head: () => ({ meta: [{ title: "Riders & Cash — Mimi’s Pizza" }, { name: "description", content: "Track delivery riders, orders on the way and cash to collect." }, { property: "og:title", content: "Riders & Cash — Mimi’s Pizza" }, { property: "og:description", content: "Delivery rider dispatch and cash settlement for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Riders & Cash — Mimi’s Pizza" }, { name: "description", content: "Track delivery riders, orders on the way and cash to collect." }, { property: "og:title", content: "Riders & Cash — Mimi’s Pizza" }, { property: "og:description", content: "Delivery rider dispatch and cash settlement for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: Riders,
 });
 

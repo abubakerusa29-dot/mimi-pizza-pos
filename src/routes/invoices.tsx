@@ -7,7 +7,7 @@ import { ReceiptPreview } from "@/components/pos/ReceiptPreview";
 import { cartTotals, formatRs } from "@/lib/cart";
 
 export const Route = createFileRoute("/invoices")({
-  head: () => ({ meta: [{ title: "Previous Invoices — Mimi’s Pizza" }, { name: "description", content: "Search and reprint previous invoices at Mimi’s Pizza." }, { property: "og:title", content: "Previous Invoices — Mimi’s Pizza" }, { property: "og:description", content: "Search and reprint previous Mimi’s Pizza invoices." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Previous Invoices — Mimi’s Pizza" }, { name: "description", content: "Search and reprint previous invoices at Mimi’s Pizza." }, { property: "og:title", content: "Previous Invoices — Mimi’s Pizza" }, { property: "og:description", content: "Search and reprint previous Mimi’s Pizza invoices." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: Invoices,
 });
 

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { isLowStock, newId, type StockItem } from "@/lib/backOffice";
 
 export const Route = createFileRoute("/inventory")({
-  head: () => ({ meta: [{ title: "Inventory | Mimi’s Pizza POS" }, { name: "description", content: "Track packing material like pizza boxes, bags and wrappers." }, { property: "og:title", content: "Inventory | Mimi’s Pizza POS" }, { property: "og:description", content: "Packing material stock with low stock alerts." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Inventory | Mimi’s Pizza POS" }, { name: "description", content: "Track packing material like pizza boxes, bags and wrappers." }, { property: "og:title", content: "Inventory | Mimi’s Pizza POS" }, { property: "og:description", content: "Packing material stock with low stock alerts." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: InventoryPage,
 });
 

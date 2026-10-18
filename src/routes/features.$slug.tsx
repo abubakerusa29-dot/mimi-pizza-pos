@@ -11,7 +11,7 @@ export const Route = createFileRoute("/features/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Not found — Mimi’s Pizza" }, { name: "robots", content: "noindex" }] };
     const title = `${loaderData.label} — Mimi’s Pizza POS`;
-    return { meta: [{ title }, { name: "description", content: loaderData.summary }, { property: "og:title", content: title }, { property: "og:description", content: loaderData.summary }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] };
+    return { meta: [{ title }, { name: "description", content: loaderData.summary }, { property: "og:title", content: title }, { property: "og:description", content: loaderData.summary }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] };
   },
   component: FeaturePage,
 });

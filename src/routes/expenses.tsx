@@ -9,7 +9,7 @@ import { formatRs } from "@/lib/cart";
 import { expenseTypes, newId } from "@/lib/backOffice";
 
 export const Route = createFileRoute("/expenses")({
-  head: () => ({ meta: [{ title: "Expenses | Mimi’s Pizza POS" }, { name: "description", content: "Record daily restaurant expenses with type, reason, amount and date." }, { property: "og:title", content: "Expenses | Mimi’s Pizza POS" }, { property: "og:description", content: "Daily expense book for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Expenses | Mimi’s Pizza POS" }, { name: "description", content: "Record daily restaurant expenses with type, reason, amount and date." }, { property: "og:title", content: "Expenses | Mimi’s Pizza POS" }, { property: "og:description", content: "Daily expense book for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: ExpensesPage,
 });
 

@@ -11,7 +11,7 @@ import { productImages } from "@/data/productImages";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/menu-growth")({
-  head: () => ({ meta: [{ title: "Menu Management — Mimi’s Pizza" }, { name: "description", content: "Add new items, edit prices and item availability in Mimi’s Pizza POS." }, { property: "og:title", content: "Menu Management — Mimi’s Pizza" }, { property: "og:description", content: "Add menu items, edit prices and mark items unavailable." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Menu Management — Mimi’s Pizza" }, { name: "description", content: "Add new items, edit prices and item availability in Mimi’s Pizza POS." }, { property: "og:title", content: "Menu Management — Mimi’s Pizza" }, { property: "og:description", content: "Add menu items, edit prices and mark items unavailable." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: MenuManagement,
 });
 

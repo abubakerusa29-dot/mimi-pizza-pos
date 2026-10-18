@@ -6,7 +6,7 @@ import { formatRs } from "@/lib/cart";
 import { salesSummary } from "@/lib/sales";
 
 export const Route = createFileRoute("/sales")({
-  head: () => ({ meta: [{ title: "Overall Sales — Mimi’s Pizza" }, { name: "description", content: "Daily sales, best sellers and order types for Mimi’s Pizza." }, { property: "og:title", content: "Overall Sales — Mimi’s Pizza" }, { property: "og:description", content: "Sales report for Mimi’s Pizza POS." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Overall Sales — Mimi’s Pizza" }, { name: "description", content: "Daily sales, best sellers and order types for Mimi’s Pizza." }, { property: "og:title", content: "Overall Sales — Mimi’s Pizza" }, { property: "og:description", content: "Sales report for Mimi’s Pizza POS." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: Sales,
 });
 

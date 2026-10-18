@@ -9,7 +9,7 @@ import { salesSummary } from "@/lib/sales";
 import { isLowStock, profitReport } from "@/lib/backOffice";
 
 export const Route = createFileRoute("/reports")({
-  head: () => ({ meta: [{ title: "Reports | Mimi’s Pizza POS" }, { name: "description", content: "Sales, expenses and profit report for any date range." }, { property: "og:title", content: "Reports | Mimi’s Pizza POS" }, { property: "og:description", content: "Profit and expense reports for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Reports | Mimi’s Pizza POS" }, { name: "description", content: "Sales, expenses and profit report for any date range." }, { property: "og:title", content: "Reports | Mimi’s Pizza POS" }, { property: "og:description", content: "Profit and expense reports for Mimi’s Pizza." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: ReportsPage,
 });
 

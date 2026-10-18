@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { defaultInvoiceSettings, templates, kitchenTemplates, riderTemplates, type InvoiceSettings, type LogoMode } from "@/lib/invoiceTemplates";
 
 export const Route = createFileRoute("/invoice-templates")({
-  head: () => ({ meta: [{ title: "Invoice Templates — Mimi’s Pizza POS" }, { name: "description", content: "Choose and preview the printed customer invoice design." }, { property: "og:title", content: "Invoice Templates — Mimi’s Pizza POS" }, { property: "og:description", content: "Customer, kitchen and rider slip designs with logo, footer and paper size." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Invoice Templates — Mimi’s Pizza POS" }, { name: "description", content: "Choose and preview the printed customer invoice design." }, { property: "og:title", content: "Invoice Templates — Mimi’s Pizza POS" }, { property: "og:description", content: "Customer, kitchen and rider slip designs with logo, footer and paper size." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: InvoiceTemplates,
 });
 

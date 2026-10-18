@@ -7,7 +7,7 @@ import { PaperPrintStyle, SampleCustomerSlip } from "@/components/pos/ReceiptPre
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/printers")({
-  head: () => ({ meta: [{ title: "Printer Setup — Mimi’s Pizza POS" }, { name: "description", content: "Connect a thermal printer to the Android tablet and run a test print." }, { property: "og:title", content: "Printer Setup — Mimi’s Pizza POS" }, { property: "og:description", content: "Android thermal printer guide, paper sizes and test print." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({ meta: [{ title: "Printer Setup — Mimi’s Pizza POS" }, { name: "description", content: "Connect a thermal printer to the Android tablet and run a test print." }, { property: "og:title", content: "Printer Setup — Mimi’s Pizza POS" }, { property: "og:description", content: "Android thermal printer guide, paper sizes and test print." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: PrinterSetup,
 });
 
