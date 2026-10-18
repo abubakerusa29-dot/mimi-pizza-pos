@@ -45,20 +45,81 @@ function WhatsAppIcon({ className }: { className?: string }) {
   return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.6-.1 1.8-.7 2-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" /></svg>;
 }
 
+function sizeCode(s: string) {
+  const t = s.toLowerCase();
+  if (t.startsWith("extra") || t === "xl") return "XL";
+  if (t.startsWith("small")) return "S";
+  if (t.startsWith("medium")) return "M";
+  if (t.startsWith("large")) return "L";
+  return "";
+}
+
+function orderMessage(name: string, qty: number, price: number, size?: string) {
+  const code = size ? sizeCode(size) : "";
+  const label = size ? ` ${size}${code ? ` (${code})` : ""}` : "";
+  return `Assalam-o-alaikum Mimi’s Pizza! 🍕\n\nI want to order:\n*${qty}x ${name}${label}*\nPrice: *${formatRs(price * qty)}*\n\nPlease confirm my order. Thank you!`;
+}
+
+function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: () => void }) {
+  const sizes = (p.sizes ?? []).filter((s) => s.price);
+  const [size, setSize] = useState(sizes[0]?.size);
+  const [qty, setQty] = useState(1);
+  const unit = sizes.find((s) => s.size === size)?.price ?? p.price ?? 0;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/60 p-0 sm:items-center sm:p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={`Order ${name}`} onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 shadow-2xl sm:rounded-3xl">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-xs font-bold uppercase tracking-widest text-primary">WhatsApp Order</p><h3 className="mt-1 text-xl font-bold">{name}</h3></div>
+          <button onClick={onClose} aria-label="Close" className="flex size-9 items-center justify-center rounded-full bg-muted text-lg">×</button>
+        </div>
+        {sizes.length > 0 && (
+          <>
+            <p className="mt-4 text-sm font-semibold">Choose size</p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {sizes.map((s) => {
+                const code = sizeCode(s.size);
+                const on = s.size === size;
+                return (
+                  <button key={s.size} onClick={() => setSize(s.size)} className={`flex items-center justify-between rounded-xl border-2 px-3 py-3 text-left ${on ? "border-primary bg-primary/10" : "border-border"}`}>
+                    <span className="flex items-center gap-2">{code && <span className={`flex size-7 items-center justify-center rounded-full text-xs font-black ${on ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{code}</span>}<span className="text-sm font-semibold">{s.size}</span></span>
+                    <span className="text-sm font-bold text-primary">{formatRs(s.price!)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm font-semibold">Quantity</p>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="size-9 rounded-full border border-border text-lg font-bold" aria-label="Decrease">−</button>
+            <span className="w-6 text-center font-bold">{qty}</span>
+            <button onClick={() => setQty((q) => q + 1)} className="size-9 rounded-full border border-border text-lg font-bold" aria-label="Increase">+</button>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-muted px-4 py-3"><span className="text-sm">Total</span><span className="text-lg font-bold text-primary">{formatRs(unit * qty)}</span></div>
+        <a href={whatsappLink(orderMessage(name, qty, unit, size))} target="_blank" rel="noopener noreferrer" onClick={onClose} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
+      </div>
+    </div>
+  );
+}
+
 function MenuCard({ p, image }: { p: Product; image?: string | undefined }) {
   const img = image ?? productImages[p.id];
-  const name = p.tag ? `${p.name} ${p.tag}` : p.name;
+  const name = p.tag && !["Regular", "Special", "Signature"].includes(p.tag) ? `${p.name} ${p.tag}` : p.name;
+  const [open, setOpen] = useState(false);
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-lg">
       <div className="overflow-hidden">
         {img ? <img src={img} alt={name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105" /> : <div className="flex aspect-[4/3] items-center justify-center bg-muted"><Pizza className="size-10 text-muted-foreground" /></div>}
       </div>
       <div className="flex flex-1 flex-col p-3">
-        <h3 className="text-sm font-bold leading-tight sm:text-base">{name}</h3>
+        <h3 className="text-sm font-bold leading-tight sm:text-base">{p.tag ? `${p.name} ${p.tag}` : p.name}</h3>
         {p.description && <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>}
         <p className="mt-auto pt-2 text-sm font-bold text-primary sm:text-base">{priceOf(p)}</p>
-        <a href={whatsappLink(`Assalam-o-alaikum Mimi’s Pizza, I want to order: ${name} (${priceOf(p)})`)} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-whatsapp text-xs font-bold text-whatsapp-foreground sm:text-sm"><WhatsAppIcon className="size-4" />WhatsApp Order</a>
+        <button onClick={() => setOpen(true)} className="mt-2 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-whatsapp text-xs font-bold text-whatsapp-foreground sm:text-sm"><WhatsAppIcon className="size-4" />WhatsApp Order</button>
       </div>
+      {open && <OrderModal p={p} name={name} onClose={() => setOpen(false)} />}
     </article>
   );
 }
