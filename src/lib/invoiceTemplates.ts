@@ -44,7 +44,7 @@ export const defaultInvoiceSettings: InvoiceSettings = {
   kitchenTemplate: "standard",
   riderTemplate: "cash",
   paper: "80",
-  logo: "both",
+  logo: "badge",
   customLogo: "",
   footer: "Thank you for your order! Please visit again",
   showBarcode: true,

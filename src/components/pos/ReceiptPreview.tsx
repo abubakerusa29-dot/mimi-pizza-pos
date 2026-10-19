@@ -58,8 +58,8 @@ function Credit() {
 function TrackQr({ orderNo }: { orderNo: number }) {
   return (
     <div className="mt-3 border-t border-dashed border-current pt-2">
-      <p className="text-[11px] font-bold">SCAN TO TRACK YOUR ORDER LIVE</p>
-      <QRCodeSVG value={`${TRACK_URL}?id=${orderNo}`} size={110} level="M" marginSize={1} bgColor="#ffffff" fgColor="#000000" className="mx-auto my-1" aria-label="Order tracking QR code" />
+      <p className="text-[11px] font-bold">SCAN FOR LIVE ORDER TRACKING</p>
+      <QRCodeSVG value={`${TRACK_URL}?id=${orderNo}`} size={130} level="M" marginSize={1} bgColor="#ffffff" fgColor="#000000" className="mx-auto my-1" aria-label="Order tracking QR code" />
       <p className="text-[10px]">{TRACK_URL.replace(/^https?:\/\//, "")}</p>
       <p className="text-[11px] font-bold">Tracking ID: {orderNo}</p>
     </div>
@@ -181,7 +181,7 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
   const compact = t === "compact" || t === "minimal";
   const logoSrc = invoice.customLogo || badge.url;
   const showBadge = t !== "minimal" && (invoice.logo === "badge" || invoice.logo === "both");
-  const showWordmark = invoice.logo === "wordmark" || invoice.logo === "both";
+  const showWordmark = invoice.logo === "wordmark"; // "both" prints one clean badge only: the wordmark duplicated the name and printed faded
   const badgeSize = t === "bold" ? 170 : compact ? 90 : 138;
   const boxed = t === "boxed";
   if (t === "premium" || t === "retail") {
@@ -218,7 +218,7 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
         </div>
         <div className="pt-3 text-center">
           {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
-          {orderType !== "Dine-in" && <TrackQr orderNo={orderNo} />}
+          <TrackQr orderNo={orderNo} />
           {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
         </div>
         <Credit />
@@ -263,7 +263,7 @@ function CustomerSlip({ lines, orderNo, orderType, table, restaurant, invoice, m
       <div className={compact ? "receipt-divider tight" : "receipt-divider"} />
       <div className={compact ? "pt-1 text-center" : "pt-3 text-center"}>
         {invoice.footer && <p className="whitespace-pre-line">{invoice.footer}</p>}
-        {orderType !== "Dine-in" && <TrackQr orderNo={orderNo} />}
+        <TrackQr orderNo={orderNo} />
         {invoice.showBarcode && <><Barcode orderNo={orderNo} /><p className="mt-2 text-[10px]">MIMI-{orderNo}</p></>}
         {t !== "bold" && t !== "minimal" && showWordmark && <img src={wordmark.url} alt="" width={140} height={29} className="thermal-logo mx-auto mt-4 h-auto w-[140px] object-contain" />}
       </div>
