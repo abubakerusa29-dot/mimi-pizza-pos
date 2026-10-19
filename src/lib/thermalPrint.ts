@@ -56,6 +56,13 @@ export function buildEscPos(o: ThermalOrder): string {
     s += row("Items", String(items), w) + "\n" + row("Subtotal", formatRs(subtotal), w) + "\n";
     s += BOLD + row(o.kind === "rider" ? "CASH TO COLLECT" : "TOTAL", formatRs(total), w) + NOBOLD + "\n";
     if (o.kind === "customer" && o.footer) s += CENTER + clean(o.footer) + "\n";
+    if (o.kind === "customer") {
+      const url = `https://mimispizza.site/track?id=${o.orderNo}`;
+      const len = url.length + 3;
+      const qr = GS + "(k\x04\x001A2\x00" + GS + "(k\x03\x001C\x06" + GS + "(k\x03\x001E1" +
+        GS + "(k" + String.fromCharCode(len % 256, Math.floor(len / 256)) + "1P0" + url + GS + "(k\x03\x001Q0";
+      s += CENTER + "\n" + BOLD + "SCAN FOR LIVE ORDER TRACKING" + NOBOLD + "\n" + qr + "\n" + url.replace("https://", "") + "\n" + BOLD + "Tracking ID: " + o.orderNo + NOBOLD + "\n";
+    }
   }
   s += CENTER + "\nSoftware by " + softwareCredit.name + "\n";
   if (o.kind !== "kitchen") s += softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "") + " - " + softwareCredit.phone + "\n";
