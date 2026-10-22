@@ -50,6 +50,13 @@
       "when": 1792231452372,
       "tag": "0006_dispatch_time",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792695232257,
+      "tag": "0007_migration",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { logPublicEvent } from "@/lib/publicEvents";
 import { useState } from "react";
 import { Search, ArrowLeft } from "lucide-react";
 import { PublicHeader } from "@/components/public/PublicHeader";
@@ -36,7 +37,7 @@ function TrackPage() {
         <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" />Back to home</Link>
         <h1 className="mt-3 font-display text-3xl font-bold">Track your order</h1>
         <p className="mt-1 text-sm text-muted-foreground">Tracking is available for Delivery and Takeaway orders.</p>
-        <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) navigate({ to: "/track", search: { id: input.trim() } }); }} className="mt-4 flex gap-2">
+        <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) { logPublicEvent("track_search", input.trim()); } if (input.trim()) navigate({ to: "/track", search: { id: input.trim() } }); }} className="mt-4 flex gap-2">
           <input value={input} onChange={(e) => setInput(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder="Tracking ID from your receipt" aria-label="Tracking ID" className="h-12 min-w-0 flex-1 rounded-xl border border-input bg-card px-4 text-base" />
           <button className="inline-flex h-12 items-center gap-1 rounded-xl bg-primary px-5 font-bold text-primary-foreground"><Search className="size-4" />Track</button>
         </form>
