@@ -28,7 +28,6 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TablesRouteImport } from './routes/tables'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TrackRouteImport } from './routes/track'
-import { Route as ApiTmpBootstrapRouteImport } from './routes/api/tmp-bootstrap'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
 import { Route as Pizza50200RouteImport } from './routes/pizza.50200'
 
@@ -127,11 +126,6 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiTmpBootstrapRoute = ApiTmpBootstrapRouteImport.update({
-  id: '/api/tmp-bootstrap',
-  path: '/api/tmp-bootstrap',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   id: '/features/$slug',
   path: '/features/$slug',
@@ -163,7 +157,6 @@ export interface FileRoutesByFullPath {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/tmp-bootstrap': typeof ApiTmpBootstrapRoute
   '/features/$slug': typeof FeaturesSlugRoute
   '/pizza/50200': typeof Pizza50200Route
 }
@@ -187,7 +180,6 @@ export interface FileRoutesByTo {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/tmp-bootstrap': typeof ApiTmpBootstrapRoute
   '/features/$slug': typeof FeaturesSlugRoute
   '/pizza/50200': typeof Pizza50200Route
 }
@@ -212,7 +204,6 @@ export interface FileRoutesById {
   '/tables': typeof TablesRoute
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
-  '/api/tmp-bootstrap': typeof ApiTmpBootstrapRoute
   '/features/$slug': typeof FeaturesSlugRoute
   '/pizza/50200': typeof Pizza50200Route
 }
@@ -238,7 +229,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/tmp-bootstrap'
     | '/features/$slug'
     | '/pizza/50200'
   fileRoutesByTo: FileRoutesByTo
@@ -262,7 +252,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/tmp-bootstrap'
     | '/features/$slug'
     | '/pizza/50200'
   id:
@@ -286,7 +275,6 @@ export interface FileRouteTypes {
     | '/tables'
     | '/team'
     | '/track'
-    | '/api/tmp-bootstrap'
     | '/features/$slug'
     | '/pizza/50200'
   fileRoutesById: FileRoutesById
@@ -311,7 +299,6 @@ export interface RootRouteChildren {
   TablesRoute: typeof TablesRoute
   TeamRoute: typeof TeamRoute
   TrackRoute: typeof TrackRoute
-  ApiTmpBootstrapRoute: typeof ApiTmpBootstrapRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
   Pizza50200Route: typeof Pizza50200Route
 }
@@ -451,13 +438,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/tmp-bootstrap': {
-      id: '/api/tmp-bootstrap'
-      path: '/api/tmp-bootstrap'
-      fullPath: '/api/tmp-bootstrap'
-      preLoaderRoute: typeof ApiTmpBootstrapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/features/$slug': {
       id: '/features/$slug'
       path: '/features/$slug'
@@ -495,7 +475,6 @@ const rootRouteChildren: RootRouteChildren = {
   TablesRoute: TablesRoute,
   TeamRoute: TeamRoute,
   TrackRoute: TrackRoute,
-  ApiTmpBootstrapRoute: ApiTmpBootstrapRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
   Pizza50200Route: Pizza50200Route,
 }
