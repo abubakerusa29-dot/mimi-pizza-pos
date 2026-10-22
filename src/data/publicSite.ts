@@ -5,5 +5,5 @@ export const WHATSAPP_NUMBER = "923124607733";
 export const CALL_NUMBER = "+923124607733";
 export const whatsappLink = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 /** Public pages render without the private POS shell. */
-export const isPublicPath = (path: string) => path === "/" || path === "/menu" || path.startsWith("/track") || path === "/reviews";
+export const isPublicPath = (path: string) => path === "/" || path === "/menu" || path.startsWith("/track") || path === "/reviews" || path.startsWith("/pizza/50200");
 export const MAPS_URL = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Mimi’s Pizza, Main Qasba Road, Near Muhammadi Masjid, Lalamusa");
