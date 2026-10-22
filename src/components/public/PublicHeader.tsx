@@ -16,7 +16,7 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
       <div className="bg-foreground px-3 py-1 text-center text-[11px] font-medium text-background">
-        <span className="mr-1.5 inline-block size-1.5 rounded-full bg-whatsapp align-middle" />Connected with our kitchen · track your order live
+        <span className="mr-1.5 inline-block size-1.5 rounded-full bg-whatsapp align-middle" />Connected with our POS · track your order live
       </div>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
         <Link to="/" aria-label="Mimi’s Pizza home" className="flex min-w-0 items-center gap-2">
