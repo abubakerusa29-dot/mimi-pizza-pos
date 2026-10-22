@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, LogOut, MessageCircle, PackageSearch, Wallet } from "lucide-react";
+import { Eye, EyeOff, LogOut, MessageCircle, PackageSearch, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/pizza/50200")({
   ssr: false,
@@ -35,7 +35,7 @@ function SecretDashboard() {
 }
 
 function Login({ signedInOther }: { signedInOther: boolean }) {
-  const [e, setE] = useState(""); const [p, setP] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
+  const [e, setE] = useState(""); const [p, setP] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false); const [show, setShow] = useState(false);
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault(); setBusy(true); setErr("");
     if (e.trim().toLowerCase() !== OWNER) { setErr("Wrong email or password."); setBusy(false); return; }
@@ -49,9 +49,15 @@ function Login({ signedInOther }: { signedInOther: boolean }) {
         <h1 className="text-xl font-bold">Private dashboard</h1>
         {signedInOther && <p className="text-xs text-muted-foreground">This account cannot open this page. Sign in with the owner email.</p>}
         <input type="email" required value={e} onChange={(x) => setE(x.target.value)} placeholder="Email" className="h-11 w-full rounded-xl border border-input bg-background px-3" />
-        <input type="password" required value={p} onChange={(x) => setP(x.target.value)} placeholder="Password" className="h-11 w-full rounded-xl border border-input bg-background px-3" />
+        <div className="relative">
+          <input type={show ? "text" : "password"} required value={p} onChange={(x) => setP(x.target.value)} placeholder="Password" className="h-11 w-full rounded-xl border border-input bg-background px-3 pr-11" />
+          <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground">
+            {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
         {err && <p className="text-sm text-destructive">{err}</p>}
         <button disabled={busy} className="h-11 w-full rounded-xl bg-primary font-bold text-primary-foreground">{busy ? "Signing in…" : "Sign in"}</button>
+        {signedInOther && <button type="button" onClick={() => supabase.auth.signOut()} className="w-full text-sm text-muted-foreground underline">Sign out the other account first</button>}
       </form>
     </div>
   );
