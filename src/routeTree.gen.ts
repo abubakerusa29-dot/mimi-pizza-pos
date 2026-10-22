@@ -29,6 +29,7 @@ import { Route as TablesRouteImport } from './routes/tables'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as FeaturesSlugRouteImport } from './routes/features.$slug'
+import { Route as Pizza50200RouteImport } from './routes/pizza.50200'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -130,6 +131,11 @@ const FeaturesSlugRoute = FeaturesSlugRouteImport.update({
   path: '/features/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Pizza50200Route = Pizza50200RouteImport.update({
+  id: '/pizza/50200',
+  path: '/pizza/50200',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
+  '/pizza/50200': typeof Pizza50200Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
+  '/pizza/50200': typeof Pizza50200Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/team': typeof TeamRoute
   '/track': typeof TrackRoute
   '/features/$slug': typeof FeaturesSlugRoute
+  '/pizza/50200': typeof Pizza50200Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/track'
     | '/features/$slug'
+    | '/pizza/50200'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/track'
     | '/features/$slug'
+    | '/pizza/50200'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/track'
     | '/features/$slug'
+    | '/pizza/50200'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -288,6 +300,7 @@ export interface RootRouteChildren {
   TeamRoute: typeof TeamRoute
   TrackRoute: typeof TrackRoute
   FeaturesSlugRoute: typeof FeaturesSlugRoute
+  Pizza50200Route: typeof Pizza50200Route
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeaturesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pizza/50200': {
+      id: '/pizza/50200'
+      path: '/pizza/50200'
+      fullPath: '/pizza/50200'
+      preLoaderRoute: typeof Pizza50200RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -456,6 +476,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamRoute: TeamRoute,
   TrackRoute: TrackRoute,
   FeaturesSlugRoute: FeaturesSlugRoute,
+  Pizza50200Route: Pizza50200Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
