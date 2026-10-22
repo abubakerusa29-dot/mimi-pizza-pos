@@ -110,6 +110,30 @@ export type Database = {
         }
         Relationships: []
       }
+      public_events: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          kind: string
+          label: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          kind: string
+          label?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string
