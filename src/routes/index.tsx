@@ -11,6 +11,7 @@ import { RatingChip } from "@/components/public/ReviewsSection";
 import { Link } from "@tanstack/react-router";
 import { categories, products, restaurantInfo, type CategoryId, type Product } from "@/data/menuData";
 import { productImages } from "@/data/productImages";
+import { logPublicEvent } from "@/lib/publicEvents";
 import { CALL_NUMBER, MAPS_URL, whatsappLink } from "@/data/publicSite";
 import { formatRs } from "@/lib/cart";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -98,7 +99,7 @@ function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: (
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between rounded-xl bg-muted px-4 py-3"><span className="text-sm">Total</span><span className="text-lg font-bold text-primary">{formatRs(unit * qty)}</span></div>
-        <a href={whatsappLink(orderMessage(name, qty, unit, size))} target="_blank" rel="noopener noreferrer" onClick={onClose} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
+        <a href={whatsappLink(orderMessage(name, qty, unit, size))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", `${qty}x ${name}${size ? ` ${size}` : ""}`, unit * qty); onClose(); }} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
       </div>
     </div>
   );
@@ -152,6 +153,7 @@ function Home() {
   const [trackId, setTrackId] = useState<string>();
   const isMobile = useIsMobile();
   const [overrides, setOverrides] = useState<MenuOverrides>(emptyOverrides);
+  useEffect(() => { if (!sessionStorage.getItem("mp_v")) { sessionStorage.setItem("mp_v", "1"); logPublicEvent("visit", "home"); } }, []);
   useEffect(() => { supabase.rpc("public_menu_overrides").then(({ data }) => { if (data) setOverrides({ ...emptyOverrides, ...(data as unknown as MenuOverrides) }); }); }, []);
   const menu = useMemo(() => publicMenu(products, overrides), [overrides]);
   const term = q.trim().toLowerCase();
@@ -195,7 +197,7 @@ function Home() {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-whatsapp opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-whatsapp" /></span>Live</span>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">Connected with our POS system. Enter the invoice number from your receipt.</p>
-          <form onSubmit={(e) => { e.preventDefault(); if (id.trim()) setTrackId(id.trim()); }} className="mt-3 flex gap-2">
+          <form onSubmit={(e) => { e.preventDefault(); if (id.trim()) { setTrackId(id.trim()); logPublicEvent("track_search", id.trim()); } }} className="mt-3 flex gap-2">
             <input value={id} onChange={(e) => setId(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder="Invoice # e.g. 1005" className="h-12 min-w-0 flex-1 rounded-xl border border-input bg-background px-4 text-base" aria-label="Invoice number" />
             <button className="inline-flex h-12 shrink-0 items-center gap-1 rounded-xl bg-primary px-4 font-bold text-primary-foreground sm:px-5"><Search className="size-4" />Track</button>
           </form>
