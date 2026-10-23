@@ -31,7 +31,7 @@ function TrackPage() {
   const navigate = useNavigate();
   const [input, setInput] = useState(id ?? "");
   return (
-    <div className="min-h-dvh overflow-y-auto bg-background">
+    <div className="min-h-screen bg-background">
       <PublicHeader />
       <main className="mx-auto max-w-2xl px-4 py-8">
         <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" />Back to home</Link>
