@@ -156,8 +156,13 @@ function MenuSection({ id, items, isMobile, images }: { id: CategoryId; items: P
       </div>
       {id === "pizza" ? (
         <div className="space-y-6">
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+            {[...new Set(items.map((p) => p.tag ?? "Other"))].map((t) => (
+              <button key={t} type="button" onClick={() => document.getElementById(`pizza-${t}`)?.scrollIntoView({ behavior: "smooth", block: "start" })} className="shrink-0 rounded-full border border-primary/40 bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-primary hover:text-primary-foreground">{t} Pizza</button>
+            ))}
+          </div>
           {[...new Set(items.map((p) => p.tag ?? "Other"))].map((t) => (
-            <div key={t}>
+            <div key={t} id={`pizza-${t}`} className="scroll-mt-48">
               <h4 className="mb-3 inline-flex rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">{t} Pizza</h4>
               <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{items.filter((p) => (p.tag ?? "Other") === t).map((p) => <MenuCard key={p.id} p={p} image={images?.[p.id]} />)}</div>
             </div>
