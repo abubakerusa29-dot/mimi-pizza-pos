@@ -155,7 +155,7 @@ function POS() {
         product={modal}
         onClose={() => setModal(null)}
         onAdd={(p, option, price) => {
-          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
+          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.tag && p.category === "drinks" ? `${p.name} ${p.tag}` : p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
           setModal(null);
         }}
       />

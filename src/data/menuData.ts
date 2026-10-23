@@ -132,7 +132,6 @@ export const products: Product[] = [
 
   // Sauces & extras
   { id: "ex-sauces", name: "Sauces", category: "extras", sizes: [{ size: "Special Sauce", price: 100 }, { size: "Dip Sauce", price: 100 }, { size: "Burger Sauce", price: 100 }, { size: "Chipotley Sauce", price: 100 }, { size: "Peri Peri Sauce", price: 150 }] },
-  { id: "ex-topping", name: "Extra Topping", category: "extras", tag: "Pizza", sizes: S(100, 150, 200, 300) },
   { id: "ex-cheese-slice", name: "Cheese Slice", category: "extras", price: 100 },
 ];
 
