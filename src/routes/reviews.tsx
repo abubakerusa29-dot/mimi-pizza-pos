@@ -19,7 +19,7 @@ export const Route = createFileRoute("/reviews")({
     links: [{ rel: "canonical", href: URL }],
   }),
   component: () => (
-    <div className="h-dvh overflow-y-auto bg-background">
+    <div className="min-h-screen bg-background">
       <PublicHeader />
       <ReviewsPageContent />
       <PublicFooter />

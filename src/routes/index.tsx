@@ -198,7 +198,7 @@ function Home() {
   };
 
   return (
-    <div className="h-dvh overflow-y-auto scroll-smooth bg-background">
+    <div className="min-h-screen bg-background">
       <PublicHeader />
 
       <section className="relative isolate overflow-hidden">
