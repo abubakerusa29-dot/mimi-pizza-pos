@@ -9,10 +9,11 @@ describe("thermal print", () => {
     expect(s).toContain("- Zinger Burger");
     expect(s).not.toContain("Rs.");
   });
-  it("rider slip shows cash to collect and software contact", () => {
+  it("rider slip shows cash to collect and hides software credit", () => {
     const s = buildEscPos({ ...base, kind: "rider" });
     expect(s).toContain("Rs. 2,000");
-    expect(s).toContain("03426313348");
+    expect(s).not.toContain("03426313348");
+    expect(s).not.toContain("Ecom Builder");
   });
   it("rawbt url targets the RawBT app", () => {
     expect(rawbtUrl("x")).toContain("package=ru.a402d.rawbtprinter");

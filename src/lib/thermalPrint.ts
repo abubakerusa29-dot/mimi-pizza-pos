@@ -64,8 +64,7 @@ export function buildEscPos(o: ThermalOrder): string {
       s += CENTER + "\n" + BOLD + "SCAN FOR LIVE ORDER TRACKING" + NOBOLD + "\n" + qr + "\n" + url.replace("https://", "") + "\n" + BOLD + "Tracking ID: " + o.orderNo + NOBOLD + "\n";
     }
   }
-  s += CENTER + "\nSoftware by " + softwareCredit.name + "\n";
-  if (o.kind !== "kitchen") s += softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "") + " - " + softwareCredit.phone + "\n";
+  void softwareCredit; // credit kept in code, not printed (client request)
   return s + CUT;
 }
 
