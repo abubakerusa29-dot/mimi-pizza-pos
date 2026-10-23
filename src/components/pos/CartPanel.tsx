@@ -2,7 +2,6 @@ import { findCustomer, searchCustomers } from "@/lib/backOffice";
 import { Minus, Plus, Trash2, ShoppingBag, Printer, Search, RotateCcw, X, UtensilsCrossed, Package, Bike } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/menuData";
 import { useOrder, type OrderType } from "./OrderContext";
 import { addonsForLine } from "@/lib/addons";
 import { type Addon, type AdjustKind, type CartLine, cartTotals, formatRs, lineTotal, isAdjustment } from "@/lib/cart";
@@ -159,7 +158,7 @@ export function CartPanel(p: Props) {
                 {addonsForLine(l).length > 0 && (
                   <div className="mt-2">
                     <Button variant="ghost" size="sm" onClick={() => setOpenAddon(openAddon === l.key ? null : l.key)} className="h-7 px-2 text-xs font-semibold text-primary hover:bg-secondary">
-                      <Plus className="h-3.5 w-3.5" /> Add add-on
+                      <Plus className="h-3.5 w-3.5" /> Add-ons (sauce{l.key.startsWith("pz-") ? ", topping" : ""})
                     </Button>
                     {openAddon === l.key && (
                       <div className="mt-1 grid grid-cols-2 gap-1.5">

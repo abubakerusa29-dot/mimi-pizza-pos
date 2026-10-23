@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { addonsForProduct } from "@/lib/addons";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { emptyOverrides, publicMenu, type MenuOverrides } from "@/lib/menuOverrides";
@@ -55,17 +56,21 @@ function sizeCode(s: string) {
   return "";
 }
 
-function orderMessage(name: string, qty: number, price: number, size?: string) {
+function orderMessage(name: string, qty: number, price: number, size?: string, extras: string[] = []) {
   const code = size ? sizeCode(size) : "";
   const label = size ? ` ${size}${code ? ` (${code})` : ""}` : "";
-  return `Assalam-o-alaikum Mimi’s Pizza! 🍕\n\nI want to order:\n*${qty}x ${name}${label}*\nPrice: *${formatRs(price * qty)}*\n\nPlease confirm my order. Thank you!`;
+  return `Assalam-o-alaikum Mimi’s Pizza! 🍕\n\nI want to order:\n*${qty}x ${name}${label}*\n${extras.length ? `Add-ons: ${extras.join(", ")}\n` : ""}Price: *${formatRs(price * qty)}*\n\nPlease confirm my order. Thank you!`;
 }
 
 function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: () => void }) {
   const sizes = (p.sizes ?? []).filter((s) => s.price);
   const [size, setSize] = useState(sizes[0]?.size);
   const [qty, setQty] = useState(1);
-  const unit = sizes.find((s) => s.size === size)?.price ?? p.price ?? 0;
+  const [extras, setExtras] = useState<string[]>([]);
+  const [showExtras, setShowExtras] = useState(false);
+  const addons = addonsForProduct(p.id, p.category, size);
+  const chosen = addons.filter((a) => extras.includes(a.name));
+  const unit = (sizes.find((s) => s.size === size)?.price ?? p.price ?? 0) + chosen.reduce((t, a) => t + a.price, 0);
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/60 p-0 sm:items-center sm:p-4" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label={`Order ${name}`} onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 shadow-2xl sm:rounded-3xl">
@@ -75,13 +80,13 @@ function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: (
         </div>
         {sizes.length > 0 && (
           <>
-            <p className="mt-4 text-sm font-semibold">Choose size</p>
+            <p className="mt-4 text-sm font-semibold">{p.category === "drinks" ? "Choose drink" : "Choose size"}</p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {sizes.map((s) => {
                 const code = sizeCode(s.size);
                 const on = s.size === size;
                 return (
-                  <button key={s.size} onClick={() => setSize(s.size)} className={`flex items-center justify-between rounded-xl border-2 px-3 py-3 text-left ${on ? "border-primary bg-primary/10" : "border-border"}`}>
+                  <button key={s.size} onClick={() => { setSize(s.size); setExtras((e) => e.filter((x) => !x.startsWith("Extra Topping"))); }} className={`flex items-center justify-between rounded-xl border-2 px-3 py-3 text-left ${on ? "border-primary bg-primary/10" : "border-border"}`}>
                     <span className="flex items-center gap-2">{code && <span className={`flex size-7 items-center justify-center rounded-full text-xs font-black ${on ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{code}</span>}<span className="text-sm font-semibold">{s.size}</span></span>
                     <span className="text-sm font-bold text-primary">{formatRs(s.price!)}</span>
                   </button>
@@ -89,6 +94,19 @@ function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: (
               })}
             </div>
           </>
+        )}
+        {addons.length > 0 && (
+          <div className="mt-4">
+            <button type="button" onClick={() => setShowExtras((v) => !v)} className="inline-flex h-9 items-center gap-1 rounded-full border border-primary px-3 text-xs font-bold text-primary">+ Add-ons {chosen.length ? `(${chosen.length})` : ""}</button>
+            {showExtras && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {addons.map((a) => {
+                  const on = extras.includes(a.name);
+                  return <button type="button" key={a.id} onClick={() => setExtras((e) => on ? e.filter((x) => x !== a.name) : [...e, a.name])} className={`flex items-center justify-between rounded-xl border-2 px-3 py-2 text-left text-xs ${on ? "border-primary bg-primary/10" : "border-border"}`}><span className="font-semibold">{a.name}</span><span className="font-bold text-primary">+{formatRs(a.price)}</span></button>;
+                })}
+              </div>
+            )}
+          </div>
         )}
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm font-semibold">Quantity</p>
@@ -99,7 +117,7 @@ function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: (
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between rounded-xl bg-muted px-4 py-3"><span className="text-sm">Total</span><span className="text-lg font-bold text-primary">{formatRs(unit * qty)}</span></div>
-        <a href={whatsappLink(orderMessage(name, qty, unit, size))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", `${qty}x ${name}${size ? ` ${size}` : ""}`, unit * qty); onClose(); }} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
+        <a href={whatsappLink(orderMessage(name, qty, unit, size, chosen.map((a) => a.name)))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", `${qty}x ${name}${size ? ` ${size}` : ""}`, unit * qty); onClose(); }} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
       </div>
     </div>
   );
@@ -136,8 +154,17 @@ function MenuSection({ id, items, isMobile, images }: { id: CategoryId; items: P
         <h3 className="font-display text-2xl font-bold sm:text-3xl"><span className="text-primary">·</span> {label}</h3>
         <span className="text-xs text-muted-foreground">{items.length} items</span>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((p) => <MenuCard key={p.id} p={p} image={images?.[p.id]} />)}</div>
-      {items.length > visible.length && (
+      {id === "pizza" ? (
+        <div className="space-y-6">
+          {[...new Set(items.map((p) => p.tag ?? "Other"))].map((t) => (
+            <div key={t}>
+              <h4 className="mb-3 inline-flex rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">{t} Pizza</h4>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{items.filter((p) => (p.tag ?? "Other") === t).map((p) => <MenuCard key={p.id} p={p} image={images?.[p.id]} />)}</div>
+            </div>
+          ))}
+        </div>
+      ) : <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">{visible.map((p) => <MenuCard key={p.id} p={p} image={images?.[p.id]} />)}</div>}
+      {id !== "pizza" && items.length > visible.length && (
         <div className="mt-5 text-center">
           <button onClick={() => setShown(visible.length + step)} className="inline-flex h-11 items-center gap-1.5 rounded-full border-2 border-primary px-6 text-sm font-bold text-primary hover:bg-primary hover:text-primary-foreground">View all <ChevronDown className="size-4" /> <span className="font-normal opacity-75">({items.length - visible.length} more)</span></button>
         </div>
