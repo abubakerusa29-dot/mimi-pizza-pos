@@ -119,8 +119,15 @@ function POS() {
                 <Button variant="link" onClick={() => { setQuery(""); setCategory("all"); }}>Clear search</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-                {visible.map((p) => <ProductCard key={p.id} product={p} onSelect={select} />)}
+              <div className="space-y-5">
+                {(category === "pizza" ? [...new Set(visible.map((p) => p.tag ?? "Other"))] : [""]).map((t) => (
+                  <div key={t}>
+                    {t && <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-primary">{t} Pizza</h3>}
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+                      {visible.filter((p) => !t || (p.tag ?? "Other") === t).map((p) => <ProductCard key={p.id} product={p} onSelect={select} />)}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -148,7 +155,7 @@ function POS() {
         product={modal}
         onClose={() => setModal(null)}
         onAdd={(p, option, price) => {
-          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
+          add({ key: `${p.id}|${option}`, addonGroup: p.category === "burgers" ? "burger" : undefined, name: p.tag && p.category === "drinks" ? `${p.name} ${p.tag}` : p.name, variant: p.sizes ? option : `${option} Pizza`, description: p.description, unitPrice: price });
           setModal(null);
         }}
       />

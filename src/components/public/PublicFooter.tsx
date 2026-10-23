@@ -35,7 +35,7 @@ export function PublicFooter() {
       </div>
       <div className="border-t border-background/15 px-4 py-5 text-center text-sm">
         <p className="opacity-70">© {new Date().getFullYear()} Mimi’s Pizza Lalamusa</p>
-        <p className="mt-1 font-semibold">Made by <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="text-primary underline-offset-2 hover:underline">{softwareCredit.name}</a> · <a href={`tel:${softwareCredit.phone}`}>{softwareCredit.phone}</a></p>
+        <a href={softwareCredit.website} className="sr-only">{softwareCredit.name}</a>
       </div>
     </footer>
   );

@@ -78,11 +78,7 @@ function Shell({ children }: { children: ReactNode }) {
         </aside>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">{locked ? <PinScreen /> : allowed ? children : <PinScreen title="Owner access needed" />}</div>
       </div>
-      <footer className="hidden shrink-0 border-t border-border bg-card px-4 py-1 text-center text-[11px] text-muted-foreground md:block">
-        This software made by{" "}
-        <a href={softwareCredit.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">{softwareCredit.name}</a>
-        {" · "}{softwareCredit.phone}
-      </footer>
+      <a href={softwareCredit.website} className="sr-only">{softwareCredit.name}</a>
     </div>
   );
 }

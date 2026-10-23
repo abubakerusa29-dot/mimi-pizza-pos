@@ -47,10 +47,8 @@ interface SlipProps { kind: SlipKind; lines: CartLine[]; orderNo: number; orderT
 
 function Credit() {
   return (
-    <div className="mt-3 border-t border-dashed border-current pb-6 pt-2 text-center text-[9px] leading-tight">
-      <p>Software by {softwareCredit.name}</p>
-      <p>{softwareCredit.website.replace(/^https?:\/\//, "").replace(/\/$/, "")} · {softwareCredit.phone}</p>
-    </div>
+    // Software credit kept in code (softwareCredit) but hidden from printed slips at client request.
+    <div className="pb-6" data-credit={softwareCredit.name} />
   );
 }
 
@@ -130,7 +128,6 @@ function Slip({ kind, lines, orderNo, orderType, table, date, phone, address, ri
         <div className="receipt-divider" />
         <p className="text-center font-bold">Total items: {items}</p>
         {kt === "checklist" && <p className="mt-2">Checked by: ______________</p>}
-        <p className="mt-2 text-center text-[9px] leading-tight">Software by {softwareCredit.name}</p>
       </div>
     );
   }

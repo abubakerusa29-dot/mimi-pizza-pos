@@ -32,6 +32,8 @@ const S = (s: number, m: number, l: number, f: number): SizeOption[] => [
 const SIG: SizeOption[] = [{ size: "Medium", price: 1400 }, { size: "Large", price: 1800 }, { size: "Family", price: 2600 }];
 const SPECIAL = S(700, 1300, 1700, 2500);
 const REGULAR = S(650, 1200, 1600, 2400);
+export const DRINK_FLAVOURS = ["Coke", "Sprite", "Fanta", "Pepsi", "7Up", "Dew"];
+const drink = (p: number): SizeOption[] => DRINK_FLAVOURS.map((f) => ({ size: f, price: p }));
 const two = (a: string, ap: number, b: string, bp: number): SizeOption[] => [{ size: a, price: ap }, { size: b, price: bp }];
 
 export const products: Product[] = [
@@ -121,17 +123,15 @@ export const products: Product[] = [
   { id: "sw-grill", name: "Grill Sandwich", category: "rolls", tag: "Sandwich", price: 400 },
 
   // Drinks
-  { id: "dr-500", name: "Soft Drink", category: "drinks", tag: "500 ml", price: 130 },
-  { id: "dr-tin", name: "Soft Drink", category: "drinks", tag: "Tin Pack", price: 120 },
-  { id: "dr-1l", name: "Soft Drink", category: "drinks", tag: "1 Liter", price: 180 },
-  { id: "dr-1-5l", name: "Soft Drink", category: "drinks", tag: "1.5 Liter", price: 230 },
+  { id: "dr-500", name: "Soft Drink", category: "drinks", tag: "500 ml", sizes: drink(130) },
+  { id: "dr-tin", name: "Soft Drink", category: "drinks", tag: "Tin Pack", sizes: drink(120) },
+  { id: "dr-1l", name: "Soft Drink", category: "drinks", tag: "1 Liter", sizes: drink(180) },
+  { id: "dr-1-5l", name: "Soft Drink", category: "drinks", tag: "1.5 Liter", sizes: drink(230) },
   { id: "dr-water-small", name: "Water", category: "drinks", tag: "Small", price: 70 },
   { id: "dr-water-large", name: "Water", category: "drinks", tag: "Large", price: 120 },
 
   // Sauces & extras
   { id: "ex-sauces", name: "Sauces", category: "extras", sizes: [{ size: "Special Sauce", price: 100 }, { size: "Dip Sauce", price: 100 }, { size: "Burger Sauce", price: 100 }, { size: "Chipotley Sauce", price: 100 }, { size: "Peri Peri Sauce", price: 150 }] },
-  { id: "ex-topping", name: "Extra Topping", category: "extras", tag: "Pizza", sizes: S(100, 150, 200, 300) },
-  { id: "ex-patty", name: "Extra Patty", category: "extras", tag: "Smash / Grill Burger", price: 200 },
   { id: "ex-cheese-slice", name: "Cheese Slice", category: "extras", price: 100 },
 ];
 
