@@ -7,7 +7,8 @@ describe("menu photos", () => {
     expect(products.filter((p) => !productImages[p.id]).map((p) => p.id)).toEqual([]);
   });
   it("never reuses the same photo for two products", () => {
-    const srcs = products.map((p) => productImages[p.id]);
+    const shared = new Set(["pl-malai-boti", "dr-water-large"]); // client asked for same photo
+    const srcs = products.filter((p) => !shared.has(p.id)).map((p) => productImages[p.id]);
     expect(new Set(srcs).size).toBe(srcs.length);
   });
   it("keeps menu prices from the printed menu", () => {
