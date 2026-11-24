@@ -11,8 +11,5 @@
 
 - Keep menu imagery in a browser-safe product ID map separate from pricing data, so visual changes cannot change billing.
 - Render invoice previews from the current cart using an auto-height thermal slip and a client-rendered CODE128 barcode; printer integration stays separate from preview rendering.
-- Keep the shared POS shell and in-memory order provider around route content so navigation to frontend-only future-feature pages preserves the active order without persistent storage.
-- The public homepage lives at `/` (digital menu, tracking, contact); the private POS lives at `/pos` behind Staff Access. Why: anyone opening the site URL must never land on the billing counter.
-- POS pages (everything except the public homepage and /track) sit behind Lovable Cloud email/password login in AppShell; public signups are disabled so only the owner account exists. Why: the billing counter must never be open to visitors.
-- POS login has a server-checked 6-digit staff PIN step (hashed in pos_security, lockout, 12h httpOnly session cookie) before email/password. Why: extra layer the browser cannot read or bypass.
+- This web app is the public site only (`/`, `/track`, `/reviews`); every old POS/admin path is a redirect-only route to `/`. Why: the POS moved to a desktop app that syncs with the same backend, which must stay unchanged.
 - Public reviews are read only through the public_reviews() function (hides phone and hidden reviews); owner moderates at /customer-reviews. Why: customer phone numbers must never be public.

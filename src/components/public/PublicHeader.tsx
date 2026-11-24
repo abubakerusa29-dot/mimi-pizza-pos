@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Phone, Lock, Menu, X, PackageSearch, Pizza, Star, MapPin } from "lucide-react";
+import { Phone, Menu, X, PackageSearch, Pizza, Star, MapPin } from "lucide-react";
 import badge from "@/assets/mimis-primary-logo.png.asset.json";
 import { CALL_NUMBER } from "@/data/publicSite";
 
@@ -27,7 +27,6 @@ export function PublicHeader() {
           {links.map((l) => <a key={l.href} href={l.href} className="rounded-full px-4 py-2 transition-colors hover:bg-primary hover:text-primary-foreground">{l.label}</a>)}
         </nav>
         <div className="flex shrink-0 items-center gap-1.5">
-          <Link to="/pos" preload="intent" className="hidden h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-bold hover:bg-accent sm:inline-flex"><Lock className="size-3.5" />Staff Access</Link>
           <a href={`tel:${CALL_NUMBER}`} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 text-xs font-bold text-primary-foreground"><Phone className="size-3.5" />Call</a>
           <button onClick={() => setOpen(!open)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} className="inline-flex size-9 items-center justify-center rounded-full border border-border md:hidden">{open ? <X className="size-4" /> : <Menu className="size-4" />}</button>
         </div>
@@ -39,7 +38,6 @@ export function PublicHeader() {
               <a key={href} href={href} onClick={() => setOpen(false)} className="flex h-12 items-center gap-2 rounded-xl bg-accent px-3 text-sm font-semibold"><Icon className="size-4 text-primary" />{label}</a>
             ))}
           </div>
-          <Link to="/pos" preload="intent" className="mt-2 flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border text-xs font-bold text-muted-foreground"><Lock className="size-3.5" />Staff Access</Link>
         </nav>
       )}
     </header>

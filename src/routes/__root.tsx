@@ -12,8 +12,6 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ConfirmDialogHost } from "@/components/ConfirmDialog";
-import { AppShell } from "@/components/pos/AppShell";
-import { OrderProvider } from "@/components/pos/OrderContext";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -82,8 +80,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Mimi’s Pizza POS" },
-      { name: "description", content: "Counter billing for Mimi’s Pizza." },
+      { title: "Mimi’s Pizza" },
+      { name: "description", content: "Mimi’s Pizza digital menu and live order tracking." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -124,7 +122,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <OrderProvider><AppShell><Outlet /></AppShell></OrderProvider>
+      <Outlet />
       <Toaster position="top-center" />
       <ConfirmDialogHost />
     </QueryClientProvider>
