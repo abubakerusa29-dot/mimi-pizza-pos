@@ -13,3 +13,4 @@
 - Render invoice previews from the current cart using an auto-height thermal slip and a client-rendered CODE128 barcode; printer integration stays separate from preview rendering.
 - This web app is the public site only (`/`, `/track`, `/reviews`); every old POS/admin path is a redirect-only route to `/`. Why: the POS moved to a desktop app that syncs with the same backend, which must stay unchanged.
 - Public reviews are read only through the public_reviews() function (hides phone and hidden reviews); owner moderates at /customer-reviews. Why: customer phone numbers must never be public.
+- Owner-only writes (pos_settings, staff PIN change) are checked with has_role(auth.uid(), 'admin') from public.user_roles. Why: other signed-in users must not change prices or the PIN.

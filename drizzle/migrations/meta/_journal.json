@@ -57,6 +57,13 @@
       "when": 1792695232257,
       "tag": "0007_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795520932508,
+      "tag": "0008_owner_only_settings",
+      "breakpoints": true
     }
   ]
 }

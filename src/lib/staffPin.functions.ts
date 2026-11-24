@@ -50,7 +50,9 @@ export const verifyStaffPin = createServerFn({ method: "POST" })
 export const changeStaffPin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { pin: string }) => ({ pin: String(d?.pin ?? "") }))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { data: isOwner } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (isOwner !== true) return { ok: false, message: "Only the owner can change the PIN." };
     if (!isStaffPin(data.pin)) return { ok: false, message: "PIN must be exactly 6 digits." };
     const db = await admin();
     const { error } = await db.from("pos_security").update({ pin_hash: hashPin(data.pin), failed_attempts: 0, locked_until: null, updated_at: new Date().toISOString() }).eq("id", 1);
