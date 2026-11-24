@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { addonsForProduct } from "@/lib/addons";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { emptyOverrides, publicMenu, type MenuOverrides } from "@/lib/menuOverrides";
 import { Search, MapPin, Clock, Bike, Phone, PackageSearch, Pizza, ChevronDown, Navigation, MessageCircle } from "lucide-react";
@@ -62,6 +62,50 @@ function orderMessage(name: string, qty: number, price: number, size?: string, e
   return `Assalam-o-alaikum Mimi’s Pizza! 🍕\n\nI want to order:\n*${qty}x ${name}${label}*\n${extras.length ? `Add-ons: ${extras.join(", ")}\n` : ""}Price: *${formatRs(price * qty)}*\n\nPlease confirm my order. Thank you!`;
 }
 
+type CartLine = { key: string; text: string; total: number };
+let cartLines: CartLine[] = [];
+const cartSubs = new Set<() => void>();
+const setCart = (next: CartLine[]) => { cartLines = next; cartSubs.forEach((f) => f()); };
+const subscribeCart = (f: () => void) => { cartSubs.add(f); return () => { cartSubs.delete(f); }; };
+const useCart = () => useSyncExternalStore(subscribeCart, () => cartLines, () => cartLines);
+
+function cartMessage(lines: CartLine[]) {
+  const total = lines.reduce((t, l) => t + l.total, 0);
+  return `Assalam-o-alaikum Mimi’s Pizza! 🍕\n\nI want to order:\n${lines.map((l) => `*${l.text}* — ${formatRs(l.total)}`).join("\n")}\n\nTotal: *${formatRs(total)}*\n\nPlease confirm my order. Thank you!`;
+}
+
+function CartBar() {
+  const lines = useCart();
+  const [open, setOpen] = useState(false);
+  if (!lines.length) return null;
+  const total = lines.reduce((t, l) => t + l.total, 0);
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="fixed inset-x-3 bottom-3 z-50 mx-auto flex h-14 max-w-md items-center justify-between rounded-full bg-primary px-5 font-bold text-primary-foreground shadow-2xl">
+        <span>{lines.length} item{lines.length > 1 ? "s" : ""} · {formatRs(total)}</span><span>View Order →</span>
+      </button>
+      {open && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/60 sm:items-center sm:p-4" onClick={() => setOpen(false)}>
+          <div role="dialog" aria-modal="true" aria-label="Your order" onClick={(e) => e.stopPropagation()} className="max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-card p-5 shadow-2xl sm:rounded-3xl">
+            <div className="flex items-center justify-between"><h3 className="text-xl font-bold">Your Order</h3><button onClick={() => setOpen(false)} aria-label="Close" className="flex size-9 items-center justify-center rounded-full bg-muted text-lg">×</button></div>
+            <ul className="mt-4 space-y-2">
+              {lines.map((l) => (
+                <li key={l.key} className="flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2 text-sm">
+                  <span className="font-semibold">{l.text}</span>
+                  <span className="flex items-center gap-2"><span className="font-bold text-primary">{formatRs(l.total)}</span><button onClick={() => setCart(cartLines.filter((x) => x.key !== l.key))} aria-label="Remove" className="flex size-7 items-center justify-center rounded-full bg-muted">×</button></span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-center justify-between rounded-xl bg-muted px-4 py-3"><span className="text-sm">Total</span><span className="text-lg font-bold text-primary">{formatRs(total)}</span></div>
+            <a href={whatsappLink(cartMessage(lines))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", lines.map((l) => l.text).join(" + "), total); setCart([]); setOpen(false); }} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
+            <button onClick={() => { setCart([]); setOpen(false); }} className="mt-2 w-full text-sm text-muted-foreground underline">Clear order</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: () => void }) {
   const sizes = (p.sizes ?? []).filter((s) => s.price);
   const [size, setSize] = useState(sizes[0]?.size);
@@ -117,7 +161,8 @@ function OrderModal({ p, name, onClose }: { p: Product; name: string; onClose: (
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between rounded-xl bg-muted px-4 py-3"><span className="text-sm">Total</span><span className="text-lg font-bold text-primary">{formatRs(unit * qty)}</span></div>
-        <a href={whatsappLink(orderMessage(name, qty, unit, size, chosen.map((a) => a.name)))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", `${qty}x ${name}${size ? ` ${size}` : ""}`, unit * qty); onClose(); }} className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Send order on WhatsApp</a>
+        <button onClick={() => { const code = size ? sizeCode(size) : ""; const ex = chosen.map((a) => a.name); setCart([...cartLines, { key: `${Date.now()}`, text: `${qty}x ${name}${size ? ` ${size}${code ? ` (${code})` : ""}` : ""}${ex.length ? ` + ${ex.join(", ")}` : ""}`, total: unit * qty }]); onClose(); }} className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full border-2 border-primary font-bold text-primary">+ Add to Cart</button>
+        <a href={whatsappLink(orderMessage(name, qty, unit, size, chosen.map((a) => a.name)))} target="_blank" rel="noopener noreferrer" onClick={() => { logPublicEvent("whatsapp_order", `${qty}x ${name}${size ? ` ${size}` : ""}`, unit * qty); onClose(); }} className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp font-bold text-whatsapp-foreground"><WhatsAppIcon className="size-5" />Order now on WhatsApp</a>
       </div>
     </div>
   );
@@ -280,6 +325,7 @@ function Home() {
       </section>
 
       <PublicFooter />
+      <CartBar />
     </div>
   );
 }
