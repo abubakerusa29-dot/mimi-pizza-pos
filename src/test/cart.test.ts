@@ -17,8 +17,8 @@ describe("cart billing", () => {
     expect(c).toHaveLength(0);
   });
   it("formats rupees", () => expect(formatRs(1460)).toBe("Rs. 1,460"));
-  it("Behari Kabab starts from Rs. 1,400 (no small)", () => {
-    expect(startingPrice(products.find((p) => p.id === "pz-behari-kabab")!)).toBe(1400);
+  it("Behari Kabab starts from Rs. 1,450 (no small)", () => {
+    expect(startingPrice(products.find((p) => p.id === "pz-behari-kabab")!)).toBe(1450);
   });
 });
 

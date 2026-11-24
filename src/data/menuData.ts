@@ -29,21 +29,21 @@ export interface Product {
 const S = (s: number, m: number, l: number, f: number): SizeOption[] => [
   { size: "Small", price: s }, { size: "Medium", price: m }, { size: "Large", price: l }, { size: "Family", price: f },
 ];
-const SIG: SizeOption[] = [{ size: "Medium", price: 1400 }, { size: "Large", price: 1800 }, { size: "Family", price: 2600 }];
-const SPECIAL = S(700, 1300, 1700, 2500);
-const REGULAR = S(650, 1200, 1600, 2400);
+const SIG: SizeOption[] = [{ size: "Medium", price: 1450 }, { size: "Large", price: 1850 }, { size: "Family", price: 2800 }];
+const SPECIAL = S(750, 1350, 1800, 2700);
+const REGULAR = S(700, 1300, 1700, 2600);
 export const DRINK_FLAVOURS = ["Coke", "Sprite", "Fanta", "Pepsi", "7Up", "Dew"];
 const drink = (p: number): SizeOption[] => DRINK_FLAVOURS.map((f) => ({ size: f, price: p }));
 const two = (a: string, ap: number, b: string, bp: number): SizeOption[] => [{ size: a, price: ap }, { size: b, price: bp }];
 
 export const products: Product[] = [
   // Deals
-  { id: "deal-1", name: "Deal 1", category: "deals", price: 1460, description: "Mimi’s Special Small Pizza, Zinger Burger, Small Fries, 500 ml Drink" },
-  { id: "deal-2", name: "Deal 2", category: "deals", price: 1530, flavourChoice: true, description: "Regular Small Pizza, Creamy Pasta (Half), Chicken Paratha Roll, 500 ml Drink" },
-  { id: "deal-3", name: "Deal 3", category: "deals", price: 1780, flavourChoice: true, description: "Regular Medium Pizza, 6 Hot Wings, 1 Liter Drink" },
-  { id: "deal-4", name: "Deal 4", category: "deals", price: 2480, flavourChoice: true, description: "Regular Large Pizza, Small Pizza, 1.5 Liter Drink" },
-  { id: "deal-5", name: "Deal 5", category: "deals", price: 2580, flavourChoice: true, description: "Regular Large Pizza, Pizza Fries (Small), Chicken Petty Burger, 1.5 Liter Drink" },
-  { id: "deal-birthday", name: "Birthday Deal", category: "deals", price: 8470, description: "2 Large Special Pizzas, 2 Medium Regular Pizzas, 2 Zinger Burgers, Crunchy Pasta (Full), 10 Hot Wings, 2 × 1.5 Liter Drinks" },
+  { id: "deal-1", name: "Deal 1", category: "deals", price: 1600, description: "Mimi’s Special Small Pizza, Zinger Burger, Small Fries, 500 ml Drink" },
+  { id: "deal-2", name: "Deal 2", category: "deals", price: 1730, flavourChoice: true, description: "Regular Small Pizza, Creamy Pasta (Half), Chicken Paratha Roll, 500 ml Drink" },
+  { id: "deal-3", name: "Deal 3", category: "deals", price: 1880, flavourChoice: true, description: "Regular Medium Pizza, 6 Hot Wings, 1 Liter Drink" },
+  { id: "deal-4", name: "Deal 4", category: "deals", price: 2630, flavourChoice: true, description: "Regular Large Pizza, Small Pizza, 1.5 Liter Drink" },
+  { id: "deal-5", name: "Deal 5", category: "deals", price: 2780, flavourChoice: true, description: "Regular Large Pizza, Pizza Fries (Small), Chicken Petty Burger, 1.5 Liter Drink" },
+  { id: "deal-birthday", name: "Birthday Deal", category: "deals", price: 8950, description: "2 Large Special Pizzas, 2 Medium Regular Pizzas, 2 Zinger Burgers, Crunchy Pasta (Full), 10 Hot Wings, 2 × 1.5 Liter Drinks" },
 
   // Special pizzas
   { id: "pz-mimis-special", name: "Mimi’s Special Pizza", category: "pizza", tag: "Special", sizes: SPECIAL, description: "Special sauce, chicken, onion, capsicum, mushroom, tomato, olives, sausages, sweet corn, cheese" },
@@ -67,16 +67,16 @@ export const products: Product[] = [
   { id: "pz-chicken-supreme", name: "Chicken Supreme Pizza", category: "pizza", tag: "Regular", sizes: REGULAR, description: "Tomato sauce, chicken, onion, mushroom, olives, cheese" },
   { id: "pz-vegetable", name: "Vegetable Pizza", category: "pizza", tag: "Regular", sizes: REGULAR, description: "Tomato sauce, onion, jalapeno, capsicum, mushroom, tomato, olives, sweet corn, cheese" },
   { id: "pz-hot-spicy", name: "Hot & Spicy Pizza", category: "pizza", tag: "Regular", sizes: REGULAR, description: "Tomato sauce, jalapeno, chicken, onion, capsicum, cheese" },
-  { id: "pz-square", name: "Square Pizza", category: "pizza", tag: "Square", sizes: [{ size: "Small", price: 750 }, { size: "Medium", price: 1350 }, { size: "Large", price: 1750 }], description: "Special sauce, chicken, 2 type sausages, onion, capsicum, red jalapeno, mushroom" },
+  { id: "pz-square", name: "Square Pizza", category: "pizza", tag: "Square", sizes: [{ size: "Small", price: 800 }, { size: "Medium", price: 1400 }, { size: "Large", price: 1800 }], description: "Special sauce, chicken, 2 type sausages, onion, capsicum, red jalapeno, mushroom" },
 
   // Burgers
-  { id: "bg-mighty-zinger", name: "Mighty Zinger Burger", category: "burgers", price: 650 },
-  { id: "bg-tender-fillet", name: "Tender Fillet Burger", category: "burgers", price: 400 },
-  { id: "bg-arabian-fillet", name: "Arabian Fillet Burger", category: "burgers", price: 350 },
-  { id: "bg-zinger", name: "Zinger Burger", category: "burgers", price: 380 },
-  { id: "bg-zinger-cheese", name: "Zinger Cheese Burger", category: "burgers", price: 480 },
-  { id: "bg-petty", name: "Chicken Petty Burger", category: "burgers", price: 300 },
-  { id: "bg-petty-cheese", name: "Chicken Petty Cheese Burger", category: "burgers", price: 350 },
+  { id: "bg-mighty-zinger", name: "Mighty Zinger Burger", category: "burgers", price: 750 },
+  { id: "bg-tender-fillet", name: "Tender Fillet Burger", category: "burgers", price: 480 },
+  { id: "bg-arabian-fillet", name: "Arabian Fillet Burger", category: "burgers", price: 400 },
+  { id: "bg-zinger", name: "Zinger Burger", category: "burgers", price: 420 },
+  { id: "bg-zinger-cheese", name: "Zinger Cheese Burger", category: "burgers", price: 500 },
+  { id: "bg-petty", name: "Chicken Petty Burger", category: "burgers", price: 350 },
+  { id: "bg-petty-cheese", name: "Chicken Petty Cheese Burger", category: "burgers", price: 400 },
   { id: "bg-onion-smash", name: "Onion Smash Beef Burger", category: "burgers", tag: "Signature", sizes: two("Single Patty", 650, "Double Patty", 850), description: "Beef smash patties, cheese, caramelised onions, lettuce, special sauce" },
   { id: "bg-jalapeno-smash", name: "Jalapeno Smash Beef Burger", category: "burgers", tag: "Signature", sizes: two("Single Patty", 650, "Double Patty", 850), description: "Beef smash patties, cheese, jalapenos, lettuce, special sauce" },
   { id: "bg-grill", name: "Chicken Grill Burger", category: "burgers", tag: "Signature", sizes: two("Single Patty", 600, "Double Patty", 800), description: "Grilled chicken fillet, lettuce, BBQ and special sauce" },
@@ -84,43 +84,43 @@ export const products: Product[] = [
   // Wings & nuggets
   { id: "wg-hot", name: "Hot Wings", category: "wings", sizes: two("6 Pcs", 400, "10 Pcs", 650) },
   { id: "wg-oven", name: "Oven Baked Wings", category: "wings", sizes: two("6 Pcs", 400, "12 Pcs", 800) },
-  { id: "wg-peri", name: "Peri Peri Wings", category: "wings", sizes: two("6 Pcs", 430, "12 Pcs", 860) },
-  { id: "wg-bbq", name: "Bar B Q Wings", category: "wings", sizes: two("6 Pcs", 430, "12 Pcs", 860) },
+  { id: "wg-peri", name: "Peri Peri Wings", category: "wings", sizes: two("6 Pcs", 450, "12 Pcs", 900) },
+  { id: "wg-bbq", name: "Bar B Q Wings", category: "wings", sizes: two("6 Pcs", 450, "12 Pcs", 900) },
   { id: "wg-chipotley", name: "Chipotley Saucy Wings", category: "wings", sizes: two("5 Pcs", 400, "10 Pcs", 800) },
   { id: "wg-nuggets", name: "Nuggets", category: "wings", sizes: two("6 Pcs", 300, "10 Pcs", 550) },
   { id: "wg-arabian-nuggets", name: "Arabian Fillet Nuggets", category: "wings", sizes: two("5 Pcs", 400, "10 Pcs", 800) },
 
   // Fries & sides
-  { id: "sd-fries", name: "Fries", category: "sides", sizes: two("Small", 250, "Large", 350) },
-  { id: "sd-mayo-fries", name: "Mayo Fries", category: "sides", sizes: two("Small", 300, "Large", 400) },
-  { id: "sd-chipotley-fries", name: "Chipotley Fries", category: "sides", sizes: two("Small", 300, "Large", 400) },
-  { id: "sd-pizza-fries", name: "Pizza Fries", category: "sides", tag: "Special", sizes: two("Small", 450, "Large", 750) },
+  { id: "sd-fries", name: "Fries", category: "sides", sizes: two("Small", 300, "Large", 400) },
+  { id: "sd-mayo-fries", name: "Mayo Fries", category: "sides", sizes: two("Small", 400, "Large", 500) },
+  { id: "sd-chipotley-fries", name: "Chipotley Fries", category: "sides", sizes: two("Small", 400, "Large", 500) },
+  { id: "sd-pizza-fries", name: "Pizza Fries", category: "sides", tag: "Special", sizes: two("Small", 500, "Large", 800) },
   { id: "sd-loaded-fries", name: "Loaded Fries", category: "sides", tag: "Special", sizes: two("Small", 500, "Large", 800) },
-  { id: "sd-cheese-stick", name: "Cheese Stick", category: "sides", price: 650 },
-  { id: "sd-chicken-cheese-stick", name: "Chicken Cheese Stick", category: "sides", price: 1000 },
+  { id: "sd-cheese-stick", name: "Cheese Stick", category: "sides", price: 700 },
+  { id: "sd-chicken-cheese-stick", name: "Chicken Cheese Stick", category: "sides", price: 1100 },
   { id: "sd-calzon-chunk", name: "Calzon Chunk", category: "sides", price: 1300 },
 
   // Pasta & platters
   { id: "ps-cheesy", name: "Cheesy Pasta", category: "pasta", tag: "Oven Baked", sizes: two("Half", 500, "Full", 800) },
-  { id: "ps-creamy", name: "Creamy Pasta", category: "pasta", tag: "Oven Baked", sizes: two("Half", 450, "Full", 750) },
+  { id: "ps-creamy", name: "Creamy Pasta", category: "pasta", tag: "Oven Baked", sizes: two("Half", 500, "Full", 800) },
   { id: "ps-crunchy", name: "Crunchy Pasta", category: "pasta", tag: "Oven Baked", sizes: two("Half", 500, "Full", 800) },
-  { id: "pl-special", name: "Special Platter", category: "pasta", price: 1150, description: "Oven Baked Wings (6 Pcs), Spin Roll (4 Pcs), Regular Fries, Dip Sauce" },
-  { id: "pl-malai-boti", name: "Malai Boti Platter", category: "pasta", price: 1150, description: "Oven Baked Wings (6 Pcs), Malai Boti Roll (4 Pcs), Regular Fries, Dip Sauce" },
+  { id: "pl-special", name: "Special Platter", category: "pasta", price: 1200, description: "Oven Baked Wings (6 Pcs), Spin Roll (4 Pcs), Regular Fries, Dip Sauce" },
+  { id: "pl-malai-boti", name: "Malai Boti Platter", category: "pasta", price: 1200, description: "Oven Baked Wings (6 Pcs), Malai Boti Roll (4 Pcs), Regular Fries, Dip Sauce" },
 
   // Rolls, wraps & sandwiches
-  { id: "rl-chicken-paratha", name: "Chicken Paratha Roll", category: "rolls", price: 300 },
-  { id: "rl-chicken-cheese-paratha", name: "Chicken Cheese Paratha Roll", category: "rolls", price: 350 },
-  { id: "rl-malai-boti-paratha", name: "Malai Boti Paratha Roll", category: "rolls", price: 300 },
-  { id: "rl-zinger-paratha", name: "Zinger Paratha Roll", category: "rolls", price: 380 },
-  { id: "rl-pizza-paratha", name: "Pizza Paratha", category: "rolls", price: 450 },
-  { id: "rl-spin", name: "Spin Roll", category: "rolls", tag: "4 Pcs", price: 500 },
-  { id: "rl-malai-boti", name: "Malai Boti Roll", category: "rolls", tag: "4 Pcs", price: 500 },
-  { id: "rl-behari-kabab", name: "Behari Kabab Roll", category: "rolls", price: 600 },
-  { id: "wr-special", name: "Mimi’s Special Wrap", category: "rolls", tag: "Wrap", price: 500 },
-  { id: "wr-arabian-grill", name: "Arabian Grill Wrap", category: "rolls", tag: "Wrap", price: 550 },
-  { id: "sw-tikka", name: "Tikka Sandwich", category: "rolls", tag: "Sandwich", price: 350 },
-  { id: "sw-mexican", name: "Mexican Sandwich", category: "rolls", tag: "Sandwich", price: 750 },
-  { id: "sw-grill", name: "Grill Sandwich", category: "rolls", tag: "Sandwich", price: 400 },
+  { id: "rl-chicken-paratha", name: "Chicken Paratha Roll", category: "rolls", price: 400 },
+  { id: "rl-chicken-cheese-paratha", name: "Chicken Cheese Paratha Roll", category: "rolls", price: 450 },
+  { id: "rl-malai-boti-paratha", name: "Malai Boti Paratha Roll", category: "rolls", price: 400 },
+  { id: "rl-zinger-paratha", name: "Zinger Paratha Roll", category: "rolls", price: 420 },
+  { id: "rl-pizza-paratha", name: "Pizza Paratha", category: "rolls", price: 550 },
+  { id: "rl-spin", name: "Spin Roll", category: "rolls", tag: "4 Pcs", price: 600 },
+  { id: "rl-malai-boti", name: "Malai Boti Roll", category: "rolls", tag: "4 Pcs", price: 600 },
+  { id: "rl-behari-kabab", name: "Behari Kabab Roll", category: "rolls", price: 650 },
+  { id: "wr-special", name: "Mimi’s Special Wrap", category: "rolls", tag: "Wrap", price: 550 },
+  { id: "wr-arabian-grill", name: "Arabian Grill Wrap", category: "rolls", tag: "Wrap", price: 600 },
+  { id: "sw-tikka", name: "Tikka Sandwich", category: "rolls", tag: "Sandwich", price: 450 },
+  { id: "sw-mexican", name: "Mexican Sandwich", category: "rolls", tag: "Sandwich", price: 800 },
+  { id: "sw-grill", name: "Grill Sandwich", category: "rolls", tag: "Sandwich", price: 450 },
 
   // Drinks
   { id: "dr-500", name: "Soft Drink", category: "drinks", tag: "500 ml", sizes: drink(130) },

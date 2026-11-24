@@ -13,9 +13,9 @@ describe("menu photos", () => {
   });
   it("keeps menu prices from the printed menu", () => {
     const find = (id: string) => products.find((p) => p.id === id)!;
-    expect(find("deal-birthday").price).toBe(8470);
-    expect(find("deal-5").price).toBe(2580);
-    expect(find("pz-behari-kabab").sizes?.map((s) => s.price)).toEqual([1400, 1800, 2600]);
-    expect(find("pz-square").sizes?.map((s) => s.price)).toEqual([750, 1350, 1750]);
+    expect(find("deal-birthday").price).toBe(8950);
+    expect(find("deal-5").price).toBe(2780);
+    expect(find("pz-behari-kabab").sizes?.map((s) => s.price)).toEqual([1450, 1850, 2800]);
+    expect(find("pz-square").sizes?.map((s) => s.price)).toEqual([800, 1400, 1800]);
   });
 });

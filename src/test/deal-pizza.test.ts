@@ -13,7 +13,7 @@ describe("deal pizza swap", () => {
   it("Deal 1 small special -> regular is Rs. 50 less", () => {
     expect(diff("deal-1", "Fajita")).toBe(-50);
   });
-  it("Deal 3 medium regular -> special costs Rs. 100 more", () => {
-    expect(diff("deal-3", "BBQ")).toBe(100);
+  it("Deal 3 medium regular -> special costs Rs. 50 more", () => {
+    expect(diff("deal-3", "BBQ")).toBe(50);
   });
 });
